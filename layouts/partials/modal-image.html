@@ -1,0 +1,4 @@
+<figure>
+<img src='{{ ((.image.Resize "1500x").Process "webp").RelPermalink }}' alt="{{ .image.Name }}" uk-img>
+<figcaption>{{ .caption | markdownify }}</figcaption>
+</figure>

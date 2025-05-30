@@ -1,0 +1,5 @@
+{{ $movie := $.Page.Parent.Resources.Get (.Get 0) }}
+{{ if not $movie }}
+    {{ errorf "movie not found: %v" (.Get 0) }}
+{{ end }}
+{{ partial "modal-movie.html" (dict "movie" $movie "caption" .Inner) }}

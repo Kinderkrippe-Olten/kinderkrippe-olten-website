@@ -1,0 +1,74 @@
+{{ $bg := .Resources.Get "background.jpg" }}
+
+{{/* Check index.md ID */}}
+{{ if .Params.id }}
+  {{ errorf "id: property is not allowed in %s" .File.Path }}
+{{ end }}
+
+{{/* Check modal.md ID */}}
+{{ $modal := .Resources.Get "modal.md" }}
+{{ if and $modal $modal.Params.id }}
+  {{ $validation := dict "id" $modal.Params.id "filepath" (printf "%smodal.md" .File.Dir) }}
+  {{ $result := partial "validate-id" $validation }}
+  {{ if not $result.valid }}
+    {{ errorf "%s (%smodal.md)" $result.error .File.Dir }}
+  {{ end }}
+{{ end }}
+
+{{ if $bg }}
+  {{ $style := (printf "background-image: url('%s');" ( ($bg.Process "fill 348x557 center webp").RelPermalink ) ) }}
+  {{ .Scratch.Set "bg_style" $style }}
+{{ end }}
+
+{{ $teaser := .Resources.Get "teaser.jpg" }}
+{{ if $teaser }}
+  {{ $src := ($teaser.Process "fill 348x278 center webp").RelPermalink }}
+  {{ .Scratch.Set "teaser_src" $src }}
+{{ end }}
+
+{{ if $modal }}
+  {{ if $modal.Params.id }}
+    {{ .Scratch.Set "local_modal_id" (printf "modal-%s" $modal.Params.id) }}
+  {{ else }}
+    {{ if eq ( $.Site.Store.Get "modal_id" ) "" }}
+      {{ $.Site.Store.Set "modal_id" 0 }}
+    {{ end }}
+    {{ $.Site.Store.Add "modal_id" 1 }}
+    {{ .Scratch.Set "local_modal_id" (printf "automodal-%d" ( $.Site.Store.Get "modal_id")) }}
+  {{ end }}
+{{ end }}
+
+<div id="{{ .Params.id }}" class="ti-card" style='{{ .Scratch.Get "bg_style" | safe.CSS }}'>
+  {{ if $teaser }}
+    <div class="ti-card-teaser">
+      <img src='{{ .Scratch.Get "teaser_src" }}' alt="teaser-image">
+    </div>
+  {{ end }}
+
+  <h3 class="{{ if .Params.hyphenate_mobile }}ti-hyphenate-mobile{{ end }}">{{ .Title | safe.HTML }}</h3>
+
+  <div class="ti-card-body {{ if not $bg }}ti-card-fadeout{{ end }}">
+    {{ .Content | safe.HTML }}
+  </div>
+
+  {{ if $modal }}
+    <a href='#{{ .Scratch.Get "local_modal_id" }}' uk-toggle><img src='{{ (resources.Get "images/plus-icon.svg").RelPermalink }}' 
+         uk-img alt="+"
+         class="ti-round-button ti-plus-button"></a>
+  {{ end }}
+</div>
+
+{{ if $modal }}
+  <!-- This is the modal with the default close button -->
+  <div id='{{ .Scratch.Get "local_modal_id" }}' class="uk-modal-container" uk-modal>
+    <div class="uk-modal-dialog">
+      <img src='{{ (resources.Get "images/x-icon.svg").RelPermalink }}'
+           alt="open-modal"
+           uk-img
+           class="ti-round-button ti-close-button uk-modal-close">
+      <div class="uk-modal-body uk-margin-auto-vertical" uk-overflow-auto>
+        <div class="ti-modal-body">{{ $modal.Content | safe.HTML }}</div>
+      </div>
+    </div>
+  </div>
+{{ end }}

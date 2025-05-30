@@ -1,0 +1,32 @@
+{{/* 
+  Usage: 
+  {{ partial "get-svg.html" "images/arrow.svg" }} - returns first SVG
+  {{ partial "get-svg.html" (dict "path" "images/arrow.svg" "class" "my-class") }} - with CSS class
+*/}}
+{{ $svgPath := "" }}
+{{ $cssClass := "" }}
+{{ $svgContent := "" }}
+
+{{ if reflect.IsMap . }}
+  {{ $svgPath = .path }}
+  {{ $cssClass = .class | default "" }}
+{{ else }}
+  {{ $svgPath = . }}
+{{ end }}
+
+{{ $svgResource := resources.Get $svgPath }}
+{{ if $svgResource }}
+  {{ $svgMatches := findRE `(?s)<svg.*?>.+</svg>` $svgResource.Content }}
+  {{ if $svgMatches }}
+    {{ $svgContent = index $svgMatches 0 }}
+    {{ if $cssClass }}
+      {{ $svgContent = replace $svgContent "<svg" (printf `<svg class="%s"` $cssClass) }}
+    {{ end }}
+  {{ else }}
+    {{ errorf "No SVG content found in file: %s" $svgPath }}
+  {{ end }}
+{{ else }}
+  {{ errorf "SVG file not found: %s" $svgPath }}
+{{ end }}
+
+{{ return ($svgContent | safeHTML) }}

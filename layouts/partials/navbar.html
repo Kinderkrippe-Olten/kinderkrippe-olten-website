@@ -1,0 +1,40 @@
+<div class="uk-navbar-container uk-box-shadow-small"
+    uk-sticky="show-on-up: true; media: 640;animation: uk-animation-slide-top">
+    <nav class="uk-container uk-container-xsmall" uk-navbar>
+        <div class="uk-navbar-left">
+            <a href="/"><img src='{{ (resources.Get "images/logo.svg").RelPermalink }}' alt="logo" class="uk-navbar-item ti-logo"></a>
+        </div>
+        <div class="uk-navbar-right">
+        <a class="uk-navbar-toggle" uk-toggle href="#ti-menu">
+            <span uk-navbar-toggle-icon></span>
+        </a>
+    </div>
+    </nav>
+</div>
+
+<div id="ti-menu" uk-offcanvas="overlay: true;flip: true">
+    <div class="uk-offcanvas-bar">
+        <button class="uk-offcanvas-close" type="button" uk-close></button>
+        {{ with .Site.GetPage "navigation" }}
+            {{ .Content }}
+            <ul class="uk-nav-primary" uk-nav>
+            {{ range .Params.navigation }}
+                {{ if .subnav }}
+                <li class="uk-parent">
+                    <a href="{{ .href }}" >{{ .title }} <span uk-nav-parent-icon></span></a>
+                    <ul class="uk-nav-sub">
+                    {{ range .subnav }}
+                        <li>
+                            <a href="{{ .href }}" {{ if .modal }}uk-toggle{{ else }}uk-scroll{{ end }}>{{ .title | markdownify }}</a>
+                        </li>
+                    {{ end }}
+                    </ul>
+                </li>
+                {{ else }}
+                <li><a href="{{ .href }}" {{ if .modal }}uk-toggle{{ else }}uk-scroll{{ end }}>{{ .title | markdownify }}</a></li>
+                {{ end }}
+            {{ end }}
+            </ul>
+        {{ end }}
+    </div>
+</div>

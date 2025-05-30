@@ -1,0 +1,13 @@
+<div class="kko-minigame-header" uk-sticky="show-on-up: true;">
+    <button class="kko-bookmark">
+         <span>{{-
+            partial "get-svg.html" "images/kko-bookmark.svg" 
+        -}}</span>
+    </button>
+    <script>
+        document.querySelector('.kko-bookmark').addEventListener('click', function() {
+            document.body.classList.toggle('kko-bookmark-active');
+        });
+    </script>
+    {{ partial "kko-logo.html" . }}
+</div>

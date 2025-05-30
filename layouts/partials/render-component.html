@@ -1,0 +1,48 @@
+{{/* layouts/partials/render-component.html */}}
+{{/*
+Renders a component based on a parameter string like "type/id".
+Expects context:
+- .param: The string parameter (e.g., "minigame/mygame", "block/myblock").
+- .Page: The current page context.
+*/}}
+{{ $param := .param }}
+{{ $page := .Page }}
+{{ $Site := .Site }}
+
+{{/* Initialize an empty string for the rendered content */}}
+{{ $renderedContent := "" }}
+
+{{ if $param }}
+  {{ $parts := split $param "/" }}
+  {{ $type := "" }}
+  {{ $id := "unknown" }}
+
+  {{ if ge (len $parts) 1 }}
+    {{ $type = index $parts 0 }}
+  {{ end }}
+  {{ if ge (len $parts) 2 }}
+    {{ $id = index $parts 1 }}
+  {{ end }}
+
+  {{/* Check if both type and id were successfully extracted */}}
+  {{ if and $type $id }}
+    {{ if eq $type "minigame" }}
+      {{ $renderedContent = partial (printf "minigames/%s.html" $id) . }}
+    {{ else if eq $type "block" }}
+      {{/* Use the dedicated render-block partial to render the block */}}
+      {{ $renderedContent = partial "render-block.html" (dict "id" $id "page" $page) }}
+    {{ else if eq $type "menu" }}
+      {{ $renderedContent = partial "render-menu.html" (dict "Page" $page "Site" $Site) }}
+    {{ else }}
+      {{ warnf "Unsupported component type '%s' in render-component for param: %s" $type $param }}
+    {{ end }}
+  {{ else if $type }}
+      {{/* Type was found, but ID was missing */}}
+      {{/* Warning already generated above */}}
+  {{ else }}
+      {{ warnf "Invalid component parameter format in render-component: %s" $param }}
+  {{ end }}
+{{ else }}
+  {{/* No parameter provided, return empty string */}}
+{{ end }}
+{{ return $renderedContent }}

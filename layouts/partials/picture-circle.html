@@ -1,0 +1,28 @@
+{{ $block := .block }}
+{{ $index := .index }}
+{{ $layout := .layout }}
+
+{{/* checking if block has the appropproprite params defined */}}
+{{ if not $block.Params.pictures }}
+  {{ errorf "Block '%s' does not have 'pictures' defined in params." $block.File.Path }}
+{{ end }}
+
+{{/* checking if the index is within the range of pictures */}}
+{{ if gt $index (len $block.Params.pictures) }}
+  {{ errorf "Index %d is out of range for block '%s' with %d pictures." $index $block.File.Path (len $block.Params.pictures) }}
+{{ end }}
+
+{{/* checking if the layout is either 3 or 5 */}}
+{{ if not (or (eq $layout 3) (eq $layout 5)) }}
+  {{ errorf "Invalid layout '%d' for block '%s'. Expected 3 or 5." $layout $block.File.Path }}
+{{ end }}
+
+{{ $picture := index $block.Params.pictures (sub $index 1) }}
+{{ $pictureAlt := $picture.alt | default "Picture Circle" }}
+{{ $pictureTitle := $picture.title | default "Picture Circle" }}
+{{ $pictureFile := path.Join $block.File.Dir $picture.file }}
+{{ $pictureSrc := (resources.Get $pictureFile | images.Filter (images.Crop "400x400") | images.Filter (images.Process "webp")).RelPermalink }}
+
+<div class="kko-circle kko-circle-{{ $index }}">
+  <img src="{{ $pictureSrc }}" alt="{{ $pictureAlt }}" title="{{ $pictureTitle }}" class="kko-circle">
+</div>

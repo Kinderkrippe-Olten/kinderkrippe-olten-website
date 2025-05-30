@@ -1,0 +1,6 @@
+{{ $file := printf "/movies/%s" (.Get 0) }}
+{{ $page := .Site.GetPage $file }}
+{{ if not $page }}
+    {{ errorf "Movie not found: %s" $file }}
+{{ end }}
+{{ partial "movie.html" $page }}

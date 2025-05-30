@@ -1,0 +1,28 @@
+{{ .Site.Params.headercommentblock | safeHTML }}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ block "title" . }}
+        {{ .Title }}
+        {{ end }}
+    </title>
+    {{ $sass := resources.Get "scss/site.scss" }}
+    {{ $style := $sass | resources.ExecuteAsTemplate "main.scss" . | css.Sass | minify | fingerprint }}
+    {{ $secureStyle := $style | resources.Fingerprint "sha512" }}
+    <link rel="stylesheet" href="{{ $style.RelPermalink }}" integriety="{{ $style.Data.Integrity }}">
+    {{ $js := resources.Get "uikit/dist/js/uikit.min.js" }}
+    {{ $secureJS := $js | resources.Fingerprint "sha512" }}
+    <script src="{{ $js.RelPermalink }}" integrity="{{ $secureJS.Data.Integrity }}"></script>
+    {{ $jsIcons := resources.Get "uikit/dist/js/uikit-icons.min.js" }}
+    {{ $secureJsIcons := $jsIcons | resources.Fingerprint "sha512" }}
+    <script src="{{ $jsIcons.RelPermalink }}" integrity="{{ $secureJsIcons.Data.Integrity }}"></script>
+    {{ $customJs:= resources.Get "js/custom.js" }}
+    {{ $secureCustomJs := $customJs | resources.Fingerprint "sha512" }}
+    <script src="{{ $customJs.RelPermalink }}" integrity="{{ $secureCustomJs.Data.Integrity }}"></script>
+    {{ $favicon := $.Site.Params.favicon }}
+    {{ if $favicon }}
+    <link rel="icon" href='{{ (resources.Get (print "img/" $favicon ".png")).RelPermalink }}' sizes="any">
+    <link rel="icon" href='{{ (resources.Get (print "img/" $favicon ".svg")).RelPermalink }}' type="image/svg+xml">
+    {{ end }}
+    <link rel="stylesheet" href="https://use.typekit.net/ryz8ukp.css">
+</head>

@@ -1,0 +1,19 @@
+<script>
+    function openExternalLinksInNewWindow() {
+        const currentDomain = window.location.hostname; // Get the current website's domain
+
+        // Select all anchor tags (<a>) on the page
+        const links = document.querySelectorAll('a');
+
+        links.forEach(link => {
+            // Check if the link is external (doesn't belong to the current domain)
+            if ((link.hostname !== currentDomain && !link.hasAttribute('target')) ||
+                link.href.endsWith('.pdf')) {
+                // Set the target attribute to "_blank" to open in a new window
+                link.setAttribute('target', '_blank');
+            }
+        });
+    }
+    // Call the function to execute the changes
+    openExternalLinksInNewWindow(); 
+</script>

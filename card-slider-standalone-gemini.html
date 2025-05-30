@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Slider Standalone</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .card-slider-container {
+            --card-width: 200px; /* Adjusted for better viewing */
+            --card-height: 300px; /* Adjusted */
+            --card-gap: 15px;
+            --stack-limit: 5;
+            --fan-offset-percent: 3; /* Slightly more visible */
+            --stack-base-percent-left: 5;
+            --stack-base-percent-right: 95;
+            --transition-speed: 0.3s;
+            --snap-animation-duration: 400; /* ms for JS animation */
+
+            position: relative;
+            width: 80%; /* Adjust container width as needed */
+            max-width: 1000px;
+            min-height: calc(var(--card-height) + 40px);
+            overflow: hidden;
+            margin: 2em 0;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .card-slider-track {
+            position: relative;
+            width: 100%;
+            height: var(--card-height);
+            margin: 20px 0; /* Vertical margin for breathing room */
+        }
+
+        .card {
+            width: var(--card-width);
+            height: var(--card-height);
+            position: absolute;
+            top: 0;
+            left: 50%; /* Start calculation from center */
+            transform: translateX(-50%); /* Center initially */
+            background-color: #eee;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform var(--transition-speed) ease-out,
+                        opacity var(--transition-speed) ease-out,
+                        z-index 0s var(--transition-speed); /* Delay z-index change */
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            flex-direction: column; /* Allow content stacking */
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1em;
+            border-radius: 8px;
+            padding: 15px;
+            box-sizing: border-box;
+            text-align: center;
+            overflow: hidden; /* Prevent content spill */
+        }
+
+        .card.dragging {
+             cursor: grabbing;
+             transition: none; /* Disable transition during drag for direct feedback */
+        }
+
+
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background 0.2s ease, transform 0.1s ease;
+            font-size: 1.5em;
+            color: #333;
+        }
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+        .nav-arrow:active {
+             transform: translateY(-50%) scale(0.95);
+        }
+
+        .nav-arrow.prev { left: 15px; }
+        .nav-arrow.next { right: 15px; }
+
+        /* Basic styling for card content */
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+        .card p {
+            font-size: 0.9em;
+            color: #555;
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="card-slider-container" id="card-slider">
+        <div class="card-slider-track">
+            <!-- Static Example Cards -->
+            <div class="card"><h3>Card 1</h3><p>Description for card one.</p></div>
+            <div class="card"><h3>Card 2</h3><p>Details about the second item.</p></div>
+            <div class="card"><h3>Card 3</h3><p>Third card's information goes here.</p></div>
+            <div class="card"><h3>Card 4</h3><p>Content for the fourth card.</p></div>
+            <div class="card"><h3>Card 5</h3><p>Fifth element description.</p></div>
+            <div class="card"><h3>Card 6</h3><p>More details for card six.</p></div>
+            <div class="card"><h3>Card 7</h3><p>Seventh card example text.</p></div>
+            <div class="card"><h3>Card 8</h3><p>Eighth item in the slider.</p></div>
+            <div class="card"><h3>Card 9</h3><p>Information about the ninth card.</p></div>
+            <div class="card"><h3>Card 10</h3><p>Final example card, number ten.</p></div>
+        </div>
+        <button type="button" class="nav-arrow prev" aria-label="Previous Card"></button>
+        <button type="button" class="nav-arrow next" aria-label="Next Card"></button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('card-slider');
+            if (!slider) {
+                console.error("Slider container not found");
+                return;
+            }
+            initSlider(slider);
+        });
+
+        function initSlider(sliderContainer) {
+            const track = sliderContainer.querySelector('.card-slider-track');
+            const cards = Array.from(track.querySelectorAll('.card'));
+            const prevButton = sliderContainer.querySelector('.nav-arrow.prev');
+            const nextButton = sliderContainer.querySelector('.nav-arrow.next');
+
+            if (!track || cards.length === 0 || !prevButton || !nextButton) {
+                console.error("Slider elements missing (track, cards, or buttons)");
+                return;
+            }
+
+            // --- Configuration (Read from CSS Variables) ---
+            const style = getComputedStyle(sliderContainer);
+            const cardWidth = parseInt(style.getPropertyValue('--card-width'), 10);
+            const cardGap = parseInt(style.getPropertyValue('--card-gap'), 10);
+            const stackLimit = parseInt(style.getPropertyValue('--stack-limit'), 10);
+            const fanOffsetPercent = parseInt(style.getPropertyValue('--fan-offset-percent'), 10);
+            const stackBasePercentLeft = parseInt(style.getPropertyValue('--stack-base-percent-left'), 10);
+            const stackBasePercentRight = parseInt(style.getPropertyValue('--stack-base-percent-right'), 10);
+            const snapAnimationDuration = parseInt(style.getPropertyValue('--snap-animation-duration'), 10);
+
+            // --- State Variables ---
+            let containerWidth = sliderContainer.offsetWidth;
+            let currentLogicalIndex = Math.floor(cards.length / 2); // Start near the middle
+            let actualTrackOffset = 0; // Raw offset during drag
+            let targetTrackOffset = calculateTargetOffset(currentLogicalIndex); // Target offset for snapping
+
+            let isDragging = false;
+            let dragStartX = 0;
+            let dragStartOffset = 0;
+            let animationFrameId = null;
+            let snapAnimation = { startTime: 0, startOffset: 0, targetOffset: 0, id: null };
+
+            // --- Calculated Values ---
+            let fanOffsetPixels = (fanOffsetPercent / 100) * cardWidth;
+            let stackBaseLeftPixels = (stackBasePercentLeft / 100) * containerWidth;
+            // Adjust right base to be the *start* of the card
+            let stackBaseRightPixels = ((stackBasePercentRight / 100) * containerWidth) - cardWidth;
+
+            // --- Core Logic ---
+            function calculateTargetOffset(index) {
+                // Calculate the offset needed to center the card at 'index'
+                const centerPos = containerWidth / 2 - cardWidth / 2;
+                return centerPos - (index * (cardWidth + cardGap));
+            }
+
+            function updateCardPositions(offset) {
+                // const centerViewThreshold = cardWidth * 0.6; // How much of card needs to be visible to be 'center' - Not currently used
+
+                cards.forEach((card, i) => {
+                    // const cardCenterTarget = offset + (i * (cardWidth + cardGap)) + (cardWidth / 2); // Not directly used for positioning logic below
+
+                    let translateXValue, zIndex, opacity = 1;
+                    // let transformOrigin = 'center center'; // Default transform origin - Not currently used
+
+                    // Determine the absolute target left edge position for the card
+                    const cardLeftEdgeTarget = offset + (i * (cardWidth + cardGap));
+
+                    // Calculate the card's intended absolute left position based on its zone
+                    let targetAbsoluteLeft;
+
+                    if (cardLeftEdgeTarget < stackBaseLeftPixels) {
+                        // --- Left Stack ---
+                        // Calculate how many cards are *intended* to be fully to the left of this one's target position
+                        let cardsFullyLeft = 0;
+                        for (let j = 0; j < i; j++) {
+                            // Check if card j's target position is also in the left stack zone
+                            if (offset + (j * (cardWidth + cardGap)) < stackBaseLeftPixels) {
+                                cardsFullyLeft++;
+                            }
+                        }
+                        const stackIndex = cardsFullyLeft; // 0 is the card closest to the edge (topmost)
+                        const cappedIndex = Math.min(stackIndex, stackLimit - 1);
+                        targetAbsoluteLeft = stackBaseLeftPixels - (cappedIndex * fanOffsetPixels);
+                        // Invert zIndex: topmost card (stackIndex 0) should be highest within the stack
+                        zIndex = cards.length + stackLimit - cappedIndex; // Base zIndex + offset
+                        opacity = stackIndex >= stackLimit ? 0.5 : 1; // Fade out cards beyond limit slightly
+                        // transformOrigin = 'center right'; // Fan from the right edge
+
+                    } else if (cardLeftEdgeTarget + cardWidth > stackBaseRightPixels + cardWidth) {
+                         // --- Right Stack ---
+                         // Calculate how many cards are *intended* to be fully to the right of this one's target position
+                        let cardsFullyRight = 0;
+                        for (let j = cards.length - 1; j > i; j--) {
+                             // Check if card j's target position is also in the right stack zone
+                             if (offset + (j * (cardWidth + cardGap)) + cardWidth > stackBaseRightPixels + cardWidth) {
+                                cardsFullyRight++;
+                            }
+                        }
+                        const stackIndex = cardsFullyRight; // 0 is the card closest to the edge (topmost)
+                        const cappedIndex = Math.min(stackIndex, stackLimit - 1);
+                        targetAbsoluteLeft = stackBaseRightPixels + (cappedIndex * fanOffsetPixels);
+                         // Invert zIndex: topmost card (stackIndex 0) should be highest within the stack
+                        zIndex = cards.length + stackLimit - cappedIndex; // Base zIndex + offset
+                        opacity = stackIndex >= stackLimit ? 0.5 : 1; // Fade out cards beyond limit slightly
+                        // transformOrigin = 'center left'; // Fan from the left edge
+
+                    } else {
+                        // --- Center ---
+                        targetAbsoluteLeft = cardLeftEdgeTarget; // Linear position
+                        // Higher z-index for the logically centered card, decreasing outwards
+                        zIndex = (cards.length * 2) + (cards.length - Math.abs(i - currentLogicalIndex));
+                        opacity = 1;
+                        // transformOrigin = 'center center';
+                    }
+
+                    // Adjust translateX to be relative to the initial 50% position in CSS
+                    // targetAbsoluteLeft is where the card's left edge should be in the container.
+                    // The card's CSS starts it at left: 50%, transform: translateX(-50%),
+                    // meaning its initial *visual* left edge is at (containerWidth / 2) - (cardWidth / 2).
+                    const initialVisualLeftEdge = containerWidth / 2 - cardWidth / 2;
+                    translateXValue = targetAbsoluteLeft - initialVisualLeftEdge;
+
+
+                    card.style.transform = `translateX(${translateXValue}px)`;
+                    card.style.zIndex = zIndex;
+                    card.style.opacity = opacity;
+                    // card.style.transformOrigin = transformOrigin; // Optional: for rotation effects if added later
+                    // Add/remove class for potential stack-specific styling
+                    const isInStack = cardLeftEdgeTarget < stackBaseLeftPixels || cardLeftEdgeTarget + cardWidth > stackBaseRightPixels + cardWidth;
+                    card.classList.toggle('in-stack', isInStack);
+                    card.classList.toggle('center-card', !isInStack && i === currentLogicalIndex); // Mark the center card
+                });
+            }
+
+
+            function snapToNearestCard(targetIndex = -1) {
+                cancelAnimationFrame(snapAnimation.id); // Cancel existing snap
+
+                let finalIndex;
+                if (targetIndex !== -1) {
+                    finalIndex = Math.max(0, Math.min(cards.length - 1, targetIndex));
+                } else {
+                    // Calculate closest index based on current actualTrackOffset
+                    // Estimate where the center of the viewport falls relative to card positions
+                    const viewportCenterTarget = containerWidth / 2;
+                    // Find which card's center is closest to viewportCenterTarget
+                    let closestIndex = 0;
+                    let minDistance = Infinity;
+
+                    for (let i = 0; i < cards.length; i++) {
+                        const cardCenterPos = actualTrackOffset + (i * (cardWidth + cardGap)) + (cardWidth / 2);
+                        const distance = Math.abs(viewportCenterTarget - cardCenterPos);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestIndex = i;
+                        }
+                    }
+                     finalIndex = closestIndex;
+                }
+
+                currentLogicalIndex = finalIndex; // Update logical index
+                snapAnimation.targetOffset = calculateTargetOffset(finalIndex);
+                snapAnimation.startOffset = actualTrackOffset;
+                snapAnimation.startTime = performance.now();
+
+                function animateSnap(timestamp) {
+                    const elapsedTime = timestamp - snapAnimation.startTime;
+                    const progress = Math.min(1, elapsedTime / snapAnimationDuration); // Linear progress
+
+                    // Simple ease-out cubic easing
+                    const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+                    actualTrackOffset = snapAnimation.startOffset + (snapAnimation.targetOffset - snapAnimation.startOffset) * easedProgress;
+                    updateCardPositions(actualTrackOffset);
+
+                    if (progress < 1) {
+                        snapAnimation.id = requestAnimationFrame(animateSnap);
+                    } else {
+                        actualTrackOffset = snapAnimation.targetOffset; // Ensure final position
+                        updateCardPositions(actualTrackOffset);
+                        targetTrackOffset = actualTrackOffset; // Update the resting target
+                    }
+                }
+                snapAnimation.id = requestAnimationFrame(animateSnap);
+            }
+
+
+            // --- Event Handlers ---
+            function handlePointerDown(e) {
+                // Ignore clicks on buttons within the card if any
+                if (e.target.closest('button')) return;
+
+                isDragging = true;
+                dragStartX = e.clientX; // Use clientX for consistency
+                dragStartOffset = actualTrackOffset;
+                sliderContainer.style.cursor = 'grabbing';
+                track.classList.add('dragging'); // Add class to cards via track or individually
+                cards.forEach(c => c.classList.add('dragging'));
+
+                // Cancel any ongoing snap animation
+                cancelAnimationFrame(snapAnimation.id);
+
+                // Capture pointer events
+                sliderContainer.setPointerCapture(e.pointerId);
+
+                // Prevent text selection during drag
+                e.preventDefault();
+            }
+
+            function handlePointerMove(e) {
+                if (!isDragging) return;
+
+                const currentX = e.clientX;
+                const deltaX = currentX - dragStartX;
+                actualTrackOffset = dragStartOffset + deltaX;
+
+                // Throttle updates using requestAnimationFrame
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = requestAnimationFrame(() => {
+                    updateCardPositions(actualTrackOffset);
+                });
+            }
+
+            function handlePointerUp(e) {
+                if (!isDragging) return;
+
+                isDragging = false;
+                sliderContainer.style.cursor = 'grab';
+                 track.classList.remove('dragging');
+                 cards.forEach(c => c.classList.remove('dragging'));
+                sliderContainer.releasePointerCapture(e.pointerId);
+
+                // Snap to the nearest card
+                snapToNearestCard();
+            }
+
+             function handlePointerCancel(e) {
+                 if (!isDragging) return;
+                 // Treat cancel like pointer up
+                 handlePointerUp(e);
+             }
+
+
+            function handleNavClick(direction) {
+                 cancelAnimationFrame(snapAnimation.id); // Cancel existing snap
+                 let targetIndex = currentLogicalIndex + direction;
+                 targetIndex = Math.max(0, Math.min(cards.length - 1, targetIndex));
+                 snapToNearestCard(targetIndex);
+            }
+
+            function handleResize() {
+                containerWidth = sliderContainer.offsetWidth;
+                // Recalculate pixel values based on new width
+                stackBaseLeftPixels = (stackBasePercentLeft / 100) * containerWidth;
+                stackBaseRightPixels = ((stackBasePercentRight / 100) * containerWidth) - cardWidth;
+                // Recalculate target offset based on current index and new width
+                targetTrackOffset = calculateTargetOffset(currentLogicalIndex);
+                actualTrackOffset = targetTrackOffset; // Jump to new position for simplicity on resize
+                updateCardPositions(actualTrackOffset);
+            }
+
+
+            // --- Attach Listeners ---
+            sliderContainer.addEventListener('pointerdown', handlePointerDown);
+            sliderContainer.addEventListener('pointermove', handlePointerMove);
+            sliderContainer.addEventListener('pointerup', handlePointerUp);
+            sliderContainer.addEventListener('pointercancel', handlePointerCancel); // Handle cases like focus loss
+
+            prevButton.addEventListener('click', () => handleNavClick(-1));
+            nextButton.addEventListener('click', () => handleNavClick(1));
+
+            // Optional: Recalculate on resize
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(handleResize, 250); // Debounce resize events
+            });
+
+            // --- Initial Setup ---
+            actualTrackOffset = targetTrackOffset; // Start at the calculated offset
+            updateCardPositions(actualTrackOffset); // Initial positioning
+            sliderContainer.style.cursor = 'grab'; // Set initial cursor
+        }
+
+    </script>
+
+</body>
+</html>

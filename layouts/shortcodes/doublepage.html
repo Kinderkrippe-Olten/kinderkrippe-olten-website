@@ -1,0 +1,39 @@
+{{/* layouts/shortcodes/doublepage.html */}}
+
+{{ $leftParam := .Get "left" }}
+{{ $rightParam := .Get "right" }}
+{{ $background := (or (.Get "background") "beige") }}
+{{ $border := (or (.Get "border") "none") }}
+
+{{/* Check if both left and right parameters are provided */}}
+{{ if not $leftParam }}
+  {{ errorf "Missing 'left' parameter in doublepage shortcode." }}
+{{ end }}
+{{ if not $rightParam }}
+  {{ errorf "Missing 'right' parameter in doublepage shortcode." }}
+{{ end }}
+
+{{/* Render left content using the shared partial */}}
+{{ $leftContent := partial "render-component.html" (dict "param" $leftParam "Page" .Page "Site" .Site) }}
+
+{{/* Render right content using the shared partial */}}
+{{ $rightContent := partial "render-component.html" (dict "param" $rightParam "Page" .Page "Site" .Site) }}
+
+{{/* set page background */}}
+{{ $colorClass := printf "kko-background-%s" $background }}
+
+{{ $borderClass := printf "kko-border-%s" $border }}
+
+{{/* Render the double page layout */}}
+<div class="uk-container-expanded kko-doublepage {{ $colorClass }}">
+  <div class="uk-container">
+    <div class="uk-grid-match uk-grid-collapse uk-child-width-1-2@s {{ $borderClass }}" uk-grid>
+      <div class="kko-doublepage-left uk-overflow-auto">
+        {{ $leftContent | safeHTML }}
+      </div>
+      <div id="next-page" class="kko-doublepage-right uk-overflow-auto">
+        {{ $rightContent | safeHTML }}
+      </div>
+    </div>
+  </div>
+</div>

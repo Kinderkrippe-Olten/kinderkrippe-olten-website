@@ -1,0 +1,5 @@
+{{- if (eq (.Get 0) "mobile") -}}
+    <span class="ti-hyphenate-mobile{ .Get 0 }}">{{- .Inner -}}</span>
+{{- else -}}
+    <span class="ti-hyphenate">{{- .Inner -}}</span>
+{{- end -}}

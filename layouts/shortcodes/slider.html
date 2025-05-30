@@ -1,0 +1,6 @@
+{{ $file := printf "/sliders/%s" (.Get 0) }}
+{{ $page := .Site.GetPage $file }}
+{{ if not $page }}
+    {{ errorf "Slider not found: %s" $file }}
+{{ end }}
+{{ partial "slider.html" $page }}

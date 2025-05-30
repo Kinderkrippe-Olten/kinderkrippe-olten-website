@@ -1,0 +1,5 @@
+<div class="ti-movie uk-container uk-container-xsmall">
+    {{ with .Resources.GetMatch "movie.*" }}
+    <video src="{{ .RelPermalink }}" playsinline preload="metadata" disablepictureinpicture loop="true" uk-video="autoplay: inview"></video>
+    {{ end }}
+</div>

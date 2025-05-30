@@ -1,0 +1,15 @@
+{{ $result := dict "valid" true "error" "" }}
+{{ $id := .id }}
+{{ $filepath := .filepath }}
+{{ $invalidChars := findRE "[^a-zA-Z0-9-_:]" $id }}
+
+{{ if $invalidChars }}
+  {{ $charsList := delimit $invalidChars "\", \"" }}
+  {{ $result = dict "valid" false "error" (printf "Characters \"%s\" not allowed in ID '%s'" $charsList $id) }}
+{{ end }}
+
+{{ if and (eq $result.valid true) (findRE "^[0-9]" $id) }}
+  {{ $result = dict "valid" false "error" (printf "ID '%s' must not start with a digit" $id) }}
+{{ end }}
+
+{{ return $result }}

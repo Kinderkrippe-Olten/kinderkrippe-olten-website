@@ -1,0 +1,42 @@
+{{/* layouts/partials/render-block.html */}}
+{{/*
+Renders a block content by id.
+Expects:
+- .id: The id of the block to render
+- .page: The current page context
+*/}}
+
+{{ $id := .id }}
+{{ $page := .page }}
+{{ $renderedContent := "" }}
+
+{{/* Construct the path to the block page */}}
+{{ $blockPath := printf "blocks/%s" $id }}
+
+{{/* Get the block page using its path */}}
+{{ $block := $page.Site.GetPage $blockPath }}
+
+{{ if $block }}
+  {{ if eq $block.Params.type "3-picture-circles" }}
+    <div class="kko-block kko-picture-circles">
+      {{ range (seq 1 3) }}
+        {{ partial "picture-circle.html" (dict "block" $block "layout" 3 "index" .) }}
+      {{ end }}
+    </div>
+  {{ else if eq $block.Params.type "5-picture-circles" }}
+    <div class="kko-block kko-picture-circles">
+      {{ range (seq 1 5) }}
+        {{ partial "picture-circle.html" (dict "block" $block "layout" 5 "index" .) }}
+      {{ end }}
+    </div>
+  {{ else }}
+    {{ $renderedContent = $block.Content }} {{/* Use RenderString for shortcodes etc. */}}
+  {{ end }}
+{{ else }}
+  {{ errorf "Block '%s' not found at path '%s'" $id $blockPath }}
+{{ end }}
+
+{{/* Return the rendered HTML content */}}
+<div class="kko-block kko-background-{{ $block.Params.background }}">
+  {{ $renderedContent | safe.HTML }}
+</div>

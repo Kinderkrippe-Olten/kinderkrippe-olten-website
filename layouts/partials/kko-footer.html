@@ -1,0 +1,36 @@
+{{ $fo := .Site.Data.footer }}
+<footer>
+    <div class="uk-container-expand kko-logoband">
+        <div class="uk-container">
+            {{ range $fo.extralogos }}
+                {{ $file := (print "images/logos/" .file ".svg" )}}
+                    <div><a href="{{ .href }}">{{-
+                        partial "get-svg.html" $file -}}</a></div>
+            {{ end }}
+        </div>
+    </div>
+    <div class="uk-container-expand kko-masthead">
+        <div class="uk-container">
+            {{ partial "kko-logo.html" . }}
+            <div class="kko-footer">
+                {{ range $fo.sites }}
+                <div class="kko-site">
+                    <div><b>{{ .title }}</b></div>
+                    <div>{{ .phone }}</div>
+                    <div><a href="mailto:{{ .email }}">E-Mail</a></div>
+                </div>
+                {{ end }}
+                <div class="kko-links">
+                {{ range $fo.links }}
+                    <div><a href="{{ .href }}">{{ .title }}</a></div>
+                {{ end }}
+                </div>
+                <div class="kko-credits">
+                {{ range $fo.credits }}
+                    <div><div class="kko-credit-title">{{ .title }}:</div> <a href="{{ .href }}">{{ .company }}</a></div>
+                {{ end }}
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

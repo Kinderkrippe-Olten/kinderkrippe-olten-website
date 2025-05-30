@@ -1,0 +1,6 @@
+{{ $file := printf "/cards/%s" (.Get 0) }}
+{{ $page := .Site.GetPage $file }}
+{{ if not $page }}
+    {{ errorf "Card not found: %s" $file }}
+{{ end }}
+{{ partial "card.html" $page }}

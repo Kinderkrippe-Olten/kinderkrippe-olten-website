@@ -1,0 +1,27 @@
+mainlinks:
+  - title: "Hagmatt"
+    href: /hagmatt
+    color: green
+  - title: "Sonnhalde"
+    href: /sonnhalde
+    color: red
+  - title: "Anmeldung"
+    href: /anmeldung
+    color: blue
+  - title: "Aktuelles"
+    href: /aktuell
+    color: yellow
+  
+sublinks:
+  - title: "Über uns"
+    href: /ueber-uns
+  - title: "Angebot"
+    href: /angebot
+  - title: "Team"
+    href: /team
+  - title: "Eltern"
+    href: /eltern
+  - title: "Kontakt"
+    href: /kontakt
+
+

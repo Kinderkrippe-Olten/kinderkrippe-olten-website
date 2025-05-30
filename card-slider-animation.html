@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Animation Component</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Card slider container */
+        .card-slider {
+            /* CSS Variables for configuration */
+            --card-width: 250px;
+            --card-height: 350px;
+            --card-gap: 20px;
+            --stack-limit: 5;
+            --fan-offset-percent: 3; /* Increased for more visible fanning effect */
+            --stack-base-percent-left: 10;
+            --stack-base-percent-right: 90;
+            --transition-speed: 0.3s;
+
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            height: calc(var(--card-height) + 80px);
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 40px 0;
+        }
+
+        /* Card track - container for all cards */
+        .card-track {
+            position: relative;
+            width: 100%;
+            height: var(--card-height);
+        }
+
+        /* Individual card styling */
+        .card {
+            position: absolute;
+            width: var(--card-width);
+            height: var(--card-height);
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform var(--transition-speed) ease-out;
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Card zone indicators (for debugging) */
+        .card.in-left-stack {
+            border-left: 3px solid #3498db;
+        }
+
+        .card.in-center {
+            border-bottom: 3px solid #2ecc71;
+        }
+
+        .card.in-right-stack {
+            border-right: 3px solid #e74c3c;
+        }
+
+        .card.transitioning {
+            border-top: 3px solid #f39c12;
+        }
+
+        .card.dragging {
+            cursor: grabbing;
+            transition: none; /* Disable transition during drag */
+        }
+
+        /* Card content styling */
+        .card h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        /* Navigation arrows */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000; /* Ensure arrows are above all cards */
+            transition: all 0.2s ease;
+            border: 2px solid #ddd;
+        }
+
+        .nav-arrow:hover {
+            background-color: #fff;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .nav-arrow.prev {
+            left: 20px;
+        }
+
+        .nav-arrow.next {
+            right: 20px;
+        }
+
+        /* Arrow icons */
+        .nav-arrow::before {
+            content: '';
+            display: block;
+            width: 15px;
+            height: 15px;
+            border-top: 3px solid #333;
+            border-right: 3px solid #333;
+        }
+
+        .nav-arrow.prev::before {
+            transform: rotate(-135deg);
+            margin-left: 5px;
+        }
+
+        .nav-arrow.next::before {
+            transform: rotate(45deg);
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-slider" id="cardSlider">
+        <div class="card-track" id="cardTrack">
+            <!-- Cards will be dynamically generated -->
+        </div>
+        <div class="nav-arrow prev" id="prevBtn"></div>
+        <div class="nav-arrow next" id="nextBtn"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize the card slider
+            const cardSlider = new CardSlider('cardSlider');
+            cardSlider.init();
+        });
+
+        class CardSlider {
+            constructor(containerId) {
+                // DOM elements
+                this.container = document.getElementById(containerId);
+                this.track = this.container.querySelector('.card-track');
+                this.prevBtn = this.container.querySelector('.nav-arrow.prev');
+                this.nextBtn = this.container.querySelector('.nav-arrow.next');
+                
+                // Debug DOM elements
+                console.log('Container:', this.container);
+                console.log('Track:', this.track);
+                console.log('Prev button:', this.prevBtn);
+                console.log('Next button:', this.nextBtn);
+                
+                // Configuration (from CSS variables)
+                const style = getComputedStyle(this.container);
+                this.cardWidth = parseInt(style.getPropertyValue('--card-width'), 10);
+                this.cardHeight = parseInt(style.getPropertyValue('--card-height'), 10);
+                this.cardGap = parseInt(style.getPropertyValue('--card-gap'), 10);
+                this.stackLimit = parseInt(style.getPropertyValue('--stack-limit'), 10);
+                this.fanOffsetPercent = parseInt(style.getPropertyValue('--fan-offset-percent'), 10);
+                this.stackBasePercentLeft = parseInt(style.getPropertyValue('--stack-base-percent-left'), 10);
+                this.stackBasePercentRight = parseInt(style.getPropertyValue('--stack-base-percent-right'), 10);
+                this.transitionSpeed = parseFloat(style.getPropertyValue('--transition-speed'));
+                
+                // State variables
+                this.cards = [];
+                this.containerWidth = this.container.offsetWidth;
+                this.currentIndex = 0;
+                this.isDragging = false;
+                this.startX = 0;
+                this.startOffset = 0;
+                this.currentOffset = 0;
+                this.targetOffset = 0;
+                
+                // Calculated values
+                this.fanOffsetPixels = (this.fanOffsetPercent / 100) * this.cardWidth;
+                this.stackBaseLeftPixels = (this.stackBasePercentLeft / 100) * this.containerWidth;
+                this.stackBaseRightPixels = ((this.stackBasePercentRight / 100) * this.containerWidth) - this.cardWidth;
+                
+                // Animation frame ID for cancellation
+                this.animationId = null;
+            }
+            
+            init() {
+                // Create sample cards
+                this.createSampleCards();
+                
+                // Set initial positions
+                this.updateCardPositions();
+                
+                // Add event listeners
+                this.addEventListeners();
+                
+                // Handle window resize
+                window.addEventListener('resize', this.handleResize.bind(this));
+            }
+            
+            createSampleCards() {
+                // Sample card data
+                const cardData = [
+                    { title: 'Card 1', content: 'This is the first card with some sample content.' },
+                    { title: 'Card 2', content: 'Here is the second card with different information.' },
+                    { title: 'Card 3', content: 'The third card contains unique details about something.' },
+                    { title: 'Card 4', content: 'Card number four has its own special content.' },
+                    { title: 'Card 5', content: 'Fifth card with more interesting information.' },
+                    { title: 'Card 6', content: 'Sixth card presents additional details for users.' },
+                    { title: 'Card 7', content: 'The seventh card contains more sample text.' },
+                    { title: 'Card 8', content: 'Eighth card with its own unique information.' },
+                    { title: 'Card 9', content: 'The ninth card has different content to display.' },
+                    { title: 'Card 10', content: 'Final card with concluding information.' }
+                ];
+                
+                // Create DOM elements for cards
+                cardData.forEach((data, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${data.title}</h3>
+                        <p>${data.content}</p>
+                    `;
+                    this.track.appendChild(card);
+                    this.cards.push(card);
+                });
+                
+                // Set initial index to first card (0) instead of middle card
+                this.currentIndex = 0;
+                
+                // Log initial state
+                console.log(`Initial card: ${this.currentIndex + 1}`);
+            }
+            
+            addEventListeners() {
+                // Navigation buttons with debug logs
+                this.prevBtn.addEventListener('click', () => {
+                    console.log('Prev button clicked');
+                    this.navigate(-1);
+                });
+                
+                this.nextBtn.addEventListener('click', () => {
+                    console.log('Next button clicked');
+                    this.navigate(1);
+                });
+                
+                // Drag functionality
+                this.container.addEventListener('pointerdown', this.handlePointerDown.bind(this));
+                this.container.addEventListener('pointermove', this.handlePointerMove.bind(this));
+                this.container.addEventListener('pointerup', this.handlePointerUp.bind(this));
+                this.container.addEventListener('pointercancel', this.handlePointerUp.bind(this));
+            }
+            
+            handleResize() {
+                // Recalculate dimensions on window resize
+                this.containerWidth = this.container.offsetWidth;
+                this.stackBaseLeftPixels = (this.stackBasePercentLeft / 100) * this.containerWidth;
+                this.stackBaseRightPixels = ((this.stackBasePercentRight / 100) * this.containerWidth) - this.cardWidth;
+                
+                // Update positions with new dimensions
+                this.updateCardPositions();
+            }
+            
+            handlePointerDown(e) {
+                // Ignore if clicked on a button
+                if (e.target.closest('.nav-arrow')) return;
+                
+                this.isDragging = true;
+                this.startX = e.clientX;
+                this.startOffset = this.currentOffset;
+                
+                // Add dragging class
+                this.cards.forEach(card => card.classList.add('dragging'));
+                
+                // Capture pointer
+                this.container.setPointerCapture(e.pointerId);
+                
+                // Cancel any ongoing animation
+                cancelAnimationFrame(this.animationId);
+                
+                e.preventDefault();
+            }
+            
+            handlePointerMove(e) {
+                if (!this.isDragging) return;
+                
+                const deltaX = e.clientX - this.startX;
+                this.currentOffset = this.startOffset + deltaX;
+                
+                // Update positions during drag
+                this.updateCardPositions();
+            }
+            
+            handlePointerUp(e) {
+                if (!this.isDragging) return;
+                
+                this.isDragging = false;
+                
+                // Remove dragging class
+                this.cards.forEach(card => card.classList.remove('dragging'));
+                
+                // Release pointer capture
+                this.container.releasePointerCapture(e.pointerId);
+                
+                // Snap to nearest card
+                this.snapToNearestCard();
+            }
+            
+            navigate(direction) {
+                // Debug the navigation
+                console.log(`Current index: ${this.currentIndex}, Direction: ${direction}`);
+                
+                // Move to next or previous card
+                const newIndex = Math.max(0, Math.min(this.cards.length - 1, this.currentIndex + direction));
+                
+                // Only proceed if the index actually changed
+                if (newIndex !== this.currentIndex) {
+                    this.currentIndex = newIndex;
+                    
+                    // Calculate new offset
+                    this.targetOffset = this.calculateTargetOffset(this.currentIndex);
+                    
+                    // Animate to new position
+                    this.animateToOffset(this.targetOffset);
+                    
+                    console.log(`Navigating to card ${this.currentIndex + 1}`);
+                } else {
+                    console.log(`Already at ${direction > 0 ? 'last' : 'first'} card`);
+                }
+            }
+            
+            snapToNearestCard() {
+                // Find which card is closest to center
+                const viewportCenter = this.containerWidth / 2;
+                let closestIndex = 0;
+                let minDistance = Infinity;
+                
+                for (let i = 0; i < this.cards.length; i++) {
+                    const cardCenter = this.currentOffset + (i * (this.cardWidth + this.cardGap)) + (this.cardWidth / 2);
+                    const distance = Math.abs(viewportCenter - cardCenter);
+                    
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestIndex = i;
+                    }
+                }
+                
+                // Update current index and target offset
+                this.currentIndex = closestIndex;
+                this.targetOffset = this.calculateTargetOffset(this.currentIndex);
+                
+                // Animate to target position
+                this.animateToOffset(this.targetOffset);
+            }
+            
+            calculateTargetOffset(index) {
+                // Calculate offset to center the card at index
+                const centerPos = this.containerWidth / 2 - this.cardWidth / 2;
+                return centerPos - (index * (this.cardWidth + this.cardGap));
+            }
+            
+            animateToOffset(targetOffset) {
+                // Cancel any existing animation
+                cancelAnimationFrame(this.animationId);
+                
+                const startOffset = this.currentOffset;
+                const distance = targetOffset - startOffset;
+                const duration = 300; // ms
+                const startTime = performance.now();
+                
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Easing function (ease-out cubic)
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    
+                    // Calculate current position
+                    this.currentOffset = startOffset + (distance * eased);
+                    
+                    // Update card positions
+                    this.updateCardPositions();
+                    
+                    // Continue animation if not complete
+                    if (progress < 1) {
+                        this.animationId = requestAnimationFrame(animate);
+                    } else {
+                        this.currentOffset = targetOffset;
+                    }
+                };
+                
+                this.animationId = requestAnimationFrame(animate);
+            }
+            
+            updateCardPositions() {
+                // Calculate stack thresholds
+                const leftStackThreshold = this.stackBaseLeftPixels;
+                const rightStackThreshold = this.stackBaseRightPixels;
+                
+                // Process each card
+                this.cards.forEach((card, i) => {
+                    // Calculate card's target position
+                    const cardLeftEdge = this.currentOffset + (i * (this.cardWidth + this.cardGap));
+                    
+                    // Determine card's zone (left stack, center, right stack)
+                    let targetPosition, zIndex;
+                    
+                    // Remove all zone classes first
+                    card.classList.remove('in-left-stack', 'in-center', 'in-right-stack', 'transitioning');
+                    
+                    if (cardLeftEdge < leftStackThreshold) {
+                        // Left stack
+                        // Calculate how many cards are to the left of this one
+                        let cardsToLeft = 0;
+                        for (let j = 0; j < i; j++) {
+                            if (this.currentOffset + (j * (this.cardWidth + this.cardGap)) < leftStackThreshold) {
+                                cardsToLeft++;
+                            }
+                        }
+                        
+                        // Determine stack position (0 is topmost)
+                        const stackPosition = cardsToLeft;
+                        
+                        if (stackPosition < this.stackLimit) {
+                            // Card is within stack limit - show with fanning effect
+                            const fanOffset = stackPosition * this.fanOffsetPixels;
+                            targetPosition = leftStackThreshold - fanOffset;
+                            zIndex = 100 + (this.stackLimit - stackPosition); // Higher z-index for top cards
+                            card.style.display = 'flex'; // Show card
+                            card.classList.add('in-left-stack'); // Add left stack class
+                        } else {
+                            // Card is beyond stack limit - hide
+                            card.style.display = 'none';
+                            return; // Skip further processing
+                        }
+                        
+                    } else if (cardLeftEdge > rightStackThreshold) {
+                        // Right stack
+                        // Calculate how many cards are to the right of this one
+                        let cardsToRight = 0;
+                        for (let j = this.cards.length - 1; j > i; j--) {
+                            if (this.currentOffset + (j * (this.cardWidth + this.cardGap)) > rightStackThreshold) {
+                                cardsToRight++;
+                            }
+                        }
+                        
+                        // Determine stack position (0 is topmost)
+                        const stackPosition = cardsToRight;
+                        
+                        if (stackPosition < this.stackLimit) {
+                            // Card is within stack limit - show with fanning effect
+                            const fanOffset = stackPosition * this.fanOffsetPixels;
+                            targetPosition = rightStackThreshold + fanOffset;
+                            zIndex = 100 + (this.stackLimit - stackPosition); // Higher z-index for top cards
+                            card.style.display = 'flex'; // Show card
+                            card.classList.add('in-right-stack'); // Add right stack class
+                        } else {
+                            // Card is beyond stack limit - hide
+                            card.style.display = 'none';
+                            return; // Skip further processing
+                        }
+                        
+                    } else {
+                        // Center zone - linear movement
+                        targetPosition = cardLeftEdge;
+                        zIndex = 200 + (this.cards.length - Math.abs(i - this.currentIndex)); // Highest z-index for center cards
+                        card.style.display = 'flex'; // Show card
+                        card.classList.add('in-center'); // Add center class
+                    }
+                    
+                    // Check if card is approaching stack threshold for smooth transition
+                    const distanceToLeftThreshold = Math.abs(cardLeftEdge - leftStackThreshold);
+                    const distanceToRightThreshold = Math.abs(cardLeftEdge - rightStackThreshold);
+                    const isApproachingLeftStack = distanceToLeftThreshold < this.fanOffsetPixels && cardLeftEdge > leftStackThreshold;
+                    const isApproachingRightStack = distanceToRightThreshold < this.fanOffsetPixels && cardLeftEdge < rightStackThreshold;
+                    
+                    // Prepare stack for new card if approaching
+                    if (isApproachingLeftStack || isApproachingRightStack) {
+                        // Card is approaching a stack - adjust z-index for smooth transition
+                        zIndex = 150; // Middle z-index for transitioning cards
+                        card.classList.add('transitioning'); // Add transitioning class
+                    }
+                    
+                    // Calculate final transform value
+                    // Cards are initially positioned at left: 50%, transform: translateX(-50%)
+                    const initialLeftEdge = this.containerWidth / 2 - this.cardWidth / 2;
+                    const translateX = targetPosition - initialLeftEdge;
+                    
+                    // Apply styles
+                    card.style.transform = `translateX(${translateX}px)`;
+                    card.style.zIndex = zIndex;
+                });
+                
+                // Pre-animate stack when a card is approaching
+                this.preAnimateStacks();
+            }
+            
+            preAnimateStacks() {
+                // Find cards that are about to enter stacks
+                const leftStackThreshold = this.stackBaseLeftPixels;
+                const rightStackThreshold = this.stackBaseRightPixels;
+                
+                // Check each card for approaching stack threshold
+                this.cards.forEach((card, i) => {
+                    const cardLeftEdge = this.currentOffset + (i * (this.cardWidth + this.cardGap));
+                    
+                    // Check if approaching left stack
+                    if (cardLeftEdge > leftStackThreshold && cardLeftEdge < leftStackThreshold + this.fanOffsetPixels) {
+                        // Card is approaching left stack
+                        const progress = 1 - ((cardLeftEdge - leftStackThreshold) / this.fanOffsetPixels);
+                        this.animateLeftStack(progress);
+                    }
+                    
+                    // Check if approaching right stack
+                    if (cardLeftEdge < rightStackThreshold && cardLeftEdge > rightStackThreshold - this.fanOffsetPixels) {
+                        // Card is approaching right stack
+                        const progress = 1 - ((rightStackThreshold - cardLeftEdge) / this.fanOffsetPixels);
+                        this.animateRightStack(progress);
+                    }
+                });
+            }
+            
+            animateLeftStack(progress) {
+                // Animate left stack to prepare for new card
+                // Find cards in left stack
+                const leftStackThreshold = this.stackBaseLeftPixels;
+                
+                // Get cards in left stack
+                const leftStackCards = [];
+                this.cards.forEach((card, i) => {
+                    const cardLeftEdge = this.currentOffset + (i * (this.cardWidth + this.cardGap));
+                    if (cardLeftEdge < leftStackThreshold) {
+                        leftStackCards.push({ card, index: i });
+                    }
+                });
+                
+                // Sort by position in stack (topmost first)
+                leftStackCards.sort((a, b) => {
+                    const aLeftEdge = this.currentOffset + (a.index * (this.cardWidth + this.cardGap));
+                    const bLeftEdge = this.currentOffset + (b.index * (this.cardWidth + this.cardGap));
+                    return bLeftEdge - aLeftEdge; // Reverse order for left stack
+                });
+                
+                // Animate top cards in stack
+                leftStackCards.slice(0, this.stackLimit).forEach((item, stackPos) => {
+                    // Calculate target position with progress-based offset
+                    const fanOffset = (stackPos + progress) * this.fanOffsetPixels;
+                    const targetPosition = leftStackThreshold - fanOffset;
+                    
+                    // Calculate transform value
+                    const initialLeftEdge = this.containerWidth / 2 - this.cardWidth / 2;
+                    const translateX = targetPosition - initialLeftEdge;
+                    
+                    // Apply transform
+                    item.card.style.transform = `translateX(${translateX}px)`;
+                });
+            }
+            
+            animateRightStack(progress) {
+                // Animate right stack to prepare for new card
+                // Find cards in right stack
+                const rightStackThreshold = this.stackBaseRightPixels;
+                
+                // Get cards in right stack
+                const rightStackCards = [];
+                this.cards.forEach((card, i) => {
+                    const cardLeftEdge = this.currentOffset + (i * (this.cardWidth + this.cardGap));
+                    if (cardLeftEdge > rightStackThreshold) {
+                        rightStackCards.push({ card, index: i });
+                    }
+                });
+                
+                // Sort by position in stack (topmost first)
+                rightStackCards.sort((a, b) => {
+                    const aLeftEdge = this.currentOffset + (a.index * (this.cardWidth + this.cardGap));
+                    const bLeftEdge = this.currentOffset + (b.index * (this.cardWidth + this.cardGap));
+                    return aLeftEdge - bLeftEdge; // Normal order for right stack
+                });
+                
+                // Animate top cards in stack
+                rightStackCards.slice(0, this.stackLimit).forEach((item, stackPos) => {
+                    // Calculate target position with progress-based offset
+                    const fanOffset = (stackPos + progress) * this.fanOffsetPixels;
+                    const targetPosition = rightStackThreshold + fanOffset;
+                    
+                    // Calculate transform value
+                    const initialLeftEdge = this.containerWidth / 2 - this.cardWidth / 2;
+                    const translateX = targetPosition - initialLeftEdge;
+                    
+                    // Apply transform
+                    item.card.style.transform = `translateX(${translateX}px)`;
+                });
+            }
+        }
+    </script>
+</body>
+</html>
