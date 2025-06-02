@@ -2,7 +2,7 @@
 Title: Gut Aufgehoben
 background: red
 ---
-# Gut Aufgehoben
+# Willkommen
 
 Herzlich willkommen in unserer bunten Kinderkrippe! Hier können die Kleinen in einer
 sicheren und liebevollen Umgebung spielen,
