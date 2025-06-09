@@ -1,3 +1,5 @@
+@use "hugo:vars" as v;
+
 // 1. Your custom variables and variable overwrites.
 $global-font-family: filson-pro, sans-serif;
 $global-font-size: 15px !default;
@@ -82,7 +84,7 @@ $modal-container-width: 778px !default;
 }
 
 // 4. Import UIkit.
-@use "../uikit/src/scss/uikit-theme.scss" as *;
+@import "../uikit/src/scss/uikit-theme.scss";
 
 @import "kko-header";
 @import "kko-footer";

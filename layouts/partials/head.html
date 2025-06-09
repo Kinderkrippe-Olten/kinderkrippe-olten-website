@@ -6,8 +6,13 @@
         {{ .Title }}
         {{ end }}
     </title>
-    {{ $sass := resources.Get "scss/site.scss" }}
-    {{ $style := $sass | resources.ExecuteAsTemplate "main.scss" . | css.Sass | minify | fingerprint }}
+    {{ $sassResource := resources.Get "scss/site.scss" }}
+    {{ $sassOptions := dict 
+        "transpiler" "dartsass"
+        "fingerprint" true
+        "targetPath" "css/main.css"
+    }}
+    {{ $style := css.Sass $sassOptions $sassResource }}
     {{ $secureStyle := $style | resources.Fingerprint "sha512" }}
     <link rel="stylesheet" href="{{ $style.RelPermalink }}" integriety="{{ $style.Data.Integrity }}">
     {{ $js := resources.Get "uikit/dist/js/uikit.min.js" }}
