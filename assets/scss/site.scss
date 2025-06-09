@@ -82,7 +82,7 @@ $modal-container-width: 778px !default;
 }
 
 // 4. Import UIkit.
-@import "../uikit/src/scss/uikit-theme.scss";
+@use "../uikit/src/scss/uikit-theme.scss" as *;
 
 @import "kko-header";
 @import "kko-footer";
