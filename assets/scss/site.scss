@@ -228,10 +228,16 @@ $modal-container-width: 778px !default;
   &.kko-background-beige {
     background-color: $kko-base-beige;
   }
-
+ 
   .kko-border-stripes {
     position: relative;
 
+    @media (max-width: $breakpoint-small) {
+     
+    .kko-menu {
+        display: none;
+    }
+  }      
     @media (min-width: $breakpoint-small) {
       .kko-doublepage-left {
         padding-left: $kko-border-stripe-width * 3;

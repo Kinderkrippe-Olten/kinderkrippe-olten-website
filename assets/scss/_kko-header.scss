@@ -16,7 +16,7 @@ header.kko-header {
 
   .kko-pulldown-menu {
     display: block;
-    position: fixed;
+    position: absolute;
     left: 0;
     width: 100%;
     top: calc(-100vh + #{$kko-border-stripe-width * 6});
