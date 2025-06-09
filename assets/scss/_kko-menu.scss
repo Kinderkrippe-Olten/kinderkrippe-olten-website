@@ -1,0 +1,103 @@
+
+.kko-menu {
+  container: kko-menu / size;
+  background-color: $kko-base-blue;
+  color: $kko-base-beige;
+  padding-left: 5cqw;
+  padding-top: 0;
+  height: calc(100vh - #{$kko-border-stripe-width * 3});
+  width: 100%;
+  left: 0;
+  a {
+    text-decoration: none;
+  }
+
+  .kko-color-logo {
+    svg {
+      width: 20cqw;
+    }
+
+    margin-bottom: 3cqh;
+    margin-top: 3cqh;
+  }
+
+  .kko-name {
+    font-size: 12cqw;
+    line-height: 1.1;
+    font-weight: 500;
+    margin-bottom: 3cqh;
+  }
+
+  .kko-main-menu {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+
+    .kko-menu-item {
+      position: relative;
+      margin-bottom: 1.5cqh;
+
+      a {
+        width: 100%;
+        color: $kko-base-blue;
+        display: inline-block;
+        padding: 1cqh 1cqw;
+        border-radius: 100cqw;
+        font-size: 3.2cqw;
+
+        span {
+          display: inline-block;
+          padding-left: 2cqw;
+          padding-right: 0.8cqw;
+
+          svg {
+            fill: $kko-base-blue;
+            width: 3.5cqw;
+            height: auto;
+            padding-bottom: 0.5cqw;
+          }
+        }
+      }
+
+
+      &.kko-color-green a {
+        background-color: $kko-base-green;
+      }
+
+      &.kko-color-red a {
+        background-color: $kko-base-red;
+      }
+
+      &.kko-color-yellow a {
+        background-color: $kko-base-yellow;
+      }
+
+      &.kko-color-blue a {
+        background-color: $kko-blog-light-blue;
+      }
+    }
+  }
+
+  .kko-sub-menu {
+    margin-top: 5cqh;
+    padding-left: 3cqw;
+
+    .kko-menu-item {
+      margin-bottom: 0.8cqh;
+
+      a {
+        color: $kko-base-beige;
+
+        span {
+          padding-right: 0.8cqh;
+
+          svg {
+            width: 3.5cqw;
+            fill: $kko-base-beige;
+            padding-bottom: 0.3cqh;
+          }
+        }
+      }
+    }
+  }
+}

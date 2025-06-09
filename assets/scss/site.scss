@@ -84,296 +84,10 @@ $modal-container-width: 778px !default;
 // 4. Import UIkit.
 @import "../uikit/src/scss/uikit-theme.scss";
 
-.kko-logo {
-  font-size: 1.4rem;
-  font-weight: 500;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+@import "kko-header";
+@import "kko-footer";
+@import "kko-menu";
 
-  .kko-logo-inline-svg {
-    margin-right: 0.5rem;
-
-    svg {
-      height: 3rem;
-      width: auto;
-
-      path {
-        fill: $global-color;
-      }
-    }
-  }
-}
-
-footer {
-  .kko-logoband {
-    margin: 0;
-    background-color: white;
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-
-    .uk-container {
-      display: flex;
-      justify-content: space-between;
-
-      svg {
-        height: 5rem;
-        width: auto;
-      }
-    }
-
-    @media (max-width: $breakpoint-small) {
-      .uk-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        row-gap: 3rem;
-
-        div {
-          justify-self: center;
-        }
-
-        svg {
-          height: 5rem;
-          width: auto;
-
-        }
-      }
-    }
-  }
-
-  .kko-footer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: 2rem;
-
-    .kko-credits {
-      display: flex;
-      flex-direction: column;
-      row-gap: 1rem;
-    }
-  }
-
-  @media (min-width: $breakpoint-small) {
-    .kko-footer {
-      grid-template-columns: 1fr 3fr;
-      column-gap: 2rem;
-
-      .kko-credits {
-        flex-direction: row;
-        column-gap: 3rem;
-      }
-    }
-  }
-
-  @media (min-width: $breakpoint-medium) {
-    .kko-footer {
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      column-gap: 2rem;
-      align-items: flex-end;
-
-      .kko-credits {
-        flex-direction: column;
-        column-gap: 3rem;
-      }
-    }
-  }
-
-  @media (min-width: $breakpoint-large) {
-    .kko-footer {
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      align-items: flex-end;
-
-      .kko-credits {
-        flex-direction: column;
-        row-gap: 0;
-        white-space: nowrap;
-
-        .kko-credit-title {
-          display: inline;
-        }
-      }
-
-    }
-  }
-}
-
-@media (max-width: $breakpoint-small) {
-  body.kko-bookmark-active {
-    .kko-menu {
-      display: block; 
-      right: 0;
-    }
-    .kko-logo {
-      display: none;
-    }
-  }
-}
-
-.kko-menu {
-  container: kko-menu / size;
-  background-color: $kko-base-blue;
-  color: $kko-base-beige;
-  padding-left: 5cqw;
-  padding-top: 0;
-  @media (max-width: $breakpoint-small) {
-    position: fixed;
-    display: block;
-    right: -100vw;
-    transition: right 0.2s ease-in;
-    top: 0;
-    height: 100vh;
-    z-index: 10;
-  }
-  a {
-    text-decoration: none;
-  }
-  .kko-color-logo {
-    svg {
-      width: 20cqw;
-    }
-    margin-bottom: 3cqh;
-    margin-top: 3cqh;
-  }
-  .kko-name {
-    font-size: 12cqw;
-    line-height: 1.1;
-    font-weight: 500;
-    margin-bottom: 3cqh;
-  }
-  .kko-main-menu {
-    display: inline-block;
-    padding: 0;
-    margin: 0;
-    .kko-menu-item {
-      position: relative;
-      margin-bottom: 1.5cqh;
-      a {
-        width: 100%;
-        color: $kko-base-blue;
-        display: inline-block;
-        padding: 1cqh 1cqw;
-        border-radius: 100cqw;
-        font-size: 3.2cqw;
-        span {
-          display: inline-block;
-          padding-left: 2cqw;
-          padding-right: 0.8cqw;
-          svg {
-            fill: $kko-base-blue;
-            width: 3.5cqw;
-            height: auto;
-            padding-bottom: 0.5cqw;
-          }
-        }
-      }
-
-
-      &.kko-color-green a {
-        background-color: $kko-base-green;
-      }
-
-      &.kko-color-red a {
-        background-color: $kko-base-red;
-      }
-
-      &.kko-color-yellow a {
-        background-color: $kko-base-yellow;
-      }
-
-      &.kko-color-blue a {
-        background-color: $kko-blog-light-blue;
-      }
-    }
-  }
-
-  .kko-sub-menu {
-    margin-top: 5cqh;
-    padding-left: 3cqw;
-    .kko-menu-item {
-      margin-bottom: 0.8cqh;
-
-      a {
-        color: $kko-base-beige;
-
-        span {
-          padding-right: 0.8cqh;       
-          svg {
-            width: 3.5cqw;
-            fill: $kko-base-beige;
-            padding-bottom: 0.3cqh;
-          }
-        }
-      }
-    }
-  }
-}
-
-.kko-minigame-header {
-  @media (min-width: $breakpoint-small) {
-    display: none;
-  }
-
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row-reverse;
-  margin: 0;
-  padding: 0;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-
-  .kko-logo {
-    margin: 0;
-    margin-top: 0.5rem;
-    width: 70%;
-  }
-
-  &.uk-active .kko-logo {
-    display: none;
-  }
-
-  .kko-bookmark {
-    background: none;
-    border: none;
-    padding:0;
-
-    width: 12%;
-
-    span svg {
-      width: 100%;
-      height: auto;
-
-      polygon#bookmark {
-        fill: $kko-base-blue !important;
-      }
-
-      path#burger {
-        fill: $kko-base-beige !important ;
-      }
-
-      g#cross rect {
-        fill: none !important;
-      }
-    }
-  }
-}
-
-body.kko-bookmark-active .kko-bookmark {
-  span {
-    svg {
-
-    #bookmark {
-      fill: $kko-base-green !important;
-    }
-
-    path#burger {
-      fill: none !important;
-    }
-
-    g#cross rect {
-      fill: $kko-base-beige !important;
-    }
-  }
-}}
 
 .kko-minigame-footer {
   display: flex;
@@ -443,13 +157,12 @@ body.kko-bookmark-active .kko-bookmark {
 
 .kko-minigame-3body {
   background-color: $kko-base-yellow;
-  padding-top: $kko-border-stripe-width * 3;
 
   @media (max-width: $breakpoint-small) {
-    height: 100vh;
+    height: calc(100vh - #{$kko-border-stripe-width * 6});
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
   }
 
   @media (min-width: $breakpoint-small) {
@@ -505,6 +218,7 @@ body.kko-bookmark-active .kko-bookmark {
 
 .kko-doublepage {
   overflow: hidden;
+
   &.kko-background-yellow {
     background-color: $kko-base-yellow;
   }
@@ -556,19 +270,19 @@ body.kko-bookmark-active .kko-bookmark {
       .kko-doublepage-left {
         padding-top: 0;
 
-        &::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: $kko-border-stripe-width * 3;
-          background-image: linear-gradient(to bottom,
-              $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width ,
-              $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
-              $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3,
-            );
-        }
+        // &::before {
+        //   content: "";
+        //   position: absolute;
+        //   top: 0;
+        //   left: 0;
+        //   width: 100%;
+        //   height: $kko-border-stripe-width * 3;
+        //   background-image: linear-gradient(to bottom,
+        //       $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width ,
+        //       $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
+        //       $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3,
+        //     );
+        // }
 
       }
     }
@@ -583,26 +297,28 @@ body.kko-bookmark-active .kko-bookmark {
   padding-left: 4rem;
   padding-right: 4rem;
   padding-bottom: 3rem;
-      &.kko-background-green {
-        background-color: $kko-base-green;
-      }
 
-      &.kko-background-red {
-        background-color: $kko-base-red;
-      }
+  &.kko-background-green {
+    background-color: $kko-base-green;
+  }
 
-      &.kko-background-yellow {
-        background-color: $kko-base-yellow;
-      }
+  &.kko-background-red {
+    background-color: $kko-base-red;
+  }
 
-      &.kko-background-blue {
-        background-color: $kko-blog-light-blue;
-      }
+  &.kko-background-yellow {
+    background-color: $kko-base-yellow;
+  }
+
+  &.kko-background-blue {
+    background-color: $kko-blog-light-blue;
+  }
 }
 
 .kko-picture-circles {
   position: relative;
-  container: kko-picture-circles / size;
+  min-height: 60vh;
+
   .kko-circle {
     position: absolute;
     border-radius: 100%;
@@ -610,36 +326,43 @@ body.kko-bookmark-active .kko-bookmark {
     width: 50cqw;
     height: 50cqw;
   }
+
   .kko-circle-3-1,
   .kko-circle-5-1 {
     top: 0;
     right: 0;
   }
+
   .kko-circle-3-2 {
     top: 20cqh;
     left: 10cqw;
     z-index: 1;
   }
+
   .kko-circle-3-3 {
     bottom: 0;
     right: 10cqw;
     z-index: 2;
   }
+
   .kko-circle-5-2 {
     top: 5cqh;
     left: -10cqw;
     z-index: 2;
   }
+
   .kko-circle-5-3 {
     top: 25cqh;
     left: 15cqw;
     z-index: 3;
   }
+
   .kko-circle-5-4 {
     top: 50cqh;
     left: 40cqw;
     z-index: 4;
   }
+
   .kko-circle-5-5 {
     bottom: 0;
     left: 25cqw;

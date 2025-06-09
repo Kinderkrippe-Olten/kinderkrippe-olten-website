@@ -26,7 +26,7 @@
 
 {{/* Render the double page layout */}}
 <div class="uk-container-expanded kko-doublepage {{ $colorClass }}">
-  <div class="uk-container">
+
     <div class="uk-grid-match uk-grid-collapse uk-child-width-1-2@s {{ $borderClass }}" uk-grid>
       <div class="kko-doublepage-left uk-overflow-auto">
         {{ $leftContent | safeHTML }}
@@ -35,5 +35,4 @@
         {{ $rightContent | safeHTML }}
       </div>
     </div>
-  </div>
 </div>

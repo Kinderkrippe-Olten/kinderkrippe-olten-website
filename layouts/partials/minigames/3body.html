@@ -2,7 +2,6 @@
 {{ $basePath := "minigames/3body" }}
 {{ $arrow := partial "get-svg.html" "images/arrow.svg" }}
 <div class="kko-minigame-3body">
-  {{ partial "minigame-header.html" . }}
   <div class="kko-minigame-body">
   {{ range $part := $parts }}
     {{ $pattern := printf "%s/%s/*.png" $basePath $part }}
@@ -24,5 +23,5 @@
     {{ end }}
   {{ end }}
   </div>
-  {{ partial "minigame-footer.html" . }}
 </div>
+{{ partial "minigame-footer.html" . }}

@@ -1,0 +1,35 @@
+<header
+  class="uk-container-expand kko-header"
+  uk-sticky="show-on-up: true; cls-active: kko-header-active; sel-target: .kko-header"
+>
+  <div class="kko-logo">
+    {{- partial "get-svg.html" "images/kko-logo-and-name.svg" -}}
+  </div>
+  <div class="kko-pulldown-menu">
+    {{- partial "render-menu.html" . -}}
+
+      <button class="kko-close-button">
+        {{- partial "get-svg.html" "images/kko-bookmark.svg" -}}
+      </button>
+      <script>
+        const closeButtons = document.querySelectorAll(".kko-close-button");
+        closeButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            document.body.classList.remove("kko-bookmark-active");
+          });
+        });
+      </script>
+
+    <button class="kko-bookmark">
+      {{- partial "get-svg.html" "images/kko-bookmark.svg" -}}
+    </button>
+    <script>
+      const bookmarks = document.querySelectorAll(".kko-bookmark");
+      bookmarks.forEach((bookmark) => {
+        bookmark.addEventListener("click", function () {
+          document.body.classList.add("kko-bookmark-active");
+        });
+      });
+    </script>
+  </div>
+</header>

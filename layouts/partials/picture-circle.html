@@ -20,9 +20,16 @@
 {{ $picture := index $block.Params.pictures (sub $index 1) }}
 {{ $pictureAlt := $picture.alt | default "Picture Circle" }}
 {{ $pictureTitle := $picture.title | default "Picture Circle" }}
-{{ $pictureFile := path.Join $block.File.Dir $picture.file }}
-{{ $pictureSrc := (resources.Get $pictureFile | images.Filter (images.Crop "400x400") | images.Filter (images.Process "webp")).RelPermalink }}
+{{ $pictureFile := $block.Resources.Get $picture.file }}
 
-<div class="kko-circle kko-circle-{{ $index }}">
+{{ if not $pictureFile }}
+  {{ errorf "Picture file '%s' not found in block '%s'." $picture.file $block.File.Path }}
+  {{ return }}
+{{ end }}
+
+{{/* Process the picture file */}}
+{{ $pictureSrc := ((( $block.Resources.Get $pictureFile).Crop "400x400").Process "webp").RelPermalink }}
+
+<div class="kko-circle kko-circle-{{ printf "%d-%d" $layout $index }}">
   <img src="{{ $pictureSrc }}" alt="{{ $pictureAlt }}" title="{{ $pictureTitle }}" class="kko-circle">
 </div>

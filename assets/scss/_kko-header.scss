@@ -1,0 +1,125 @@
+body.kko-bookmark-active 
+header.kko-header
+div.kko-pulldown-menu {
+  top: #{$kko-border-stripe-width * 3};
+  transition: top 0.4s ease-in; 
+}
+
+header.kko-header {
+  container: kko-header / size;
+  padding-right: 10cqw;
+
+  
+  .kko-logo {
+    display: none;
+  }
+
+  .kko-pulldown-menu {
+    display: block;
+    position: fixed;
+    left: 0;
+    width: 100%;
+    top: calc(-100vh + #{$kko-border-stripe-width * 6});
+    transition: top 0.1s ease-out;
+  }
+  .kko-close-button, 
+  .kko-bookmark {
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .kko-close-button {
+    position: absolute;
+    top: 5cqw;
+    right: 7cqw;
+    width: 12cqw;
+    svg {
+      width: 100%;
+      height: auto;
+
+      polygon#bookmark {
+        fill: none !important;
+      }
+
+      path#burger {
+        fill: none !important;
+      }
+
+      g#cross rect {
+        fill: $kko-base-beige !important;
+      }
+    }
+  }
+  
+  .kko-bookmark {
+
+    width: 10cqw;
+    right: 8cqw;
+    position: absolute;
+    height: 0;
+
+    svg {
+      width: 100%;
+      height: auto;
+
+      polygon#bookmark {
+        fill: $kko-base-blue !important;
+      }
+
+      path#burger {
+        fill: $kko-base-beige !important;
+      }
+
+      g#cross rect {
+        fill: none !important;
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-small) {
+    padding-top: $kko-border-stripe-width * 3;
+    height: $kko-border-stripe-width * 3;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;;
+      height: $kko-border-stripe-width * 3;
+      background-image: linear-gradient(to bottom,
+          $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width ,
+          $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
+          $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3,
+        );
+    }
+
+    .kko-logo {
+      position: absolute;
+      display: block;
+      top: calc(4cqw + #{$kko-border-stripe-width * 3});
+      left: 5cqw;
+      width: 75cqw;
+
+      svg {
+        width: 100%;
+
+        path {
+          fill: $global-color;
+        }
+      }
+
+    }
+
+    &.uk-sticky-below .kko-logo {
+      display: none;
+    }
+
+  }
+
+  
+
+}
