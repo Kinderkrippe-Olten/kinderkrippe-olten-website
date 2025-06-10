@@ -2,14 +2,15 @@ body.kko-bookmark-active
 header.kko-header
 div.kko-pulldown-menu {
   top: #{$kko-border-stripe-width * 3};
+  @media (min-width: $breakpoint-small) {
+    top: 0;
+  }
   transition: top 0.4s ease-in; 
 }
 
 header.kko-header {
   container: kko-header / size;
-  padding-right: 10cqw;
 
-  
   .kko-logo {
     display: none;
   }
@@ -17,9 +18,15 @@ header.kko-header {
   .kko-pulldown-menu {
     display: block;
     position: absolute;
-    left: 0;
+    right: 0;
     width: 100%;
-    top: calc(-100vh + #{$kko-border-stripe-width * 6});
+    @media (min-width: $breakpoint-small) {
+      width: 50%;
+    }
+    top: calc(-100vh + #{$kko-border-stripe-width * 6});  
+    @media (min-width: $breakpoint-small) {
+      top: -100vh;
+    }  
     transition: top 0.1s ease-out;
   }
   .kko-close-button, 
@@ -34,6 +41,11 @@ header.kko-header {
     top: 5cqw;
     right: 7cqw;
     width: 12cqw;
+    @media (min-width: $breakpoint-small) {
+      width: 4rem;
+      right: 5rem;
+      top: 2rem;
+    }
     svg {
       width: 100%;
       height: auto;
@@ -53,9 +65,12 @@ header.kko-header {
   }
   
   .kko-bookmark {
-
     width: 10cqw;
     right: 8cqw;
+    @media (min-width: $breakpoint-small) {
+      width: 4rem;
+      right: 5rem;
+    }
     position: absolute;
     height: 0;
 

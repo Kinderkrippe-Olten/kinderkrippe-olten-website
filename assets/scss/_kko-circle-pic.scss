@@ -1,0 +1,54 @@
+.kko-picture-circles {
+  position: relative;
+  min-height: 60vh;
+
+  .kko-circle {
+    position: absolute;
+    border-radius: 100%;
+    object-fit: cover;
+    width: 50cqw;
+    height: 50cqw;
+  }
+
+  .kko-circle-3-1,
+  .kko-circle-5-1 {
+    top: 0;
+    right: 0;
+  }
+
+  .kko-circle-3-2 {
+    top: 20cqh;
+    left: 10cqw;
+    z-index: 1;
+  }
+
+  .kko-circle-3-3 {
+    bottom: 0;
+    right: 10cqw;
+    z-index: 2;
+  }
+
+  .kko-circle-5-2 {
+    top: 5cqh;
+    left: -10cqw;
+    z-index: 2;
+  }
+
+  .kko-circle-5-3 {
+    top: 25cqh;
+    left: 15cqw;
+    z-index: 3;
+  }
+
+  .kko-circle-5-4 {
+    top: 50cqh;
+    left: 40cqw;
+    z-index: 4;
+  }
+
+  .kko-circle-5-5 {
+    bottom: 0;
+    left: 25cqw;
+    z-index: 5;
+  }
+}
