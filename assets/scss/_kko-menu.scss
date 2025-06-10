@@ -20,15 +20,15 @@
       width: 20cqw;
     }
 
-    margin-bottom: 3cqh;
-    margin-top: 3cqh;
+    margin-bottom: 3cqw;
+    margin-top: 3cqw;
   }
 
   .kko-name {
     font-size: 12cqw;
     line-height: 1.1;
     font-weight: 500;
-    margin-bottom: 3cqh;
+    margin-bottom: 6cqw;
   }
 
   .kko-main-menu {
@@ -38,13 +38,13 @@
 
     .kko-menu-item {
       position: relative;
-      margin-bottom: 1.5cqh;
+      margin-bottom: 1.5cqw;
 
       a {
         width: 100%;
         color: $kko-base-blue;
         display: inline-block;
-        padding: 1cqh 1cqw;
+        padding: 1.3cqw 1cqw;
         border-radius: 100cqw;
         font-size: 3.2cqw;
 
@@ -82,22 +82,22 @@
   }
 
   .kko-sub-menu {
-    margin-top: 5cqh;
+    margin-top: 5cqw;
     padding-left: 3cqw;
 
     .kko-menu-item {
-      margin-bottom: 0.8cqh;
+      margin-bottom: 0.8cqw;
 
       a {
         color: $kko-base-beige;
-
+        font-size: 3.2cqw;
         span {
-          padding-right: 0.8cqh;
+          padding-right: 0.8cqw;
 
           svg {
             width: 3.5cqw;
             fill: $kko-base-beige;
-            padding-bottom: 0.3cqh;
+            padding-bottom: 1cqw;
           }
         }
       }
