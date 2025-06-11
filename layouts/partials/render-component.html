@@ -32,7 +32,8 @@ Expects context:
       {{/* Use the dedicated render-block partial to render the block */}}
       {{ $renderedContent = partial "render-block.html" (dict "id" $id "page" $page) }}
     {{ else if eq $type "menu" }}
-      {{ $renderedContent = partial "render-menu.html" (dict "Page" $page "Site" $Site) }}
+      {{ $page.Store.Set "kko-header-class-extra" "kko-menu-page-inserted" }}
+      {{ $renderedContent = partial "render-menu.html" (dict "Page" $page "Site" $Site "FullPage" true) }}
     {{ else }}
       {{ warnf "Unsupported component type '%s' in render-component for param: %s" $type $param }}
     {{ end }}

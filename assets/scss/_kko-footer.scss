@@ -34,58 +34,82 @@ footer {
     }
   }
 
-  .kko-footer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: 2rem;
+  .kko-masthead {
+    padding-bottom: 3rem;
 
-    .kko-credits {
-      display: flex;
-      flex-direction: column;
-      row-gap: 1rem;
-    }
-  }
+    .kko-logo {
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
 
-  @media (min-width: $breakpoint-small) {
-    .kko-footer {
-      grid-template-columns: 1fr 3fr;
-      column-gap: 2rem;
+      .kko-logo-inline-svg {
+        margin-right: 0.5rem;
 
-      .kko-credits {
-        flex-direction: row;
-        column-gap: 3rem;
-      }
-    }
-  }
+        svg {
+          height: 3rem;
+          width: auto;
 
-  @media (min-width: $breakpoint-medium) {
-    .kko-footer {
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      column-gap: 2rem;
-      align-items: flex-end;
-
-      .kko-credits {
-        flex-direction: column;
-        column-gap: 3rem;
-      }
-    }
-  }
-
-  @media (min-width: $breakpoint-large) {
-    .kko-footer {
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      align-items: flex-end;
-
-      .kko-credits {
-        flex-direction: column;
-        row-gap: 0;
-        white-space: nowrap;
-
-        .kko-credit-title {
-          display: inline;
+          path {
+            fill: $global-color;
+          }
         }
       }
+    }
 
+    .kko-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      row-gap: 2rem;
+
+      .kko-credits {
+        display: flex;
+        flex-direction: column;
+        row-gap: 1rem;
+      }
+    }
+
+    @media (min-width: $breakpoint-small) {
+      .kko-footer {
+        grid-template-columns: 1fr 3fr;
+        column-gap: 2rem;
+
+        .kko-credits {
+          flex-direction: row;
+          column-gap: 3rem;
+        }
+      }
+    }
+
+    @media (min-width: $breakpoint-medium) {
+      .kko-footer {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        column-gap: 2rem;
+        align-items: flex-end;
+
+        .kko-credits {
+          flex-direction: column;
+          column-gap: 3rem;
+        }
+      }
+    }
+
+    @media (min-width: $breakpoint-large) {
+      .kko-footer {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        align-items: flex-end;
+
+        .kko-credits {
+          flex-direction: column;
+          row-gap: 0;
+          white-space: nowrap;
+
+          .kko-credit-title {
+            display: inline;
+          }
+        }
+
+      }
     }
   }
 }

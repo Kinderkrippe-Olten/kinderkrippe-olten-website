@@ -1,15 +1,19 @@
-body.kko-bookmark-active 
-header.kko-header
-div.kko-pulldown-menu {
+body.kko-bookmark-active header.kko-header div.kko-pulldown-menu {
   top: #{$kko-border-stripe-width * 3};
+
   @media (min-width: $breakpoint-small) {
     top: 0;
   }
-  transition: top 0.4s ease-in; 
+
+  transition: top 0.4s ease-in;
 }
 
 header.kko-header {
   container: kko-header / size;
+  position: relative;
+  height: 1px;
+  margin-bottom: -1px;
+  ;
 
   .kko-logo {
     display: none;
@@ -20,16 +24,21 @@ header.kko-header {
     position: absolute;
     right: 0;
     width: 100%;
+
     @media (min-width: $breakpoint-small) {
       width: 50%;
     }
-    top: calc(-100vh + #{$kko-border-stripe-width * 6});  
+
+    top: calc(-100vh + #{$kko-border-stripe-width * 6});
+
     @media (min-width: $breakpoint-small) {
       top: -100vh;
-    }  
+    }
+
     transition: top 0.1s ease-out;
   }
-  .kko-close-button, 
+
+  .kko-close-button,
   .kko-bookmark {
     background: none;
     border: none;
@@ -41,11 +50,13 @@ header.kko-header {
     top: 5cqw;
     right: 7cqw;
     width: 12cqw;
+
     @media (min-width: $breakpoint-small) {
-      width: 6cqw;
+      width: 4cqw;
       right: 5cqw;
       top: 2cqw
     }
+
     svg {
       width: 100%;
       height: auto;
@@ -63,14 +74,23 @@ header.kko-header {
       }
     }
   }
-  
+
+  @media (min-width: $breakpoint-small) {
+    &.kko-menu-page-inserted:not(.kko-header-active) .kko-bookmark {
+      display: none;
+    }
+  }
+
   .kko-bookmark {
     width: 10cqw;
     right: 8cqw;
+    display: block;
+
     @media (min-width: $breakpoint-small) {
-      width: 4rem;
-      right: 5rem;
+      width: 4cqw;
+      right: 5cqw;
     }
+
     position: absolute;
     height: 0;
 
@@ -92,10 +112,10 @@ header.kko-header {
     }
   }
 
+
   @media (max-width: $breakpoint-small) {
     padding-top: $kko-border-stripe-width * 3;
     height: $kko-border-stripe-width * 3;
-    position: relative;
 
     &::before {
       content: "";
@@ -103,7 +123,8 @@ header.kko-header {
       top: 0;
       left: 0;
       width: 100%;
-      z-index: 10;;
+      z-index: 10;
+      ;
       height: $kko-border-stripe-width * 3;
       background-image: linear-gradient(to bottom,
           $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width ,
@@ -117,7 +138,7 @@ header.kko-header {
       display: block;
       top: calc(4cqw + #{$kko-border-stripe-width * 3});
       left: 5cqw;
-      width: 75cqw;
+      width: 70cqw;
 
       svg {
         width: 100%;
@@ -135,6 +156,6 @@ header.kko-header {
 
   }
 
-  
+
 
 }
