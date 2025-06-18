@@ -1,0 +1,78 @@
+<div class="uk-container-expanded kko-blog">
+<div class="uk-container">
+<h2>Blog</h2>
+  <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slider>
+    <ul class="uk-slider-items uk-child-width-1-2@s uk-child-width-1-3@m uk-grid">
+      {{ range where .Page.Site.RegularPages "Section" "blog" }}
+        {{ $site := .Params.site }}
+        {{ $group := .Params.group }}
+        {{ $siteData := index .Site.Data.sites $site }}
+        {{ $siteName := $siteData.Name | default $site }}
+        {{ $groupData := "" }}
+        {{ $groupColor := "" }}
+        {{ $groupIcon := "" }}
+        {{ $groupName := "" }}
+    
+
+        {{ if not $site }}
+          {{ warnf "Missing 'site' parameter for blog post '%s' in %s" .Title .File.Path }}
+        {{ else if not $siteData }}
+          {{ $validSites := slice }}
+          {{ range $k, $_ := .Site.Data.sites }}{{ $validSites = $validSites | append $k }}{{ end }}
+          {{ warnf "Invalid 'site' parameter '%s' for blog post '%s' in %s. Valid sites: %s" $site .Title .File.Path (delimit (sort $validSites) ", ") }}
+        {{ end }}
+        
+        {{ if not $group }}
+          {{ $groupIcon = "kko.svg" }}
+          {{ $groupColor = $siteData.Color }}
+        {{ else if $siteData }}
+          {{ $groupData = index $siteData.Groups $group }}
+          {{ if not $groupData }}
+            {{ $validGroups := slice }}
+            {{ range $k, $_ := $siteData.Groups }}{{ $validGroups = $validGroups | append $k }}{{ end }}
+            {{ warnf "Invalid 'group' parameter '%s' for site '%s' in blog post '%s' in %s. Valid groups: %s" $group $site .Title .File.Path (delimit (sort $validGroups) ", ") }}
+          {{ else }}
+            {{ $groupColor = $groupData.Color }}
+            {{ $groupIcon = $groupData.Icon }}
+            {{ $groupName = $groupData.Name }}
+          {{ end }}        
+        {{ end }}
+        
+        {{ if not .Date }}
+          {{ warnf "Missing 'date' parameter for blog post '%s' in %s" .Title .File.Path }}
+        {{ end }}
+        <li>
+          <div class="uk-card uk-card-default uk-card-hover">
+            {{ with .Resources.GetMatch "teaser.*" }}
+              {{ $webp := .Fill "400x300 webp" }}
+              <div class="uk-card-media-top">
+                <img src="{{ $webp.RelPermalink }}" alt="{{ .Title }}" />
+              </div>
+            {{ else }}
+              {{ warnf "No teaser image found for blog post '%s'. Add a teaser.* file to %s" .Title .File.Dir }}
+            {{ end }}
+            <div class="uk-card-body {{ if $groupColor }}kko-color-{{ $groupColor }}{{ end }}">
+              <h3 class="uk-card-title">
+                <a href="{{ .RelPermalink }}" class="uk-link-reset">{{ .Title }}</a>
+              </h3>
+              <div class="kko-blog-footer">
+                <div class="kko-blog-icon">
+                  {{ partial "get-svg.html" (dict "path" (printf "images/icons/%s" $groupIcon) "class" "kko-group-icon") }}
+                </div>
+                <div class="kko-blog-meta">
+                {{ $siteName }}{{ if $groupName }}, {{ $groupName }}{{ end }}<br>
+                {{ .Date.Format "02.01.2006" }}
+                </div>
+            </div>
+          </div>
+        </li>
+      {{ end }}
+    </ul>
+
+    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
+
+    <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
+  </div>
+</div>
+</div>

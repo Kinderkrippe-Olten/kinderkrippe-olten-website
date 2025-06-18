@@ -1,6 +1,14 @@
 .kko-picture-circles {
-  position: relative;
-  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .kko-picture-circles-layout {
+    height: 100cqw;
+    width: 100cqw;
+    position: relative;
+  }
 
   .kko-circle {
     position: absolute;
@@ -17,7 +25,7 @@
   }
 
   .kko-circle-3-2 {
-    top: 20cqh;
+    top: 20cqw;
     left: 10cqw;
     z-index: 1;
   }
@@ -29,19 +37,19 @@
   }
 
   .kko-circle-5-2 {
-    top: 5cqh;
+    top: 5cqw;
     left: -10cqw;
     z-index: 2;
   }
 
   .kko-circle-5-3 {
-    top: 25cqh;
+    top: 25cqw;
     left: 15cqw;
     z-index: 3;
   }
 
   .kko-circle-5-4 {
-    top: 50cqh;
+    top: 50cqw;
     left: 40cqw;
     z-index: 4;
   }
@@ -50,5 +58,62 @@
     bottom: 0;
     left: 25cqw;
     z-index: 5;
+  }
+
+  @media (min-width: $breakpoint-small) {
+    .kko-picture-circles-layout {
+      height: 50cqw;
+      width: 50cqw;
+    }
+
+    .kko-circle {
+      position: absolute;
+      border-radius: 100%;
+      object-fit: cover;
+      width: 25cqw;
+      height: 25cqw;
+    }
+
+    .kko-circle-3-1,
+    .kko-circle-5-1 {
+      top: 0;
+      right: 0;
+    }
+
+    .kko-circle-3-2 {
+      top: 10cqw;
+      left: 5cqw;
+      z-index: 1;
+    }
+
+    .kko-circle-3-3 {
+      bottom: 0;
+      right: 5cqw;
+      z-index: 2;
+    }
+
+    .kko-circle-5-2 {
+      top: 2.5cqw;
+      left: -5cqw;
+      z-index: 2;
+    }
+
+    .kko-circle-5-3 {
+      top: 12.5cqw;
+      left: 15cqw;
+      z-index: 3;
+    }
+
+    .kko-circle-5-4 {
+      top: 25cqw;
+      left: 20cqw;
+      z-index: 4;
+    }
+
+    .kko-circle-5-5 {
+      bottom: 0;
+      left: 12.5cqw;
+      z-index: 5;
+    }
   }
 }

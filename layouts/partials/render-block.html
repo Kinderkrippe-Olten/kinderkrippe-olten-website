@@ -19,15 +19,19 @@ Expects:
 {{ if $block }}
   {{ if eq $block.Params.type "3-picture-circles" }}
     <div class="kko-block kko-picture-circles">
+      <div class="kko-picture-circles-layout">
       {{ range (seq 1 3) }}
         {{ partial "picture-circle.html" (dict "block" $block "layout" 3 "index" .) }}
       {{ end }}
+      </div>
     </div>
   {{ else if eq $block.Params.type "5-picture-circles" }}
     <div class="kko-block kko-picture-circles">
+      <div class="kko-picture-circles-layout">
       {{ range (seq 1 5) }}
         {{ partial "picture-circle.html" (dict "block" $block "layout" 5 "index" .) }}
       {{ end }}
+      </div>
     </div>
   {{ else }}
     {{ $renderedContent = $block.Content }} {{/* Use RenderString for shortcodes etc. */}}

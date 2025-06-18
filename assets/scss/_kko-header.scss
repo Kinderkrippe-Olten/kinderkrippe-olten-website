@@ -76,7 +76,7 @@ header.kko-header {
   }
 
   @media (min-width: $breakpoint-small) {
-    &.kko-menu-page-inserted:not(.kko-header-active) .kko-bookmark {
+    &:not(.kko-header-active).kko-menu-page-inserted .kko-bookmark {
       display: none;
     }
   }

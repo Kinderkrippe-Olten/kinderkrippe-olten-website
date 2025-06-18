@@ -1,0 +1,21 @@
+{{/*
+  Shortcode to display a blog picture with a caption.
+  Usage: 
+    {{< blog-pic src="path/to/image.jpg" alt="Image description" >}}
+    Caption
+    {{ /blog-pic >}}
+  The image should be in the same directory as the page's index.md file.
+*/}}
+
+{{ $src := .Get "src" }}
+{{ $alt := .Get "alt" | default (.Inner | plainify) }}
+
+{{ with .Page.Resources.GetMatch $src }}
+  {{ $webp := .Resize "800x webp" }}
+  <figure class="kko-blog-pic">
+    <img src="{{ $webp.RelPermalink }}" alt="{{ $alt }}" />
+    <figcaption>{{ $.Inner }}</figcaption>
+  </figure>
+{{ else }}
+  {{ errorf "Image '%s' not found in page bundle for page '%s'. Make sure the image file is in the same directory as index.md." $src .Page.File.Path }}
+{{ end }}

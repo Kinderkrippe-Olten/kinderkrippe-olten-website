@@ -1,0 +1,28 @@
+sonnhalde:
+  Name: Sonnhalde
+  Color: yellow
+  Groups:
+    pinguin:
+      Icon: pinguin.svg
+      Name: Pinguin
+      Color: blue
+    baer:
+      Icon: baer.svg
+      Name: Bär
+      Color: blue
+    regenbogen:
+      Icon: regenbogen.svg
+      Name: Regenbogen
+      Color: red
+hagmatt:
+  Name: Hagmatt
+  Color: Green
+  Groups:
+    fisch:
+      Icon: fisch.svg
+      Name: Fisch
+      Color: blue
+    frosch:
+      Icon: frosch.svg
+      Name: Frosch
+      Color: green

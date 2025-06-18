@@ -28,7 +28,7 @@
 {{ end }}
 
 {{/* Process the picture file */}}
-{{ $pictureSrc := ((( $block.Resources.Get $pictureFile).Crop "400x400").Process "webp").RelPermalink }}
+{{ $pictureSrc := ((( $block.Resources.Get $pictureFile).Fill "400x400").Process "webp").RelPermalink }}
 
 <div class="kko-circle kko-circle-{{ printf "%d-%d" $layout $index }}">
   <img src="{{ $pictureSrc }}" alt="{{ $pictureAlt }}" title="{{ $pictureTitle }}" class="kko-circle">
