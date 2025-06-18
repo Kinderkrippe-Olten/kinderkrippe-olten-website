@@ -8,9 +8,9 @@ Site: sonnhalde
 
 Nun ist sie also da, die neue Hüpfburg im Garten der Sonnmatt. Wir waren alle schon super hibbelig. Aber natürlich warten wir mit Aufblasen bis die ganzen Tests von wegen Sicherheit durch sind, und die neue Haftpflich abgeschlossen ist. Auch eine Inspektion durch die Ortopaedieabteilung des Kantonsspital steht noch an.
 
-{< blog-pic src="pic1.jpg" >}
+{{< blog-pic src="pic2.png" >}}
 Die neue Hüpfburg
-{< /blog-pic >}
+{{< /blog-pic >}}
 
 Gegen ende August wird es so weit sein. Wir planen ein grosses Einweihungsfest in Zusammenarbeit mit dem Krankenmobilienmagazin and der Ziegelfeldstrasse.
 
