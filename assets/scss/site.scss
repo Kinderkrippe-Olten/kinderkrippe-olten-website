@@ -92,6 +92,8 @@ $modal-container-width: 778px !default;
 @import "kko-circle-pic";
 @import "kko-minigame";
 @import "kko-doublepage";
+@import "kko-blog";
+@import "kko-blog-single";
 
 // hide the menu on mobile
 @media (max-width: $breakpoint-small) {

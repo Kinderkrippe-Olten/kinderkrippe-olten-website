@@ -1,0 +1,51 @@
+<div class="uk-container-expanded kko-blog">
+<div class="uk-container">
+<h2>Blog</h2>
+  <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slider>
+    <ul class="uk-slider-items">
+      {{ range where .Page.Site.RegularPages "Section" "blog" }}
+        {{ $groupInfo := partial "get-group-data.html" . }}
+        {{ $title := .Params.TeaserTitle | default .Title }}
+        {{ $date := .Date }}
+        {{ $teaser := .Resources.GetMatch "teaser.*" }}
+        {{ $teaserImage := "" }}
+        {{ if $teaser }}{{ $teaserImage = $teaser.Fill "400x300 webp" }}{{ end }}
+        
+        {{ if not .Date }}
+          {{ warnf "Missing 'date' parameter for blog post '%s' in %s" .Title .File.Path }}
+        {{ end }}
+        <li>
+          <div class="uk-card uk-card-default uk-card-hover">
+            {{ with .Resources.GetMatch "teaser.*" }}
+              {{ $webp := .Fill "400x300 webp" }}
+              <div class="uk-card-media-top">
+                <img src="{{ $webp.RelPermalink }}" alt="{{ .Title }}" />
+              </div>
+            {{ else }}
+              {{ warnf "No teaser image found for blog post '%s'. Add a teaser.* file to %s" .Title .File.Dir }}
+            {{ end }}
+            <div class="uk-card-body {{ if $groupInfo.groupColor }}kko-color-{{ $groupInfo.groupColor }}{{ end }}">
+              <h3 class="uk-card-title">
+                <a href="{{ .RelPermalink }}">{{ $title }}</a>
+              </h3>
+              <div class="kko-blog-footer">
+                <div class="kko-blog-icon">
+                  {{ partial "get-svg.html" (dict "path" (printf "images/icons/%s" $groupInfo.groupIcon) "class" "kko-group-icon") }}
+                </div>
+                <div class="kko-blog-meta">
+                {{ $groupInfo.siteName }}{{ if $groupInfo.groupName }}, {{ $groupInfo.groupName }}{{ end }}<br>
+                {{ .Date.Format "02.01.2006" }}
+                </div>
+            </div>
+          </div>
+        </li>
+      {{ end }}
+    </ul>
+
+    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
+
+    <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
+  </div>
+</div>
+</div>

@@ -1,5 +1,6 @@
 ---
 Title: No eso es wundeerbloggi
+TeaserTitle: Wunderbloggi
 Date: 2025-05-09
 Site: hagmatt
 Group: frosch

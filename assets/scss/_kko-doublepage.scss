@@ -12,9 +12,7 @@
   .kko-border-stripes {
     position: relative;
 
-    @media (max-width: $breakpoint-small) {
-     
-  }      
+  
     @media (min-width: $breakpoint-small) {
       .kko-doublepage-left {
         padding-left: $kko-border-stripe-width * 3;

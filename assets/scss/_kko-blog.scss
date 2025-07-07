@@ -1,0 +1,46 @@
+.kko-blog {
+    
+    uk-card {
+        width: 80vw;
+        @media (min-width: $breakpoint-small) {
+            width: 20rem;
+        }
+
+    }
+    h3 a {
+        color: $kko-base-blue;
+        text-decoration: none;
+    }
+    .kko-blog-footer {
+        display: flex;
+        font-size: 0.8rem;
+        flex-direction: row;
+        .kko-blog-icon {
+            margin-right: 0.5rem;
+            width: 2rem;
+            border-radius: 50%;
+            background: $kko-base-beige;
+        }
+    }
+    .kko-color-yellow {
+        background-color: $kko-blog-yellow ;
+    }
+    .kko-color-light-blue {
+        background-color: $kko-blog-light-blue ;
+    }
+    .kko-color-red {
+        background-color: $kko-blog-red ;
+    }
+    .kko-color-green {
+        background-color: $kko-blog-green ;
+    }
+    .kko-color-grey-blue {
+        background-color: $kko-blog-grey-blue ;
+    }
+    .kko-color-pink {
+        background-color: $kko-blog-pink ;
+    }
+    .kko-color-light-green {
+        background-color: $kko-blog-light-green ;
+    }
+}
