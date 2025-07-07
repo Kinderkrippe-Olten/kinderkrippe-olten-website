@@ -1,11 +1,14 @@
 .kko-blog {
-    
-    uk-card {
+    margin-top: 3rem;
+    margin-bottom: 4rem;
+    .uk-slider-items {
+        gap: 1rem;
+    }
+    .uk-card {
         width: 80vw;
         @media (min-width: $breakpoint-small) {
             width: 20rem;
         }
-
     }
     h3 a {
         color: $kko-base-blue;
