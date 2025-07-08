@@ -1,0 +1,93 @@
+.kko-team {
+    margin-top: 3rem;
+    margin-bottom: 4rem;
+    .uk-slider-items {
+        gap: 1rem;
+    }
+    .uk-card {
+        width: 80vw;
+        @media (min-width: $breakpoint-small) {
+            width: 20rem;
+        }
+    }
+    h3 {
+        color: $kko-base-blue;
+        text-decoration: none;
+        font-size: 2rem;
+        margin-top: 0rem;
+        margin-bottom: 0.5rem;
+    }
+    .kko-team-meta {
+        font-size: 0.9rem;
+        color: $kko-base-blue;
+        margin-bottom: 1rem;
+    }
+}
+
+.kko-team-grid {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    
+    h2 {
+        color: $kko-base-blue;
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+    
+    .uk-grid {
+        margin-bottom: 2rem;
+    }
+    
+    .uk-card {
+        aspect-ratio: 2 / 3;
+        display: flex;
+        flex-direction: column;
+        
+        .uk-card-media-top {
+            flex: 2;
+            overflow: hidden;
+            
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+        
+        .uk-card-body {
+            flex: 1;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+    }
+    
+    h3 {
+        color: $kko-base-blue;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .kko-team-meta {
+        font-size: 0.85rem;
+        color: $kko-base-blue;
+        line-height: 1.3;
+    }
+}
+
+.kko-team-page {
+    background-color: $kko-base-beige;
+    
+    .kko-team-title {
+        color: $kko-base-blue;
+        margin-bottom: 2rem;
+    }
+    
+    .kko-team-content {
+        padding: 2rem 0;
+    }
+}

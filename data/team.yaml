@@ -1,0 +1,44 @@
+- sect: Standortleitung
+- name: Marta Meier
+  picture: marta_meier.jpg
+  function: Standortleitung
+  site: sonnhalde
+- name: Anna Becker
+  picture: anna_becker.jpg
+  function: Standaortleitung
+  site: hagmatt
+- sect: Gruppenleitung
+- name: Peter Müller
+  picture: peter_muller.jpg
+  function: Erzieher
+  group: fisch
+- name: Lisa Schmid
+  picture: lisa_schmid.jpg
+  function: Erzieherin
+  group: frosch
+- name: Tom Schneider
+  picture: tom_schneider.jpg
+  function: Erzieher
+  group: baer
+- break
+- name: Anna Fischer
+  picture: anna_fischer.jpg
+  function: Praktikantin
+  group: frosch
+- name: Julia Weber
+  picture: julia_weber.jpg
+  function: Erzieherin
+  group: frosch
+- name: Max Hoffmann
+  picture: max_hoffmann.jpg
+  function: Erzieher
+  group: regenbogen
+- sect: Verwaltung
+- name: Sarah Klein
+  picture: sarah_klein.jpg
+  function: Administration
+  site: sonnhalde
+- name: Lukas Braun
+  picture: lukas_braun.jpg
+  function: Administration
+  site: hagmatt

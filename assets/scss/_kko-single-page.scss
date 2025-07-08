@@ -1,0 +1,62 @@
+.kko-single-page {
+    padding-top: 10rem;
+    padding-bottom: 5rem;
+    
+    @media (min-width: $breakpoint-small) {
+        padding-top: 1rem;
+        
+        &::before,
+        &::after {
+            position: fixed;
+            top: 0;
+            content: "";
+            width: $kko-border-stripe-width * 3;
+            bottom: 0;
+        }
+
+        &::before {
+            left: 0;
+            background-image: linear-gradient(to right,
+                $kko-base-blue 0rem, $kko-base-blue $kko-border-stripe-width,
+                $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
+                $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3
+            );
+        }
+
+        &::after {
+            right: 0;
+            background-image: linear-gradient(to left,
+                $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width,
+                $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
+                $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3
+            );
+        }
+    }
+}
+
+.kko-single-page-header {
+    .kko-logo {
+        display: none;
+        @media (min-width: $breakpoint-small) {
+            display: block;
+            max-width: 40%;
+            padding-left: 3rem;
+            padding-bottom: 4rem;
+        }
+        fill: $kko-base-blue;
+    }
+}
+
+.kko-single-page-content {
+    max-width: 60em;
+    
+    .kko-single-page-title {
+        font-size: 3rem;
+        @media (min-width: $breakpoint-small) {
+            font-size: 4rem;
+        }
+        line-height: 1.0;
+        margin-bottom: 1rem;
+        color: $kko-base-blue;
+    }
+}

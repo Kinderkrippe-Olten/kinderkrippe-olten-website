@@ -1,0 +1,12 @@
+{{ define "main" }}
+<div class="kko-team-page kko-single-page">
+{{ partial "single-page-header.html" . }}
+<div class="uk-container">
+    <div class="kko-team-content kko-single-page-content">
+        <h1 class="kko-team-title kko-single-page-title">{{ .Title }}</h1>
+        {{ .Content }}
+        {{ partial "render-team-grid.html" . }}
+    </div>
+</div>
+</div>
+{{ end }}

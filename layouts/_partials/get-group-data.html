@@ -16,8 +16,25 @@
 
 {{ $site := .Params.site }}
 {{ $group := .Params.group }}
-{{ $siteData := index .Site.Data.sites $site }}
-{{ $siteName := $siteData.Name | default $site }}
+{{ $name := .Params.name }}
+
+{{/* Try to infer site from group if site is missing */}}
+{{ if and (not $site) $group }}
+  {{ range $siteKey, $siteData := .Site.Data.sites }}
+    {{ if index $siteData.Groups $group }}
+      {{ $site = $siteKey }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $siteData := "" }}
+{{ if $site }}
+  {{ $siteData = index .Site.Data.sites $site }}
+{{ end }}
+{{ $siteName := "" }}
+{{ if and $siteData (reflect.IsMap $siteData) }}
+  {{ $siteName = $siteData.Name | default $site }}
+{{ end }}
 {{ $groupData := "" }}
 {{ $groupColor := "" }}
 {{ $groupIcon := "" }}
@@ -25,18 +42,38 @@
 
 {{/* Validation and warnings */}}
 {{ if not $site }}
-  {{ warnf "Missing 'site' parameter for blog post '%s' in %s" .Title .File.Path }}
+  {{ if .Title }}
+    {{ warnf "Missing 'site' parameter for blog post '%s' in %s" .Title .File.Path }}
+  {{ else if $name }}
+    {{ if $group }}
+      {{ $validGroups := slice }}
+      {{ range $siteKey, $siteData := .Site.Data.sites }}
+        {{ range $groupKey, $_ := $siteData.Groups }}
+          {{ $validGroups = $validGroups | append $groupKey }}
+        {{ end }}
+      {{ end }}
+      {{ errorf "team member '%s' has invalid group '%s'. Valid groups are: %s" $name $group (delimit (sort $validGroups) ", ") }}
+    {{ else }}
+      {{ errorf "team member '%s' missing both 'site' and 'group' parameters. Each team member must have either a 'site' or a 'group' specified." $name }}
+    {{ end }}
+  {{ end }}
 {{ else if not $siteData }}
   {{ $validSites := slice }}
   {{ range $k, $_ := .Site.Data.sites }}{{ $validSites = $validSites | append $k }}{{ end }}
-  {{ warnf "Invalid 'site' parameter '%s' for blog post '%s' in %s. Valid sites: %s" $site .Title .File.Path (delimit (sort $validSites) ", ") }}
+  {{ if .Title }}
+    {{ warnf "Invalid 'site' parameter '%s' for blog post '%s' in %s. Valid sites: %s" $site .Title .File.Path (delimit (sort $validSites) ", ") }}
+  {{ else if $name }}
+    {{ errorf "team member '%s' has invalid site '%s'. Valid sites are: %s" $name $site (delimit (sort $validSites) ", ") }}
+  {{ end }}
 {{ end }}
 
 {{/* Process group data */}}
 {{ if not $group }}
   {{ $groupIcon = "kko.svg" }}
-  {{ $groupColor = $siteData.Color }}
-{{ else if $siteData }}
+  {{ if and $siteData (reflect.IsMap $siteData) }}
+    {{ $groupColor = $siteData.Color }}
+  {{ end }}
+{{ else if and $siteData (reflect.IsMap $siteData) }}
   {{ $groupData = index $siteData.Groups $group }}
   {{ if not $groupData }}
     {{ $validGroups := slice }}

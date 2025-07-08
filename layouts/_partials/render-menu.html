@@ -1,6 +1,6 @@
-{{ $menu := .Site.Data.menu }} {{ $arrow := partial "get-svg.html"
-"images/arrow.svg" }} {{/* Render the menu with the color logo and main links
-*/}}
+{{ $menu := .Site.Data.menu }} 
+{{ $arrow := partial "get-svg.html" "images/arrow.svg" }} 
+{{/* Render the menu with the color logo and main links */}}
 <div class="kko-menu">
   <div class="kko-color-logo">
     {{- partial "get-svg.html" "images/kko-color-head.svg" -}}
@@ -8,20 +8,20 @@
   <div class="kko-name">Kinderkrippe<br />Olten</div>
   <div class="kko-main-menu">
     {{ range $menu.mainlinks }}
-    <div class="kko-menu-item kko-color-{{ .color }}">
-      <a href="{{ .href }}"
-        ><span class="kko-arrow">{{ $arrow }}</span>{{ .title }}</a
-      >
-    </div>
+    <a href="{{ .href }}"
+      ><div class="kko-menu-item kko-color-{{ .color }}">
+        <span class="kko-arrow">{{ $arrow }}</span>{{ .title }}
+      </div></a
+    >
     {{ end }}
   </div>
   <div class="kko-sub-menu">
     {{ range $menu.sublinks }}
-    <div class="kko-menu-item">
-      <a href="{{ .href }}"
-        ><span class="kko-arrow">{{ $arrow }}</span>{{ .title }}</a
+    <a href="{{ .href }}"
+        ><div class="kko-menu-item">
+      <span class="kko-arrow">{{ $arrow }}</span>{{ .title }}
+    </div></a
       >
-    </div>
     {{ end }}
   </div>
 </div>

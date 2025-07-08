@@ -1,0 +1,35 @@
+{{/*
+  render-team-card.html
+  
+  Renders a team member card
+  
+  Usage: {{ partial "render-team-card.html" (dict "name" $name "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
+*/}}
+
+{{ $name := .name }}
+{{ $function := .function }}
+{{ $picture := .picture }}
+{{ $site := .site }}
+{{ $group := .group }}
+
+{{ $teamContext := dict "Params" (dict "site" $site "group" $group "name" $name) "Site" .Site }}
+{{ $groupInfo := partial "get-group-data.html" $teamContext }}
+{{ $cardColor := lower $groupInfo.groupColor }}
+{{ $siteName := $groupInfo.siteName }}
+{{ $groupName := $groupInfo.groupName }}
+
+{{ $finalImage := partial "get-team-image.html" (dict "picture" $picture "name" $name) }}
+
+<div class="uk-card uk-card-default uk-card-hover">
+  {{ if $finalImage }}
+    <div class="uk-card-media-top">
+      <img src="{{ $finalImage.RelPermalink }}" alt="{{ $name }}" />
+    </div>
+  {{ end }}
+  <div class="uk-card-body {{ if $cardColor }}kko-color-{{ $cardColor }}{{ end }}">
+    <h3>{{ $name }}</h3>
+    <div class="kko-team-meta">
+      {{ $function }}{{ if $siteName }}, {{ $siteName }}{{ end }}{{ if $groupName }}, {{ $groupName }}{{ end }}
+    </div>
+  </div>
+</div>

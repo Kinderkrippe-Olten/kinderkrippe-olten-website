@@ -1,45 +1,5 @@
 .kko-blog-single {
     background-color: $kko-blog-grey-blue;
-    padding-top: 10rem;
-    padding-bottom: 5rem;
-    @media (min-width: $breakpoint-small) {
-        padding-top: 1rem;
-              &::before,
-      &::after {
-        position: fixed;
-        top: 0;
-        content: "";
-        width: $kko-border-stripe-width * 3;
-        bottom: 0;
-      }
-
-      &::before {
-        left: 0;
-        background-image: linear-gradient(to right,
-            $kko-base-blue 0rem, $kko-base-blue $kko-border-stripe-width ,
-            $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
-            $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3,
-          );
-      }
-
-      &::after {
-        right: 0;
-        background-image: linear-gradient(to left,
-            $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width,
-            $kko-base-red $kko-border-stripe-width , $kko-base-red $kko-border-stripe-width * 2,
-            $kko-base-green $kko-border-stripe-width *2, $kko-base-green $kko-border-stripe-width * 3, );
-      }
-    }
-    .kko-logo {
-        display: none;
-        @media (min-width: $breakpoint-small) {
-            display: block;
-            max-width: 40%;
-            padding-left: 3rem;
-            padding-bottom: 4rem;
-        }
-        fill: $kko-base-blue;
-    }
     .kko-blog-content {
         max-width: 60em;
         .kko-blog-title {
@@ -77,25 +37,4 @@
        }
     }
 
-    .kko-color-yellow {
-        background-color: $kko-blog-yellow ;
-    }
-    .kko-color-light-blue {
-        background-color: $kko-blog-light-blue ;
-    }
-    .kko-color-red {
-        background-color: $kko-blog-red ;
-    }
-    .kko-color-green {
-        background-color: $kko-blog-green ;
-    }
-    .kko-color-grey-blue {
-        background-color: $kko-blog-grey-blue ;
-    }
-    .kko-color-pink {
-        background-color: $kko-blog-pink ;
-    }
-    .kko-color-light-green {
-        background-color: $kko-blog-light-green ;
-    }
 }

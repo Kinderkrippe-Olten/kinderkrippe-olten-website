@@ -10,3 +10,5 @@ Title: Kinderkrippe Olten
 {{< doublepage left=block/3pics right=block/blog background=beige border=none >}}
 
 {{< blog >}}
+
+{{< team >}}

@@ -1,0 +1,28 @@
+<div class="uk-container-expanded kko-team">
+<div class="uk-container">
+<h2>Unser Team</h2>
+  <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
+    uk-slider="finite: true; autoplay: true; autoplay-interval: 3000; autoplay-advances: true;">
+    <ul class="uk-slider-items">
+      {{ range $.Site.Data.team }}
+        {{ if and (reflect.IsMap .) .name }}
+          {{ $name := .name }}
+          {{ $function := .function }}
+          {{ $site := .site }}
+          {{ $group := .group }}
+          {{ $picture := .picture }}
+          {{ $sect := .sect }}
+          
+          {{ if not $sect }}
+            <li>
+              <a href="/team/" class="uk-link-reset">
+                {{ partial "render-team-card.html" (dict "name" $name "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
+              </a>
+            </li>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    </ul>
+  </div>
+</div>
+</div>

@@ -1,0 +1,32 @@
+{{/*
+  get-team-image.html
+  
+  Returns a processed image for a team member
+  
+  Usage: {{ $image := partial "get-team-image.html" (dict "picture" $picture "name" $name) }}
+  
+  Returns an image resource or empty string if none available
+*/}}
+
+{{ $picture := .picture }}
+{{ $name := .name }}
+
+{{ $imagePath := printf "images/team/%s" $picture }}
+{{ $imageResource := resources.Get $imagePath }}
+{{ $finalImage := "" }}
+
+{{ if $imageResource }}
+  {{ $finalImage = $imageResource.Fill "300x300 webp" }}
+{{ else }}
+  {{ $nameHash := sha256 $name }}
+  {{ $seed := substr $nameHash 0 8 }}
+  {{ $placeholderUrl := printf "https://thispersondoesnotexist.com/?seed=%s" $seed }}
+  {{ $placeholderResource := resources.GetRemote $placeholderUrl }}
+  {{ if $placeholderResource }}
+    {{ $smallImage := $placeholderResource.Resize "100x100" }}
+    {{ $pixelatedImage := $smallImage.Resize "300x300" }}
+    {{ $finalImage = $pixelatedImage.Fill "300x300 webp" }}
+  {{ end }}
+{{ end }}
+
+{{ return $finalImage }}

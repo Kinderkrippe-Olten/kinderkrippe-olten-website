@@ -1,0 +1,40 @@
+<div class="uk-container-expanded kko-team-grid">
+<div class="uk-container">
+  {{ $currentSection := "" }}
+  {{ $gridOpen := false }}
+  
+  {{ range $.Site.Data.team }}
+    {{ if reflect.IsMap . }}
+      {{ if .sect }}
+        {{ if $gridOpen }}
+          </div>
+          {{ $gridOpen = false }}
+        {{ end }}
+        {{ $currentSection = .sect }}
+        <h2>{{ $currentSection }}</h2>
+        <div class="uk-grid uk-grid-medium uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid>
+        {{ $gridOpen = true }}
+      {{ else if .name }}
+        {{ $name := .name }}
+        {{ $function := .function }}
+        {{ $site := .site }}
+        {{ $group := .group }}
+        {{ $picture := .picture }}
+        
+        <div>
+          {{ partial "render-team-card.html" (dict "name" $name "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
+        </div>
+      {{ end }}
+    {{ else if eq . "break" }}
+      {{ if $gridOpen }}
+        </div>
+        <div class="uk-grid uk-grid-medium uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid>
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  
+  {{ if $gridOpen }}
+    </div>
+  {{ end }}
+</div>
+</div>
