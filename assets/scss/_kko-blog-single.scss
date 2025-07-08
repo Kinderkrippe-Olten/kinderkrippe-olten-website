@@ -4,12 +4,13 @@
         max-width: 60em;
         .kko-blog-title {
             font-size: 3rem;
-            @media (min-width: $breakpoint-small) {
-                font-size: 4rem;
-            }
             line-height: 1.0;
             margin-bottom: 1rem;
             color: $kko-base-blue;
+
+            @media (min-width: $breakpoint-small) {
+                font-size: 4rem;
+            }
         }
         .kko-blog-byline {
             display: flex;

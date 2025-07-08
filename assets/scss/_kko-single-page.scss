@@ -37,13 +37,14 @@
 .kko-single-page-header {
     .kko-logo {
         display: none;
+        fill: $kko-base-blue;
+
         @media (min-width: $breakpoint-small) {
             display: block;
             max-width: 40%;
             padding-left: 3rem;
             padding-bottom: 4rem;
         }
-        fill: $kko-base-blue;
     }
 }
 
@@ -52,11 +53,12 @@
     
     .kko-single-page-title {
         font-size: 3rem;
-        @media (min-width: $breakpoint-small) {
-            font-size: 4rem;
-        }
         line-height: 1.0;
         margin-bottom: 1rem;
         color: $kko-base-blue;
+
+        @media (min-width: $breakpoint-small) {
+            font-size: 4rem;
+        }
     }
 }

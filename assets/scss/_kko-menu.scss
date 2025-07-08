@@ -6,22 +6,24 @@
   padding-left: 5cqw;
   padding-top: 3c;
   height: calc(100vh - #{$kko-border-stripe-width * 3});
+  width: 100%;
+  left: 0;
+
   @media (min-width: $breakpoint-small) {
     height: 100vh;
   }
-  width: 100%;
-  left: 0;
+
   a {
     text-decoration: none;
   }
 
   .kko-color-logo {
+    margin-bottom: 3cqw;
+    margin-top: 6cqw;
+
     svg {
       width: 20cqw;
     }
-
-    margin-bottom: 3cqw;
-    margin-top: 6cqw;
   }
 
   .kko-name {
@@ -39,28 +41,24 @@
     .kko-menu-item {
       position: relative;
       margin-bottom: 1.5cqw;
+      color: $kko-base-blue;
+      padding: 1.3cqw 3cqw;
+      border-radius: 100cqw;
+      font-size: 3.2cqw;
 
-     
-        color: $kko-base-blue;
-        padding: 1.3cqw 3cqw;
-        border-radius: 100cqw;
-        font-size: 3.2cqw;
+      span {
+        display: inline-block;
+        padding-right: 0.8cqw;
 
-        span {
-          display: inline-block;
-          padding-right: 0.8cqw;
-
-          svg {
-            fill: $kko-base-blue;
-            width: 3.5cqw;
-            height: auto;
-            padding-bottom: 0.5cqw;
-          }
+        svg {
+          fill: $kko-base-blue;
+          width: 3.5cqw;
+          height: auto;
+          padding-bottom: 0.5cqw;
         }
-     
+      }
 
-
-      &.kko-color-green  {
+      &.kko-color-green {
         background-color: $kko-base-green;
       }
 
@@ -84,20 +82,18 @@
 
     .kko-menu-item {
       margin-bottom: 0.8cqw;
+      color: $kko-base-beige;
+      font-size: 3.2cqw;
 
-      
-        color: $kko-base-beige;
-        font-size: 3.2cqw;
-        span {
-          padding-right: 0.8cqw;
+      span {
+        padding-right: 0.8cqw;
 
-          svg {
-            width: 3.5cqw;
-            fill: $kko-base-beige;
-            padding-bottom: 1cqw;
-          }
+        svg {
+          width: 3.5cqw;
+          fill: $kko-base-beige;
+          padding-bottom: 1cqw;
         }
-     
+      }
     }
   }
 }

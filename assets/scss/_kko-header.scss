@@ -1,11 +1,10 @@
 body.kko-bookmark-active header.kko-header div.kko-pulldown-menu {
   top: #{$kko-border-stripe-width * 3};
+  transition: top 0.4s ease-in;
 
   @media (min-width: $breakpoint-small) {
     top: 0;
   }
-
-  transition: top 0.4s ease-in;
 }
 
 header.kko-header {
@@ -24,18 +23,13 @@ header.kko-header {
     position: absolute;
     right: 0;
     width: 100%;
+    top: calc(-100vh + #{$kko-border-stripe-width * 6});
+    transition: top 0.1s ease-out;
 
     @media (min-width: $breakpoint-small) {
       width: 50%;
-    }
-
-    top: calc(-100vh + #{$kko-border-stripe-width * 6});
-
-    @media (min-width: $breakpoint-small) {
       top: -100vh;
     }
-
-    transition: top 0.1s ease-out;
   }
 
   .kko-close-button,
@@ -54,7 +48,7 @@ header.kko-header {
     @media (min-width: $breakpoint-small) {
       width: 4cqw;
       right: 5cqw;
-      top: 2cqw
+      top: 2cqw;
     }
 
     svg {
@@ -85,14 +79,13 @@ header.kko-header {
     width: 10cqw;
     right: 8cqw;
     display: block;
+    position: absolute;
+    height: 0;
 
     @media (min-width: $breakpoint-small) {
       width: 4cqw;
       right: 5cqw;
     }
-
-    position: absolute;
-    height: 0;
 
     svg {
       width: 100%;
@@ -123,9 +116,8 @@ header.kko-header {
       top: 0;
       left: 0;
       width: 100%;
-      z-index: 10;
-      ;
       height: $kko-border-stripe-width * 3;
+      z-index: 10;
       background-image: linear-gradient(to bottom,
           $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width ,
           $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
