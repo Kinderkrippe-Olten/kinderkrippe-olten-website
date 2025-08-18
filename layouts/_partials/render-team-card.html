@@ -18,7 +18,7 @@
 {{ $siteName := $groupInfo.siteName }}
 {{ $groupName := $groupInfo.groupName }}
 
-{{ $finalImage := partial "get-team-image.html" (dict "picture" $picture "name" $name) }}
+{{ $finalImage := partial "get-team-image.html" (dict "picture" $picture "name" $name "site" $site) }}
 
 <div class="uk-card uk-card-default uk-card-hover">
   {{ if $finalImage }}
@@ -29,7 +29,7 @@
   <div class="uk-card-body {{ if $cardColor }}kko-color-{{ $cardColor }}{{ end }}">
     <h3>{{ $name }}</h3>
     <div class="kko-team-meta">
-      {{ $function }}{{ if $siteName }}, {{ $siteName }}{{ end }}{{ if $groupName }}, {{ $groupName }}{{ end }}
+      {{ $function }}{{ if $siteName }}, {{ $siteName }}{{ end }}{{ if $groupName }}, {{ printf "Gruppe %s" $groupName }}{{ end }}
     </div>
   </div>
 </div>

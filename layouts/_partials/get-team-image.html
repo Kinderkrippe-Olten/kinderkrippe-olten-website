@@ -10,8 +10,9 @@
 
 {{ $picture := .picture }}
 {{ $name := .name }}
+{{ $site := .site }}
 
-{{ $imagePath := printf "images/team/%s" $picture }}
+{{ $imagePath := printf "images/team/%s/%s" $site $picture }}
 {{ $imageResource := resources.Get $imagePath }}
 {{ $finalImage := "" }}
 
