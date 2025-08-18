@@ -1,6 +1,7 @@
 # Team Hagmatt
 
 - Antonella Zbinden
+- Laura Altermatt
 - Michelle Von Burg
 - Erika Huber
 - Andrea Zehntner

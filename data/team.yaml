@@ -1,44 +1,181 @@
-- sect: Standortleitung
-- name: Marta Meier
-  picture: marta_meier.jpg
-  function: Standortleitung
-  site: sonnhalde
-- name: Anna Becker
-  picture: anna_becker.jpg
-  function: Standaortleitung
+- sect: Hagmatt
+
+- name: Antonella Zbinden
+  picture: Antonella_Zbinden.jpg
+  function: dipl. Krippenleitung,  eidg. dipl. Teamleitung in sozialen und sozialmedizin. Institutionen
   site: hagmatt
-- sect: Gruppenleitung
-- name: Peter Müller
-  picture: peter_muller.jpg
-  function: Erzieher
+
+- name: Laura Altermatt
+  picture: Laura_Altermatt.jpg
+  function: Stv. Krippenleiterin, Gruppenleiterin und Berufsbildberin
   group: fisch
-- name: Lisa Schmid
-  picture: lisa_schmid.jpg
-  function: Erzieherin
+  site: hagmatt
+
+- name: Rahel Felber
+  picture: Rahel_Felber.jpg
+  function: Gruppenleiterin und Berufsbildnerin
   group: frosch
-- name: Tom Schneider
-  picture: tom_schneider.jpg
-  function: Erzieher
-  group: baer
+  site: hagmatt
+
 - break
-- name: Anna Fischer
-  picture: anna_fischer.jpg
+
+- name: Michelle Von Burg
+  picture: Michelle_Von_Burg.jpg
+  function: Miterzieherin
+  group: frosch
+  site: hagmatt
+
+- name: Andrea Zehntner
+  picture: Andrea_Zehntner.jpg
+  function: Miterzieherin
+  group: fisch
+  site: hagmatt
+
+- name: Fabienne Munzinger
+  picture: Fabienne_Munzinger.jpg
+  function: Miterzieherin
+  group: frosch
+  site: hagmatt
+
+- name: Erika Huber
+  picture: Erika_Huber.jpg
+  function: Miterzieherin
+  group: fisch
+  site: hagmatt
+
+- name: Jaime Schwarzenbach
+  picture: Jaime_Schwarzenbach.jpg
+  function: Fachfrau Betreuung Kind, 3. Lehrjahr
+  group: fisch
+  site: hagmatt
+
+- name: Merci Adele
+  picture: Merci_Adele.jpg
+  function: Fachfrau Betreuung Kind, 1. Lehrjahr
+  group: fisch
+  site: hagmatt
+
+- name: Caroline Mba
+  picture: Caroline_Mba.jpg
+  function: Fachfrau Betreuung Kind, 2. Lehrjahr
+  group: frosch
+  site: hagmatt
+
+- name: Thifany Gandoli
+  picture: Thifany_Gandoli.jpg
   function: Praktikantin
   group: frosch
-- name: Julia Weber
-  picture: julia_weber.jpg
-  function: Erzieherin
-  group: frosch
-- name: Max Hoffmann
-  picture: max_hoffmann.jpg
+  site: hagmatt
+
+- name: Anna Di Bona
+  picture: Anna_Di_Bona.jpg
+  function: Köchin und Aushilfe
+  site: hagmatt
+
+- name: Alex Constantini
+  picture: Alex_Constantini.jpg
+  function: Aushilfe
+  site: hagmatt
+
+- name: Christina Lirgg
+  picture: Christina_Lirgg.jpg
+  function: Aushilfe
+  site: hagmatt
+
+- name: Marketa Vrpaca
+  picture: Marketa_Vrpaca.jpg
+  function: Aushilfe
+  site: hagmatt
+
+- name: Siriphon Soland
+  picture: Siriphon_Soland.jpg
+  function: Reinigungsfachfrau
+  site: hagmatt
+
+
+- sect: sonnhalde
+
+- name: Anne Peter
+  picture: Anne_Peter.jpg
+  function: dipl Kitaleitung, eidg. dipl. Teamleitung, Berufsbildnerin und Expertin
+  site: sonnhalde
+
+- name: Sara Kamber
+  picture: Sara_Kamber.jpg
   function: Erzieher
   group: regenbogen
-- sect: Verwaltung
-- name: Sarah Klein
-  picture: sarah_klein.jpg
-  function: Administration
   site: sonnhalde
-- name: Lukas Braun
-  picture: lukas_braun.jpg
-  function: Administration
-  site: hagmatt
+- name: Miriam Colagiacomo
+  picture: Miriam_Colagiacomo.jpg
+  function: Gruppenleiterin, Berufsbildberin und Expertin
+  group: papagei
+  site: sonnhalde
+- name: Judith Celik
+  picture: Judith_Celik.jpg
+  function: Gruppenleiterin und Berufsbildberin
+  group: balu
+  site: sonnhalde
+
+- break
+
+- name: Beata Klutzka
+  picture: Beata_Klutzka.jpg
+  function: Miterzieherin und Berufsbildberin
+  group: balu
+  site: sonnhalde
+
+- name: Anuschka Gilgen
+  picture: Anuschka_Gilgen.jpg
+  function: Miterzieherin und Berufsbildberin
+  group: papagei
+  site: sonnhalde
+
+- name: Vanessa Imhof
+  picture: Vanessa_Imhof.jpg
+  function: Miterzieherin und Berufsbildberin
+  group: regenbogen
+  site: sonnhalde
+
+- name: Noemi Bielser
+  picture: Noemi_Bielser.jpg
+  function: Fachfrau Betreuung Kind, 1. Lehrjahr
+  group: regenbogen
+  site: sonnhalde
+
+- name: Cheyenne Richener
+  picture: Cheyenne_Richener.jpg
+  function: Fachfrau Betreuung Kind, 2. Lehrjahr
+  group: regenbogen
+  site: sonnhalde
+
+- name: Elmedina Sinani
+  picture: Elmedina_Sinani.jpg
+  function: Fachfrau Betreuung Kind, 3. Lehrjahr
+  group: papagei
+  site: sonnhalde
+
+- name: Ladina Maurer
+  picture: Ladina_Maurer.jpg
+  function: Praktikantin
+  site: sonnhalde
+
+- name: Monika
+  picture: Monika.jpg
+  function: Köchin und Miterzieherin
+  site: sonnhalde
+
+- name: Marianne Müller
+  picture: Marianne_Mueller.jpg
+  function: Aushilfe
+  site: sonnhalde
+
+- sect: Verwaltung
+- name: Rosanna Grimbichler
+  picture: Rosanna_Grimbichler.jpg
+  function: Kaufmännische Angestellte
+  site: sonnhalde
+
+- name: Nihal Caylak
+  picture: Nihal_Caylak.jpg
+  function: Betreuungsassistenz
+  site: sonnhalde
