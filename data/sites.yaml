@@ -2,12 +2,12 @@ sonnhalde:
   Name: Sonnhalde
   Color: yellow
   Groups:
-    pinguin:
-      Icon: pinguin.svg
+    papagei:
+      Icon: papagei.svg
       Name: Papagai
       Color: blue
     balu:
-      Icon: baer.svg
+      Icon: balu.svg
       Name: Balu
       Color: blue
     regenbogen:
