@@ -4,11 +4,11 @@ sonnhalde:
   Groups:
     pinguin:
       Icon: pinguin.svg
-      Name: Pinguin
+      Name: Papagai
       Color: blue
-    baer:
+    balu:
       Icon: baer.svg
-      Name: Bär
+      Name: Balu
       Color: blue
     regenbogen:
       Icon: regenbogen.svg
