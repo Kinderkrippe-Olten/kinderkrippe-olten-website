@@ -9,7 +9,6 @@
 */}}
 
 {{ $picture := .picture }}
-{{ $name := .name }}
 {{ $site := .site }}
 
 {{ $imagePath := printf "images/team/%s/%s" $site $picture }}
@@ -17,16 +16,16 @@
 {{ $finalImage := "" }}
 
 {{ if $imageResource }}
-  {{ $finalImage = $imageResource.Fill "300x300 webp" }}
+  {{ $finalImage = $imageResource.Fill "400x400 webp q90" }}
 {{ else }}
-  {{ $nameHash := sha256 $name }}
-  {{ $seed := substr $nameHash 0 8 }}
+  {{ $pictureHash := sha256 $picture }}
+  {{ $seed := substr $pictureHash 0 8 }}
   {{ $placeholderUrl := printf "https://thispersondoesnotexist.com/?seed=%s" $seed }}
   {{ $placeholderResource := resources.GetRemote $placeholderUrl }}
   {{ if $placeholderResource }}
-    {{ $smallImage := $placeholderResource.Resize "100x100" }}
-    {{ $pixelatedImage := $smallImage.Resize "300x300" }}
-    {{ $finalImage = $pixelatedImage.Fill "300x300 webp" }}
+    {{ $smallImage := $placeholderResource.Resize "50x50" }}
+    {{ $pixelatedImage := $smallImage.Resize "400x400" }}
+    {{ $finalImage = $pixelatedImage.Fill "400x400 webp q90" }}
   {{ end }}
 {{ end }}
 

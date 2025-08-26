@@ -5,8 +5,9 @@
     uk-slider="finite: true; autoplay: true; autoplay-interval: 3000; autoplay-advances: true;">
     <ul class="uk-slider-items">
       {{ range $.Site.Data.team }}
-        {{ if and (reflect.IsMap .) .name }}
-          {{ $name := .name }}
+        {{ if and (reflect.IsMap .) .firstname }}
+          {{ $firstname := .firstname }}
+          {{ $lastname := .lastname }}
           {{ $function := .function }}
           {{ $site := .site }}
           {{ $group := .group }}
@@ -16,7 +17,7 @@
           {{ if not $sect }}
             <li>
               <a href="/team/" class="uk-link-reset">
-                {{ partial "render-team-card.html" (dict "name" $name "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
+                {{ partial "render-team-card.html" (dict "firstname" $firstname "lastname" $lastname "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
               </a>
             </li>
           {{ end }}

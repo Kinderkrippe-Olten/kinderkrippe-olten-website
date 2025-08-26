@@ -51,7 +51,7 @@ jobs:
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || needs.check-pr.outputs.has_pr != 'true'
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.147.7
+      HUGO_VERSION: 0.148.2
       DART_SASS_VERSION: 1.89.1
     steps:
       - name: Install Hugo

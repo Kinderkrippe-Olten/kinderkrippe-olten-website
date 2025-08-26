@@ -1,181 +1,263 @@
 - sect: Hagmatt
 
-- name: Antonella Zbinden
+- firstname: Antonella
+  lastname: Zbinden
   picture: Antonella_Zbinden.jpg
-  function: dipl. Krippenleitung,  eidg. dipl. Teamleitung in sozialen und sozialmedizin. Institutionen
+  function:
+    - dipl. Krippenleitung
+    - eidg. dipl. Teamleitung in sozialen und sozialmedizin. Institutionen
   site: hagmatt
 
-- name: Laura Altermatt
+- firstname: Laura
+  lastname: Altermatt
   picture: Laura_Altermatt.jpg
-  function: Stv. Krippenleiterin, Gruppenleiterin und Berufsbildberin
+  function:
+    - Stv. Krippenleiterin
+    - Gruppenleiterin
+    - Berufsbildberin
   group: fisch
   site: hagmatt
 
-- name: Rahel Felber
+- firstname: Rahel
+  lastname: Felber
   picture: Rahel_Felber.jpg
-  function: Gruppenleiterin und Berufsbildnerin
+  function:
+    - Gruppenleiterin
+    - Berufsbildnerin
   group: frosch
   site: hagmatt
 
 - break
 
-- name: Michelle Von Burg
+- firstname: Michelle
+  lastname: Von Burg
   picture: Michelle_Von_Burg.jpg
-  function: Miterzieherin
+  function:
+    - Miterzieherin
   group: frosch
   site: hagmatt
 
-- name: Andrea Zehntner
+- firstname: Andrea
+  lastname: Zehntner
   picture: Andrea_Zehntner.jpg
-  function: Miterzieherin
+  function:
+    - Miterzieherin
   group: fisch
   site: hagmatt
 
-- name: Fabienne Munzinger
+- firstname: Fabienne
+  lastname: Munzinger
   picture: Fabienne_Munzinger.jpg
-  function: Miterzieherin
+  function:
+    - Miterzieherin
   group: frosch
   site: hagmatt
 
-- name: Erika Huber
+- firstname: Erika
+  lastname: Huber
   picture: Erika_Huber.jpg
-  function: Miterzieherin
+  function:
+    - Miterzieherin
   group: fisch
   site: hagmatt
 
-- name: Jaime Schwarzenbach
+- firstname: Jaime
+  lastname: Schwarzenbach
   picture: Jaime_Schwarzenbach.jpg
-  function: Fachfrau Betreuung Kind, 3. Lehrjahr
+  function:
+    - Fachfrau Betreuung Kind
+    - 3. Lehrjahr
   group: fisch
   site: hagmatt
 
-- name: Merci Adele
+- firstname: Merci
+  lastname: Adele
   picture: Merci_Adele.jpg
-  function: Fachfrau Betreuung Kind, 1. Lehrjahr
+  function:
+    - Fachfrau Betreuung Kind
+    - 1. Lehrjahr
   group: fisch
   site: hagmatt
 
-- name: Caroline Mba
+- firstname: Caroline
+  lastname: Mba
   picture: Caroline_Mba.jpg
-  function: Fachfrau Betreuung Kind, 2. Lehrjahr
+  function:
+    - Fachfrau Betreuung Kind
+    - 2. Lehrjahr
   group: frosch
   site: hagmatt
 
-- name: Thifany Gandoli
+- firstname: Thifany
+  lastname: Gandoli
   picture: Thifany_Gandoli.jpg
-  function: Praktikantin
+  function:
+    - Praktikantin
   group: frosch
   site: hagmatt
 
-- name: Anna Di Bona
+- firstname: Anna
+  lastname: Di Bona
   picture: Anna_Di_Bona.jpg
-  function: Köchin und Aushilfe
+  function:
+    - Köchin
+    - Aushilfe
   site: hagmatt
 
-- name: Alex Constantini
+- firstname: Alex
+  lastname: Constantini
   picture: Alex_Constantini.jpg
-  function: Aushilfe
+  function:
+    - Aushilfe
   site: hagmatt
 
-- name: Christina Lirgg
+- firstname: Christina
+  lastname: Lirgg
   picture: Christina_Lirgg.jpg
-  function: Aushilfe
+  function:
+    - Aushilfe
   site: hagmatt
 
-- name: Marketa Vrpaca
+- firstname: Marketa
+  lastname: Vrpaca
   picture: Marketa_Vrpaca.jpg
-  function: Aushilfe
+  function:
+    - Aushilfe
   site: hagmatt
 
-- name: Siriphon Soland
+- firstname: Siriphon
+  lastname: Soland
   picture: Siriphon_Soland.jpg
-  function: Reinigungsfachfrau
+  function:
+    - Reinigungsfachfrau
   site: hagmatt
 
 
 - sect: sonnhalde
 
-- name: Anne Peter
+- firstname: Anne
+  lastname: Peter
   picture: Anne_Peter.jpg
-  function: dipl Kitaleitung, eidg. dipl. Teamleitung, Berufsbildnerin und Expertin
+  function:
+    - dipl Kitaleitung
+    - eidg. dipl. Teamleitung
+    - Berufsbildnerin
+    - Expertin
   site: sonnhalde
 
-- name: Sara Kamber
+- firstname: Sara
+  lastname: Kamber
   picture: Sara_Kamber.jpg
-  function: Erzieher
+  function:
+    - Erzieher
   group: regenbogen
   site: sonnhalde
-- name: Miriam Colagiacomo
+- firstname: Miriam
+  lastname: Colagiacomo
   picture: Miriam_Colagiacomo.jpg
-  function: Gruppenleiterin, Berufsbildberin und Expertin
+  function:
+    - Gruppenleiterin
+    - Berufsbildberin
+    - Expertin
   group: papagei
   site: sonnhalde
-- name: Judith Celik
+- firstname: Judith
+  lastname: Celik
   picture: Judith_Celik.jpg
-  function: Gruppenleiterin und Berufsbildberin
+  function:
+    - Gruppenleiterin
+    - Berufsbildberin
   group: balu
   site: sonnhalde
 
 - break
 
-- name: Beata Klutzka
+- firstname: Beata
+  lastname: Klutzka
   picture: Beata_Klutzka.jpg
-  function: Miterzieherin und Berufsbildberin
+  function:
+    - Miterzieherin
+    - Berufsbildberin
   group: balu
   site: sonnhalde
 
-- name: Anuschka Gilgen
+- firstname: Anuschka
+  lastname: Gilgen
   picture: Anuschka_Gilgen.jpg
-  function: Miterzieherin und Berufsbildberin
+  function:
+    - Miterzieherin
+    - Berufsbildberin
   group: papagei
   site: sonnhalde
 
-- name: Vanessa Imhof
+- firstname: Vanessa
+  lastname: Imhof
   picture: Vanessa_Imhof.jpg
-  function: Miterzieherin und Berufsbildberin
+  function:
+    - Miterzieherin
+    - Berufsbildberin
   group: regenbogen
   site: sonnhalde
 
-- name: Noemi Bielser
+- firstname: Noemi
+  lastname: Bielser
   picture: Noemi_Bielser.jpg
-  function: Fachfrau Betreuung Kind, 1. Lehrjahr
+  function:
+    - Fachfrau Betreuung Kind
+    - 1. Lehrjahr
   group: regenbogen
   site: sonnhalde
 
-- name: Cheyenne Richener
+- firstname: Cheyenne
+  lastname: Richener
   picture: Cheyenne_Richener.jpg
-  function: Fachfrau Betreuung Kind, 2. Lehrjahr
+  function:
+    - Fachfrau Betreuung Kind
+    - 2. Lehrjahr
   group: regenbogen
   site: sonnhalde
 
-- name: Elmedina Sinani
+- firstname: Elmedina
+  lastname: Sinani
   picture: Elmedina_Sinani.jpg
-  function: Fachfrau Betreuung Kind, 3. Lehrjahr
+  function:
+    - Fachfrau Betreuung Kind
+    - 3. Lehrjahr
   group: papagei
   site: sonnhalde
 
-- name: Ladina Maurer
+- firstname: Ladina
+  lastname: Maurer
   picture: Ladina_Maurer.jpg
-  function: Praktikantin
+  function:
+    - Praktikantin
   site: sonnhalde
 
-- name: Monika
+- firstname: Monika
   picture: Monika.jpg
-  function: Köchin und Miterzieherin
+  function:
+    - Köchin
+    - Miterzieherin
   site: sonnhalde
 
-- name: Marianne Müller
+- firstname: Marianne
+  lastname: Müller
   picture: Marianne_Mueller.jpg
-  function: Aushilfe
+  function:
+    - Aushilfe
   site: sonnhalde
 
 - sect: Verwaltung
-- name: Rosanna Grimbichler
+- firstname: Rosanna
+  lastname: Grimbichler
   picture: Rosanna_Grimbichler.jpg
-  function: Kaufmännische Angestellte
+  function:
+    - Kaufmännische Angestellte
   site: sonnhalde
 
-- name: Nihal Caylak
+- firstname: Nihal
+  lastname: Caylak
   picture: Nihal_Caylak.jpg
-  function: Betreuungsassistenz
+  function:
+    - Betreuungsassistenz
   site: sonnhalde
