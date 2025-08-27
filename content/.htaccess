@@ -1,4 +1,0 @@
-AuthType Basic
-AuthName "Geschützter Bereich - Bitte geben Sie ein Passwort ein!"
-AuthUserFile .htpasswd
-Require valid-user
