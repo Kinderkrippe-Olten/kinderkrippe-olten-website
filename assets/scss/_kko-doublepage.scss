@@ -25,93 +25,100 @@
   .kko-background-beige {
     background-color: $kko-base-beige;
   }
- 
-.kko-doublepage {
-  overflow: hidden;
 
-  .kko-half-page {
-    max-width: 600px;
-    &.kko-left-align {
-      margin-right: auto;
+  .kko-doublepage {
+    overflow: hidden;
+
+    .kko-half-page {
+
+
+      @media (min-width: $breakpoint-small) {
+        max-width: 600px;
+        container-type: inline-size;
+      }
+
+
+      &.kko-left-align {
+        margin-right: auto;
+      }
+
+      &.kko-right-align {
+        margin-left: auto;
+      }
     }
-    &.kko-right-align {
-      margin-left: auto;
+
+
+    .kko-border-stripes {
+      position: relative;
+
+
+      @media (min-width: $breakpoint-small) {
+        .kko-doublepage-left {
+          padding-left: $kko-border-stripe-width * 3;
+        }
+
+        .kko-doublepage-right {
+          padding-right: $kko-border-stripe-width * 3;
+        }
+
+        &::before,
+        &::after {
+          position: absolute;
+          top: 0;
+          content: "";
+          width: $kko-border-stripe-width * 3;
+          height: 100%;
+        }
+
+        &::before {
+          left: 0;
+          background-image: linear-gradient(to right,
+              $kko-base-blue 0rem, $kko-base-blue $kko-border-stripe-width ,
+              $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
+              $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3,
+            );
+        }
+
+        &::after {
+          right: 0;
+          background-image: linear-gradient(to left,
+              $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width,
+              $kko-base-red $kko-border-stripe-width , $kko-base-red $kko-border-stripe-width * 2,
+              $kko-base-green $kko-border-stripe-width *2, $kko-base-green $kko-border-stripe-width * 3, );
+        }
+      }
+
+      @media (max-width: $breakpoint-small) {
+        .kko-doublepage-left {
+          padding-top: 0;
+
+          // &::before {
+          //   content: "";
+          //   position: absolute;
+          //   top: 0;
+          //   left: 0;
+          //   width: 100%;
+          //   height: $kko-border-stripe-width * 3;
+          //   background-image: linear-gradient(to bottom,
+          //       $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width ,
+          //       $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
+          //       $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3,
+          //     );
+          // }
+
+        }
+      }
     }
+
   }
 
 
-  .kko-border-stripes {
-    position: relative;
 
-  
-    @media (min-width: $breakpoint-small) {
-      .kko-doublepage-left {
-        padding-left: $kko-border-stripe-width * 3;
-      }
+  .kko-block {
+    padding-top: 3rem;
+    padding-left: 4rem;
+    padding-right: 4rem;
+    padding-bottom: 3rem;
 
-      .kko-doublepage-right {
-        padding-right: $kko-border-stripe-width * 3;
-      }
 
-      &::before,
-      &::after {
-        position: absolute;
-        top: 0;
-        content: "";
-        width: $kko-border-stripe-width * 3;
-        height: 100%;
-      }
-
-      &::before {
-        left: 0;
-        background-image: linear-gradient(to right,
-            $kko-base-blue 0rem, $kko-base-blue $kko-border-stripe-width ,
-            $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
-            $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3,
-          );
-      }
-
-      &::after {
-        right: 0;
-        background-image: linear-gradient(to left,
-            $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width,
-            $kko-base-red $kko-border-stripe-width , $kko-base-red $kko-border-stripe-width * 2,
-            $kko-base-green $kko-border-stripe-width *2, $kko-base-green $kko-border-stripe-width * 3, );
-      }
-    }
-
-    @media (max-width: $breakpoint-small) {
-      .kko-doublepage-left {
-        padding-top: 0;
-
-        // &::before {
-        //   content: "";
-        //   position: absolute;
-        //   top: 0;
-        //   left: 0;
-        //   width: 100%;
-        //   height: $kko-border-stripe-width * 3;
-        //   background-image: linear-gradient(to bottom,
-        //       $kko-base-yellow 0rem, $kko-base-yellow $kko-border-stripe-width ,
-        //       $kko-base-red $kko-border-stripe-width, $kko-base-red $kko-border-stripe-width * 2,
-        //       $kko-base-green $kko-border-stripe-width * 2, $kko-base-green $kko-border-stripe-width * 3,
-        //     );
-        // }
-
-      }
-    }
   }
-
-}
-
-
-
-.kko-block {
-  padding-top: 3rem;
-  padding-left: 4rem;
-  padding-right: 4rem;
-  padding-bottom: 3rem;
-
-
-}
-
