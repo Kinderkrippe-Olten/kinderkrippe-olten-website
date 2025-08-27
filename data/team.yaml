@@ -31,7 +31,7 @@
   group: frosch
   site: hagmatt
 
-- break
+# - break
 
 - firstname: Michelle
   lastname: Von Burg
@@ -178,7 +178,7 @@
   group: balu
   site: sonnhalde
 
-- break
+# - break
 
 - firstname: Beata
   lastname: Klutzka
@@ -258,7 +258,15 @@
     - Aushilfe
   site: sonnhalde
 
-- sect: Verwaltung
+- firstname: Nihal
+  lastname: Caylak
+  picture: Nihal_Caylak.jpg
+  function:
+    - Betreuungsassistenz
+  site: sonnhalde
+
+# - sect: Verwaltung
+
 - firstname: Rosanna
   lastname: Grimbichler
   picture: Rosanna_Grimbichler.jpg
@@ -266,9 +274,3 @@
     - Kaufmännische Angestellte
   site: sonnhalde
 
-- firstname: Nihal
-  lastname: Caylak
-  picture: Nihal_Caylak.jpg
-  function:
-    - Betreuungsassistenz
-  site: sonnhalde

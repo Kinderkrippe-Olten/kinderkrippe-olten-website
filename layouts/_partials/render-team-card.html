@@ -1,6 +1,6 @@
 {{/*
   render-team-card.html
-  
+
   Renders a team member card
 
   Usage: {{ partial "render-team-card.html" (dict "firstname" $firstname "lastname" $lastname "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
@@ -30,7 +30,8 @@
   <div class="uk-card-body {{ if $cardColor }}kko-color-{{ $cardColor }}{{ end }}">
     <h3>{{ $firstname }}<br />{{ $lastname }}</h3>
     <div class="kko-team-meta">
-      {{ delimit $function ", " }}{{ if $siteName }}, {{ $siteName }}{{ end }}{{ if $groupName }}, {{ printf "Gruppe %s" $groupName }}{{ end }}
+      <!-- {{ delimit $function ", " }}{{ if $siteName }}, {{ $siteName }}{{ end }}{{ if $groupName }}, {{ printf "Gruppe %s" $groupName }}{{ end }} -->
+      {{ delimit $function ", " }}{{ if $groupName }}, {{ printf "Gruppe %s" $groupName }}{{ end }}
     </div>
   </div>
 </div>
