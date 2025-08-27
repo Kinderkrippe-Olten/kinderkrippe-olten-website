@@ -4,6 +4,8 @@
   lastname: Zbinden
   picture: Antonella_Zbinden.jpg
   function:
+    - Krippenleiterin
+  education:
     - dipl. Krippenleitung
     - eidg. dipl. Teamleitung in sozialen und sozialmedizin. Institutionen
   site: hagmatt
@@ -14,6 +16,7 @@
   function:
     - Stv. Krippenleiterin
     - Gruppenleiterin
+  education:
     - Berufsbildberin
   group: fisch
   site: hagmatt
@@ -23,7 +26,8 @@
   picture: Rahel_Felber.jpg
   function:
     - Gruppenleiterin
-    - Berufsbildnerin
+  education:
+  - Berufsbildnerin
   group: frosch
   site: hagmatt
 
@@ -139,6 +143,8 @@
   lastname: Peter
   picture: Anne_Peter.jpg
   function:
+    - Krippenleiterin
+  education:
     - dipl Kitaleitung
     - eidg. dipl. Teamleitung
     - Berufsbildnerin
@@ -149,7 +155,7 @@
   lastname: Kamber
   picture: Sara_Kamber.jpg
   function:
-    - Erzieher
+    - Erzieherin
   group: regenbogen
   site: sonnhalde
 - firstname: Miriam
@@ -157,7 +163,8 @@
   picture: Miriam_Colagiacomo.jpg
   function:
     - Gruppenleiterin
-    - Berufsbildberin
+  education:
+    - Berufsbildnerin
     - Expertin
   group: papagei
   site: sonnhalde
@@ -166,7 +173,8 @@
   picture: Judith_Celik.jpg
   function:
     - Gruppenleiterin
-    - Berufsbildberin
+  education:
+    - Berufsbildnerin
   group: balu
   site: sonnhalde
 
@@ -177,7 +185,8 @@
   picture: Beata_Klutzka.jpg
   function:
     - Miterzieherin
-    - Berufsbildberin
+  education:
+    - Berufsbildnerin
   group: balu
   site: sonnhalde
 
@@ -186,7 +195,8 @@
   picture: Anuschka_Gilgen.jpg
   function:
     - Miterzieherin
-    - Berufsbildberin
+  education:
+    - Berufsbildnerin
   group: papagei
   site: sonnhalde
 
@@ -195,7 +205,8 @@
   picture: Vanessa_Imhof.jpg
   function:
     - Miterzieherin
-    - Berufsbildberin
+  education:
+    - Berufsbildnerin
   group: regenbogen
   site: sonnhalde
 
