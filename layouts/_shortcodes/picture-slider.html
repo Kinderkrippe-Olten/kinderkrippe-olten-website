@@ -1,0 +1,35 @@
+{{/*
+  Shortcode to display a picture slider from a subdirectory within the page bundle.
+  Usage:
+    {{< picture-slider dir="subdirectory" height="400px" >}}
+  All images from the specified subdirectory will be included in the slider.
+*/}}
+
+{{ $dir := .Get "dir" }}
+{{ $height := .Get "height" | default "300px" }}
+{{ $pattern := printf "%s/*" $dir }}
+
+<div class="uk-container-expanded kko-picture-slider" style="{{ printf "height: %s;" $height | safeCSS }}">
+<div class="uk-container uk-height-1-1">
+  <div class="uk-position-relative uk-visible-toggle uk-light uk-height-1-1" tabindex="-1"
+    uk-slider="finite: false; autoplay: true; autoplay-interval: 3000; autoplay-advances: true;">
+    <ul class="uk-slider-items uk-height-1-1">
+      {{ range .Page.Resources.Match $pattern }}
+        {{ if eq .ResourceType "image" }}
+          {{ $webp := .Resize "800x webp" }}
+          <li class="uk-height-1-1">
+            <div class="kko-slider-pic uk-height-1-1 uk-flex uk-flex-center uk-flex-middle">
+              <img src="{{ $webp.RelPermalink }}" alt="{{ .Name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+            </div>
+          </li>
+        {{ end }}
+      {{ end }}
+    </ul>
+
+    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
+
+    <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
+  </div>
+</div>
+</div>

@@ -1,0 +1,2 @@
+{{ $siteFilter := .Get "siteFilter" }}
+{{ partial "render-team-grid.html" (dict "siteFilter" $siteFilter "Site" .Page.Site) }}
