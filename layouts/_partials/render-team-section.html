@@ -2,7 +2,7 @@
 <div class="uk-container">
 <h2>Unser Team</h2>
   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
-    uk-slider="finite: true; autoplay: true; autoplay-interval: 3000; autoplay-advances: true;">
+    uk-slider="finite: true; autoplay: true; autoplay-interval: 2000; autoplay-advances: true;">
     <ul class="uk-slider-items">
       {{ range $.Site.Data.team }}
         {{ if and (reflect.IsMap .) .firstname }}
@@ -13,7 +13,7 @@
           {{ $group := .group }}
           {{ $picture := .picture }}
           {{ $sect := .sect }}
-          
+
           {{ if not $sect }}
             <li>
               <a href="/team/" class="uk-link-reset">

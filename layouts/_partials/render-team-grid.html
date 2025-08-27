@@ -2,6 +2,8 @@
 <div class="uk-container">
   {{ $currentSection := "" }}
   {{ $gridOpen := false }}
+  {{ $siteFilter := "" }}
+  {{ if isset . "siteFilter" }}{{ $siteFilter = .siteFilter }}{{ end }}
   
   {{ range $.Site.Data.team }}
     {{ if reflect.IsMap . }}
@@ -11,7 +13,9 @@
           {{ $gridOpen = false }}
         {{ end }}
         {{ $currentSection = .sect }}
+        {{ if not $siteFilter }}
         <h2>{{ $currentSection }}</h2>
+        {{ end }}
         <div class="uk-grid uk-grid-medium uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-4@l" uk-grid>
         {{ $gridOpen = true }}
       {{ else if .firstname }}
@@ -22,9 +26,11 @@
         {{ $group := .group }}
         {{ $picture := .picture }}
         
+        {{ if or (not $siteFilter) (eq $site $siteFilter) }}
         <div>
           {{ partial "render-team-card.html" (dict "firstname" $firstname "lastname" $lastname "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
         </div>
+        {{ end }}
       {{ end }}
     {{ else if eq . "break" }}
       {{ if $gridOpen }}
