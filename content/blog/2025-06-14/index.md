@@ -28,4 +28,6 @@ Das Einweihungsfest war auch Anlass für eine spannende Neuigkeit: Das Bundesger
 
 Mit der Erweiterung der Kita Hagmatt setzen wir weiterhin auf Qualität und einen herzlichen Ort für unsere Kleinsten.
 
+{{< picture-slider dir="gallery" height="250px" >}}
+
 
