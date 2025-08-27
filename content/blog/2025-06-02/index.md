@@ -1,6 +1,6 @@
 ---
 Title: Einweihungsfest Hagmatt
-TeaserTitle: Einweihung
+TeaserTitle: Einweihung Spielgarten
 Date: 2025-05-09
 Site: hagmatt
 # Group: frosch
@@ -10,8 +10,8 @@ Site: hagmatt
 Ein sonniger Samstag, ein neues Kapitel für die Kita Hagmatt – mit Anbau, Spielplatz und vielen strahlenden Gesichtern. Das Einweihungsfest des neuen Anbaus und Spielgartens war ein voller Erfolg.
 
 
-{{< blog-pic src="pic2.png" >}}
-Die neue Hüpfburg
+{{< blog-pic src="tafel.jpeg" >}}
+Sponsoren
 {{< /blog-pic >}}
 
 Kürzlich feierte die Kinderkrippe Hagmatt bei strahlendem Sonnenschein die Einweihung ihres Erweiterungsbaus und des neuen Spielplatzes. Rund 100 Vereinsmitglieder, Familien und Gäste kamen zusammen, um diesen besonderen Moment zu feiern. Der Verein Kinderkrippe Olten, der neben der Hagmatt-Kita auch die Kinderkrippe Sonnhalde auf der anderen Stadtseite betreibt, blickt stolz auf 23 Jahre Betreuung zurück. Vereinspräsident Franco Giori erklärte die Hintergründe: «Nach der Erneuerung unseres Spielplatzes im letzten Jahr wollten wir das Gebäude erweitern und die Kapazität erhöhen.» Der Verein entschied sich für einen schlanken, aber qualitativ hochwertigen Ausbau.
