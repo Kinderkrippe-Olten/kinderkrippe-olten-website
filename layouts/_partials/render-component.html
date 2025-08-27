@@ -11,6 +11,7 @@ Expects context:
 
 {{/* Initialize an empty string for the rendered content */}}
 {{ $renderedContent := "" }}
+{{ $background := "" }}
 
 {{ if $param }}
   {{ $parts := split $param "/" }}
@@ -30,8 +31,11 @@ Expects context:
       {{ $renderedContent = partial (printf "minigames/%s.html" $id) . }}
     {{ else if eq $type "block" }}
       {{/* Use the dedicated render-block partial to render the block */}}
-      {{ $renderedContent = partial "render-block.html" (dict "id" $id "page" $page) }}
+      {{ $blockResult := partial "render-block.html" (dict "id" $id "page" $page) }}
+      {{ $renderedContent = $blockResult.html }}
+      {{ $background = $blockResult.background }}
     {{ else if eq $type "menu" }}
+      {{ $background = "blue" }}
       {{ $page.Store.Set "kko-header-class-extra" "kko-menu-page-inserted" }}
       {{ $renderedContent = partial "render-menu.html" (dict "Page" $page "Site" $Site "FullPage" true) }}
     {{ else }}
@@ -46,4 +50,4 @@ Expects context:
 {{ else }}
   {{/* No parameter provided, return empty string */}}
 {{ end }}
-{{ return $renderedContent }}
+{{ return (dict "html" $renderedContent "background" $background) }}

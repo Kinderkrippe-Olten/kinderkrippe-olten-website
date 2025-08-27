@@ -1,14 +1,45 @@
-.kko-doublepage {
-  overflow: hidden;
+  .kko-background-green {
+    background-color: $kko-base-green;
+  }
 
-  &.kko-background-yellow {
+  .kko-background-red {
+    background-color: $kko-base-red;
+  }
+
+  .kko-background-yellow {
     background-color: $kko-base-yellow;
   }
 
-  &.kko-background-beige {
+  .kko-background-ligh-blue {
+    background-color: $kko-blog-light-blue;
+  }
+
+  .kko-background-blue {
+    background-color: $kko-base-blue;
+  }
+
+  .kko-background-yellow {
+    background-color: $kko-base-yellow;
+  }
+
+  .kko-background-beige {
     background-color: $kko-base-beige;
   }
  
+.kko-doublepage {
+  overflow: hidden;
+
+  .kko-half-page {
+    max-width: 600px;
+    &.kko-left-align {
+      margin-right: auto;
+    }
+    &.kko-right-align {
+      margin-left: auto;
+    }
+  }
+
+
   .kko-border-stripes {
     position: relative;
 
@@ -81,20 +112,6 @@
   padding-right: 4rem;
   padding-bottom: 3rem;
 
-  &.kko-background-green {
-    background-color: $kko-base-green;
-  }
 
-  &.kko-background-red {
-    background-color: $kko-base-red;
-  }
-
-  &.kko-background-yellow {
-    background-color: $kko-base-yellow;
-  }
-
-  &.kko-background-blue {
-    background-color: $kko-blog-light-blue;
-  }
 }
 

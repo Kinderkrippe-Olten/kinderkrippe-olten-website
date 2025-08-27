@@ -14,25 +14,44 @@
 {{ end }}
 
 {{/* Render left content using the shared partial */}}
-{{ $leftContent := partial "render-component.html" (dict "param" $leftParam "Page" .Page "Site" .Site) }}
+{{ $leftResult := partial "render-component.html" (dict "param" $leftParam "Page" .Page "Site" .Site) }}
+{{ $leftContent := $leftResult.html }}
+{{ $leftBackground := $leftResult.background }}
 
 {{/* Render right content using the shared partial */}}
-{{ $rightContent := partial "render-component.html" (dict "param" $rightParam "Page" .Page "Site" .Site) }}
+{{ $rightResult := partial "render-component.html" (dict "param" $rightParam "Page" .Page "Site" .Site) }}
+{{ $rightContent := $rightResult.html }}
+{{ $rightBackground := $rightResult.background }}
 
 {{/* set page background */}}
 {{ $colorClass := printf "kko-background-%s" $background }}
 
 {{ $borderClass := printf "kko-border-%s" $border }}
 
+{{/* Determine background classes for each side */}}
+{{ $leftColorClass := "" }}
+{{ if $leftBackground }}
+  {{ $leftColorClass = printf "kko-background-%s" $leftBackground }}
+{{ end }}
+
+{{ $rightColorClass := "" }}
+{{ if $rightBackground }}
+  {{ $rightColorClass = printf "kko-background-%s" $rightBackground }}
+{{ end }}
+
 {{/* Render the double page layout */}}
 <div class="uk-container-expanded kko-doublepage {{ $colorClass }}">
 
     <div class="uk-grid-match uk-grid-collapse uk-child-width-1-2@s {{ $borderClass }}" uk-grid>
-      <div class="kko-doublepage-left uk-overflow-auto">
+      <div class="kko-doublepage-left uk-overflow-auto {{ $leftColorClass }}">
+        <div class="kko-half-page kko-right-align">
         {{ $leftContent | safeHTML }}
+        </div>
       </div>
-      <div id="next-page" class="kko-doublepage-right uk-overflow-auto">
-        {{ $rightContent | safeHTML }}
+      <div id="next-page" class="kko-doublepage-right uk-overflow-auto {{ $rightColorClass }}">
+        <div class="kko-half-page kko-left-align">
+          {{ $rightContent | safeHTML }}
+        </div>
       </div>
     </div>
 </div>
