@@ -1,18 +1,19 @@
 {{/*
   Shortcode to display a blog picture with a caption.
-  Usage: 
-    {{< blog-pic src="path/to/image.jpg" alt="Image description" >}}
+  Usage:
+    {{< blog-pic src="path/to/image.jpg" alt="Image description" float="left|right" >}}
     Caption
     {{ /blog-pic >}}
   The image should be in the same directory as the page's index.md file.
 */}}
 
 {{ $src := .Get "src" }}
+{{ $float := .Get "float" }}
 {{ $alt := .Get "alt" | default (.Inner | plainify) }}
 
 {{ with .Page.Resources.GetMatch $src }}
   {{ $webp := .Resize "800x webp" }}
-  <figure class="kko-blog-pic">
+  <figure class="kko-blog-pic{{ if $float }} kko-float-{{ $float }}{{ end }}">
     <img src="{{ $webp.RelPermalink }}" alt="{{ $alt }}" />
     <figcaption>{{ $.Inner }}</figcaption>
   </figure>
