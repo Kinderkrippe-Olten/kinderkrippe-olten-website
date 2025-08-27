@@ -1,6 +1,6 @@
 ---
 Title: Kindergeschichten
-background: red
+background: beige
 ---
 # Kindergeschichten
 

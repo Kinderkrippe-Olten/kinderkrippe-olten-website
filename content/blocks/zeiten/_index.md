@@ -1,5 +1,6 @@
 ---
 Title: Öffnungszeiten
+background: beige
 ---
 # Öffnungszeiten
 
