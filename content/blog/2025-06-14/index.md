@@ -1,7 +1,7 @@
 ---
 Title: Einweihungsfest Hagmatt
 TeaserTitle: Einweihung Spielgarten
-Date: 2025-05-09
+Date: 2025-06-14
 Site: hagmatt
 # Group: frosch
 ---
