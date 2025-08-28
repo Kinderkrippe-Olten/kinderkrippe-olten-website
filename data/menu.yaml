@@ -11,10 +11,12 @@ mainlinks:
   - title: "Aktuelles"
     href: /aktuell
     color: yellow
-  
+
 sublinks:
+  - title: "Home"
+    href: /
   - title: "Über uns"
-    href: /ueber-uns
+    href: /verein
   - title: "Angebot"
     href: /angebot
   - title: "Team"
@@ -23,5 +25,3 @@ sublinks:
     href: /eltern
   - title: "Kontakt"
     href: /kontakt
-
-

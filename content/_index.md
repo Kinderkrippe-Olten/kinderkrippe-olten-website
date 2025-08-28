@@ -3,7 +3,7 @@ Title: Kinderkrippe Olten
 ---
 {{< doublepage left=minigame/3body right=menu background=yellow border=stripes >}}
 
-{{< doublepage left=block/aufgehoben right=block/aufgeschoben background=beige border=stripes >}}
+{{< doublepage left=block/willkommen right=block/kitas background=beige border=stripes >}}
 
 {{< doublepage left=block/zeiten right=block/3pics background=red border=stripes >}}
 
