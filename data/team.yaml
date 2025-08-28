@@ -1,4 +1,4 @@
-- sect: Hagmatt
+- sect: Kita Hagmatt
 
 - firstname: Antonella
   lastname: Zbinden
@@ -137,7 +137,7 @@
   site: hagmatt
 
 
-- sect: Sonnhalde
+- sect: KitaSonnhalde
 
 - firstname: Anne
   lastname: Peter
@@ -233,7 +233,6 @@
   picture: Elmedina_Sinani.jpg
   function:
     - Fachfrau Betreuung Kind
-    - 3. Lehrjahr
   group: papagei
   site: sonnhalde
 
@@ -258,14 +257,19 @@
     - Aushilfe
   site: sonnhalde
 
+- firstname: Karin
+  lastname: Frech
+  picture: Karin_Frech.jpg
+  function:
+    - Aushilfe
+  site: sonnhalde
+
 - firstname: Nihal
   lastname: Caylak
   picture: Nihal_Caylak.jpg
   function:
     - Betreuungsassistenz
   site: sonnhalde
-
-# - sect: Verwaltung
 
 - firstname: Rosanna
   lastname: Grimbichler
@@ -274,3 +278,32 @@
     - Kaufmännische Angestellte
   site: sonnhalde
 
+- sect: Vorstand Verein Kinderkrippe Olten
+
+- firstname: Franco
+  lastname: Giori
+  picture: Franco_Giori.jpg
+  function:
+    - Präsident
+  site: verein
+
+- firstname: Fritz
+  lastname: Zaucker
+  picture: Fritz_Zaucker.jpg
+  function:
+    - Webmaster
+  site: verein
+
+- firstname: Matthias
+  lastname: Otto
+  picture: Matthias_Otto_Zaucker.jpg
+  function:
+    - Finanzen
+  site: verein
+
+- firstname: Melanie
+  lastname: Von Arx
+  picture: Melanie_Von_Arx.jpg
+  function:
+    - Elternvertretung
+  site: verein

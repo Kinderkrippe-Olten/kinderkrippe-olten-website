@@ -5,7 +5,11 @@
     <div class="kko-team-content kko-single-page-content">
         <h1 class="kko-team-title kko-single-page-title">{{ .Title }}</h1>
         {{ .Content }}
+        {{ if .Params.Filter }}
+        {{ partial "render-team-grid.html" (dict "siteFilter" .Params.Filter "Site" .Site) }}
+        {{ else }}
         {{ partial "render-team-grid.html" . }}
+        {{ end }}
     </div>
 </div>
 </div>

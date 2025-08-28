@@ -1,0 +1,3 @@
+{{/* layouts/_shortcodes/team-section.html */}}
+{{ $siteFilter := .Get "siteFilter" }}
+{{ partial "render-team-section.html" (dict "siteFilter" $siteFilter "Site" .Page.Site) }}

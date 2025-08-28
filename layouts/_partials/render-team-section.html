@@ -1,5 +1,7 @@
 <div class="uk-container-expanded kko-team">
 <div class="uk-container">
+{{ $siteFilter := "" }}
+{{ if isset . "siteFilter" }}{{ $siteFilter = .siteFilter }}{{ end }}
 <h2>Unser Team</h2>
   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
     uk-slider="finite: true; autoplay: true; autoplay-interval: 2000; autoplay-advances: true;">
@@ -14,9 +16,11 @@
           {{ $picture := .picture }}
           {{ $sect := .sect }}
 
-          {{ if not $sect }}
+          {{ if and (not $sect) (or (not $siteFilter) (eq $site $siteFilter)) }}
             <li>
-              <a href="/team/" class="uk-link-reset">
+              {{ $teamLink := "/team/" }}
+              {{ if $siteFilter }}{{ $teamLink = printf "/team/%s/" $siteFilter }}{{ end }}
+              <a href="{{ $teamLink }}" class="uk-link-reset">
                 {{ partial "render-team-card.html" (dict "firstname" $firstname "lastname" $lastname "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
               </a>
             </li>
