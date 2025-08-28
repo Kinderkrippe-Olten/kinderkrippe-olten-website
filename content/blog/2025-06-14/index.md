@@ -10,7 +10,7 @@ Site: hagmatt
 Ein sonniger Samstag, ein neues Kapitel für die Kita Hagmatt – mit Anbau, Spielplatz und vielen strahlenden Gesichtern. Das Einweihungsfest des neuen Anbaus und Spielgartens war ein voller Erfolg.
 
 
-{{< blog-pic src="tafel.jpeg" float="left" >}}
+{{< blog-pic src="tafel.jpeg" float="right" >}}
 Sponsoren
 {{< /blog-pic >}}
 

@@ -4,7 +4,7 @@
 {{ if isset . "siteFilter" }}{{ $siteFilter = .siteFilter }}{{ end }}
 <h2>Unser Team</h2>
   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
-    uk-slider="finite: true; autoplay: true; autoplay-interval: 2000; autoplay-advances: true;">
+    uk-slider="finite: false; autoplay: true; autoplay-interval: 2000;">
     <ul class="uk-slider-items">
       {{ range $.Site.Data.team }}
         {{ if and (reflect.IsMap .) .firstname }}
@@ -28,6 +28,7 @@
         {{ end }}
       {{ end }}
     </ul>
+        <ul class="uk-hidden uk-visible@s uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
   </div>
 </div>
 </div>

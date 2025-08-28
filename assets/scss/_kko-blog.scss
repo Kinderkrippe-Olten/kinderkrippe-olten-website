@@ -19,7 +19,7 @@
         .uk-card-media-top {
             flex: 3;
             overflow: hidden;
-
+            aspect-ratio: 1/1;
             img {
                 object-fit: cover;
                 height: 100%;

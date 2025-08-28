@@ -1,7 +1,8 @@
 <div class="uk-container-expanded kko-blog">
 <div class="uk-container">
 <h2>Blog</h2>
-  <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slider>
+  <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" 
+    uk-slider="finite: false; autoplay: true; autoplay-interval: 2000;">
     <ul class="uk-slider-items">
       {{ range where .Page.Site.RegularPages "Section" "blog" }}
         {{ $groupInfo := partial "get-group-data.html" . }}
@@ -43,9 +44,7 @@
       {{ end }}
     </ul>
 
-    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
-    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
-
+   
     <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
   </div>
 </div>
