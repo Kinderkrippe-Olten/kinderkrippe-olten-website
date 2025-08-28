@@ -15,7 +15,8 @@
           {{ warnf "Missing 'date' parameter for blog post '%s' in %s" .Title .File.Path }}
         {{ end }}
         <li>
-          <div class="uk-card uk-card-default uk-card-hover">
+        <a href="{{ .RelPermalink }}" class="uk-link-reset">
+          <div class="uk-card uk-card-default uk-card-hover {{ if $groupInfo.groupColor }}kko-color-{{ $groupInfo.groupColor }}{{ end }}">
             {{ with .Resources.GetMatch "teaser.*" }}
               {{ $webp := .Fill "400x300 webp" }}
               <div class="uk-card-media-top">
@@ -24,9 +25,9 @@
             {{ else }}
               {{ warnf "No teaser image found for blog post '%s'. Add a teaser.* file to %s" .Title .File.Dir }}
             {{ end }}
-            <div class="uk-card-body {{ if $groupInfo.groupColor }}kko-color-{{ $groupInfo.groupColor }}{{ end }}">
+            <div class="uk-card-body ">
               <h3 class="uk-card-title">
-                <a href="{{ .RelPermalink }}">{{ $title }}</a>
+                {{ $title }}
               </h3>
               <div class="kko-blog-footer">
                 <div class="kko-blog-icon">
@@ -37,7 +38,7 @@
                 {{ .Date.Format "02.01.2006" }}
                 </div>
             </div>
-          </div>
+          </div></a>
         </li>
       {{ end }}
     </ul>

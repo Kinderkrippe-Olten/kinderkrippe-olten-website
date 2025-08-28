@@ -30,8 +30,12 @@
   <div class="uk-card-body {{ if $cardColor }}kko-color-{{ $cardColor }}{{ end }}">
     <h3>{{ $firstname }}<br />{{ $lastname }}</h3>
     <div class="kko-team-meta">
-      <!-- {{ delimit $function ", " }}{{ if $siteName }}, {{ $siteName }}{{ end }}{{ if $groupName }}, {{ printf "Gruppe %s" $groupName }}{{ end }} -->
-      {{ delimit $function ", " }}{{ if $groupName }}, {{ printf "Gruppe %s" $groupName }}{{ end }}
+      {{ range $function }}
+        <div class="kko-team-function">{{ . }}</div>
+      {{ end }}
+      {{ if $groupName }}
+        <div class="kko-team-group">{{ printf "Gruppe %s" $groupName }}</div>
+      {{ end }}
     </div>
   </div>
 </div>

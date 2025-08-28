@@ -1,28 +1,59 @@
 .kko-blog {
     margin-top: 3rem;
     margin-bottom: 4rem;
+
     .uk-slider-items {
         gap: 1rem;
-    }
-    .uk-card {
-        width: 80vw;
+        width: 60vw;
+
         @media (min-width: $breakpoint-small) {
-            width: 20rem;
+            width: 200px;
         }
     }
-    h3 a {
-        color: $kko-base-blue;
-        text-decoration: none;
-    }
-    .kko-blog-footer {
+
+    .uk-card {
+        aspect-ratio: 3 / 5;
         display: flex;
-        font-size: 0.8rem;
-        flex-direction: row;
-        .kko-blog-icon {
-            margin-right: 0.5rem;
-            width: 2rem;
-            border-radius: 50%;
-            background: $kko-base-beige;
+        flex-direction: column;
+
+        .uk-card-media-top {
+            flex: 3;
+            overflow: hidden;
+
+            img {
+                object-fit: cover;
+                height: 100%;
+                width: 100%;
+            }
+        }
+
+        .uk-card-body {
+            flex: 2;
+            overflow: hidden;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            h3 {
+                font-size: 1.5rem;
+                line-height: 1.2;
+                color: $kko-base-blue;
+                text-decoration: none;
+            }
+
+            .kko-blog-footer {
+                display: flex;
+                font-size: 0.8rem;
+                flex-direction: row;
+
+                .kko-blog-icon {
+                    margin-right: 0.5rem;
+                    width: 2rem;
+                    border-radius: 50%;
+                    background: $kko-base-beige;
+                }
+            }
+
         }
     }
 }
