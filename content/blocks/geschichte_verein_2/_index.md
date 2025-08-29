@@ -22,4 +22,7 @@ Sonnhalde von der Stadt Olten.  Seit dem 30.  April 2016 ist der Verein
 Besitzer des Hauses und konnte einige dringend anstehende bauliche
 Erneuerungen vornehmen.
 
-**2025** Erweiterung Kita Hagmatt
+**2024** wurde der Erweiterungsbau der Kita Hagmatt im ersten Stock umgesetzt.
+Neben zusätzlichen Krippenplätzen konnte damit ein Personalaufenthaltsraum
+und ein gedeckter Aussenraum geschaffen werden.
+
