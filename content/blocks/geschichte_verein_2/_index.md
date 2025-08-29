@@ -2,8 +2,7 @@
 Title: Geschichte Verein Kinderkrippe Olten
 ---
 
-# 
-
+#
 
 **2002** wurde das Angebot mit einer zweiten Krippe an der Hagmattstrasse 27 erweitert.  Das in unmittelbarer Nähe zum Stadtzentrum, zwischen Aare und
 Stadtpark liegende Haus mit einer grosszügigen Spielfläche und eigenem

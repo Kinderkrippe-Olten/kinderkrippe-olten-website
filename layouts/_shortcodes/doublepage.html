@@ -43,12 +43,14 @@
 <div class="uk-container-expanded kko-doublepage {{ $colorClass }}">
 
     <div class="uk-grid-match uk-grid-collapse uk-child-width-1-2@s {{ $borderClass }}" uk-grid>
-      <div class="kko-doublepage-left uk-overflow-auto {{ $leftColorClass }}">
+      {{/* Removed ukl-overflow-auto, Fritz */}}
+      <div class="kko-doublepage-left {{ $leftColorClass }}">
         <div class="kko-half-page kko-right-align">
         {{ $leftContent | safeHTML }}
         </div>
       </div>
-      <div id="next-page" class="kko-doublepage-right uk-overflow-auto {{ $rightColorClass }}">
+      {{/* Removed ukl-overflow-auto, Fritz */}}
+      <div id="next-page" class="kko-doublepage-right {{ $rightColorClass }}">
         <div class="kko-half-page kko-left-align">
           {{ $rightContent | safeHTML }}
         </div>

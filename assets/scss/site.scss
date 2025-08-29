@@ -104,3 +104,30 @@ $modal-container-width: 778px !default;
     display: none;
   }
 }
+
+// Handle empty h1 headers in blocks
+.kko-block h1:empty {
+  // Hide completely on small screens
+  @media (max-width: $breakpoint-small - 1px) {
+    display: none;
+  }
+  
+  // Show as invisible content on wide screens
+  @media (min-width: $breakpoint-small) {
+    &::before {
+      content: "\00a0"; // non-breaking space for invisible content
+      visibility: hidden;
+    }
+  }
+}
+
+// Target blocks that start with empty h1 and pull them up with higher z-index
+@media (max-width: $breakpoint-small - 1px) {
+  .kko-block:has(h1:empty:first-child) {
+    margin-top: -4rem;
+    position: relative;
+    padding-top: 0;
+    z-index: 10;
+    background: inherit; // Ensure background covers any overlap
+  }
+}
