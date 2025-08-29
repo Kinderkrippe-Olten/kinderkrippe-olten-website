@@ -9,7 +9,7 @@ mainlinks:
     href: /anmeldung
     color: blue
   - title: "Aktuelles"
-    href: /aktuell
+    href: /#blog
     color: yellow
 
 sublinks:

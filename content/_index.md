@@ -9,6 +9,8 @@ Title: Kinderkrippe Olten
 
 <!-- {{< doublepage left=block/3pics right=block/blog background=beige border=stripes >}} -->
 
+<a name="blog" style="text-decoration: unset">
 {{< blog >}}
+</a>
 
 {{< team >}}
