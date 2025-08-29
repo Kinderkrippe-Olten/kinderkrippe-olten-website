@@ -1,8 +1,8 @@
 <div class="uk-container-expanded kko-blog">
 <div class="uk-container">
 <h2>Blog</h2>
-  <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" 
-    uk-slider="finite: false; autoplay: true; autoplay-interval: 2000;">
+  <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
+    uk-slider="finite: false; autoplay: true; autoplay-interval: 7000;">
     <ul class="uk-slider-items">
       {{ range where .Page.Site.RegularPages "Section" "blog" }}
         {{ $groupInfo := partial "get-group-data.html" . }}
@@ -11,7 +11,7 @@
         {{ $teaser := .Resources.GetMatch "teaser.*" }}
         {{ $teaserImage := "" }}
         {{ if $teaser }}{{ $teaserImage = $teaser.Fill "400x300 webp" }}{{ end }}
-        
+
         {{ if not .Date }}
           {{ warnf "Missing 'date' parameter for blog post '%s' in %s" .Title .File.Path }}
         {{ end }}
@@ -44,7 +44,7 @@
       {{ end }}
     </ul>
 
-   
+
     <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
   </div>
 </div>
