@@ -287,12 +287,7 @@
     - Präsident
   site: verein
 
-- firstname: Fritz
-  lastname: Zaucker
-  picture: Fritz_Zaucker.jpg
-  function:
-    - Webmaster
-  site: verein
+
 
 - firstname: Matthias
   lastname: Otto
@@ -301,9 +296,73 @@
     - Finanzen
   site: verein
 
+- firstname: Christian
+  lastname: Beyer
+  picture: Christian_Beyer.jpg
+  function:
+    - Elternvertretung Sonnhalde
+    - Etatführer
+  site: verein
+
 - firstname: Melanie
   lastname: Von Arx
   picture: Melanie_Von_Arx.jpg
   function:
     - Elternvertretung
+  site: verein
+
+- firstname: Barbara
+  lastname: Müller
+  picture: Barbara_Müller.jpg
+  function:
+    - Personalwesen
+  site: verein
+
+- firstname: Simone
+  lastname: Riner
+  picture: Simone_Riner.jpg
+  function:
+    - Sicherheitsbeauftragte
+  site: verein
+
+- firstname: Ellen
+  lastname: Schmid
+  picture: Ellen_Schmid.jpg
+  function:
+    - Aktuarin
+  site: verein
+
+- firstname: Gabriela
+  lastname: Wanner
+  picture: Gabriela_Wanner.jpg
+  function:
+    - Sicherheitsbeauftragte
+  site: verein
+
+- firstname: Ellen
+  lastname: Schmid
+  picture: Ellen_Schmid.jpg
+  function:
+    - Aktuarin
+  site: verein
+
+- firstname: Fritz
+  lastname: Zaucker
+  picture: Fritz_Zaucker.jpg
+  function:
+    - Webmaster
+  site: verein
+
+- firstname: Anne
+  lastname: Peter
+  picture: Anne_Peter.jpg
+  function:
+    - Beisitzerin
+  site: verein
+
+- firstname: Antonella
+  lastname: Zbinden
+  picture: Antonella_Zbinden.jpg
+  function:
+    - Beisitzerin
   site: verein

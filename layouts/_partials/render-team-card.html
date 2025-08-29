@@ -16,6 +16,7 @@
 {{ $teamContext := dict "Params" (dict "site" $site "group" $group) "Site" .Site }}
 {{ $groupInfo := partial "get-group-data.html" $teamContext }}
 {{ $cardColor := lower $groupInfo.groupColor }}
+{{ $cardColor := lower $groupInfo.siteColor }}
 {{ $siteName := $groupInfo.siteName }}
 {{ $groupName := $groupInfo.groupName }}
 
