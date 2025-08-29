@@ -2,12 +2,12 @@
 {{ $arrow := partial "get-svg.html" "images/arrow.svg" }} 
 {{/* Render the menu with the color logo and main links */}}
 <div class="kko-menu">
-  <div class="kko-color-logo">
-<a href="/">
-    {{- partial "get-svg.html" "images/kko-color-head.svg" -}}
-  </div>
-</a>    
-  <div class="kko-name">Kinderkrippe<br />Olten</div>
+  <a href="/" style="color: inherit; text-decoration: inherit;">
+    <div class="kko-color-logo">
+      {{- partial "get-svg.html" "images/kko-color-head.svg" -}}
+    </div>
+    <div class="kko-name">Kinderkrippe<br />Olten</div>
+  </a>    
   <div class="kko-main-menu">
     {{ range $menu.mainlinks }}
     <a href="{{ .href }}"
