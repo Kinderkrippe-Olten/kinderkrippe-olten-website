@@ -1,5 +1,5 @@
 
-# Tagesablauf Hagmatt
+# Tagesablauf
 
 | | |
 |------------|-----------|

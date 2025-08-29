@@ -1,12 +1,15 @@
 ---
-Title: Kinderkrippe Sonnhalde
+Title: Kita Sonnhalde
 ---
 
-# Kinderkrippe Sonnhalde
+# Kita Sonnhalde
 
-Die Kinderkrippe liegt bahnhofsnah an der [Sonnhaldenstrasse 44](https://maps.app.goo.gl/Uvtr9uzRCQGKUJC6A).
+Die Kinderkrippe liegt bahnhofsnah an der [Sonnhaldenstrasse
+44](https://maps.app.goo.gl/Uvtr9uzRCQGKUJC6A).
 
-Die Krippe bietet 28 Kindern in drei altersgemischten Gruppen (Balu, Papagei, Regenbogen) einen strukturierten, anregenden und abwechslungsreichen Tagesablauf.
+Die Krippe bietet 28 Kindern in drei altersgemischten Gruppen (Balu,
+Papagei, Regenbogen) einen strukturierten, anregenden und
+abwechslungsreichen Tagesablauf.
 
 - Spiele
 - Aussenaktivitäten im eigenen Garten
