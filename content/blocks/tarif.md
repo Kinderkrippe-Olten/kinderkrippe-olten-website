@@ -24,7 +24,7 @@ der Geschwisterrabatt bereits berücksichtigt.
 
 Einschreibegebühren und weitere Details siehe [Tarifblatt](docs/KK-Olten-Tarifblatt-240918.pdf).
 
-# Subventionierung
+## Subventionierung
 
 Die Einwohnergemeinde Olten unterstützt die familienergänzende Betreuung von
 Kindern finanziell durch [Betreuungsgutscheine](http://www.tagesstrukturen.olten.ch/).
