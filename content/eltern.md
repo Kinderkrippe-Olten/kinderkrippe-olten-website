@@ -2,9 +2,8 @@
 Title: Eltern
 ---
 
-# Eltern
+{{< title >}}Eltern Infos{{< /title >}}
 
-Eine Seite für Eltern ...
 
 <!-- {{< doublepage left=block/intro_verein right=block/3pics background=red border=stripes >}}
 -->
