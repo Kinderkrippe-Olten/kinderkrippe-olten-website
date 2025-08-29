@@ -2,7 +2,7 @@
 Title: Angebot
 ---
 
-# Unser Angebot
+<!-- # Unser Angebot -->
 
 {{< doublepage left=block/kitaplaetze right=block/tarif background=beige border=stripes >}}
 
