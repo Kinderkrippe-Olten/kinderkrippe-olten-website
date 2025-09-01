@@ -1,10 +1,10 @@
 {{/*
   get-group-data.html
-  
+
   Returns group data for a given page context
-  
+
   Usage: {{ $groupData := partial "get-group-data.html" . }}
-  
+
   Returns a dict with:
   - siteName: Name of the site
   - groupName: Name of the group (if any)
@@ -83,16 +83,15 @@
     {{ $groupColor = $groupData.Color }}
     {{ $groupIcon = $groupData.Icon }}
     {{ $groupName = $groupData.Name }}
-  {{ end }}        
+  {{ end }}
 {{ end }}
 
 {{/* Return the data as a dict */}}
-{{ return (dict 
-  "siteName" $siteName 
-  "groupName" $groupName 
-  "groupColor" $groupColor 
+{{ return (dict
+  "siteName" $siteName
+  "groupName" $groupName
+  "groupColor" $groupColor
   "groupIcon" $groupIcon
   "siteData" $siteData
   "groupData" $groupData
-  "siteColor" $siteData.Color
 ) }}
