@@ -12,8 +12,8 @@
 <div class="uk-container-expanded kko-picture-slider" style="{{ printf "height: %s;" $height | safeCSS }}">
 <div class="uk-container uk-height-1-1">
   <div class="uk-position-relative uk-visible-toggle uk-light uk-height-1-1" tabindex="-1"
-    uk-slider="finite: false; autoplay: true; autoplay-interval: 3000; autoplay-advances: true;">
-    <ul class="uk-slider-items uk-height-1-1">
+    uk-slider="center: true; finite: false; autoplay: true; autoplay-interval: 3000; autoplay-advances: true;">
+    <ul class="uk-slider-items uk-height-1-1 uk-grid">
       {{ range .Page.Resources.Match $pattern }}
         {{ if eq .ResourceType "image" }}
           {{ $webp := .Resize "800x webp" }}
