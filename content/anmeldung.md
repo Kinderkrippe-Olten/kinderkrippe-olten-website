@@ -1,8 +1,8 @@
 ---
-Title: Kontakt
+Title: Anmeldung
 ---
 
-{{< title >}}Kontakt Infos{{< /title >}}
+{{< title >}}Anmeldung Infos{{< /title >}}
 
 
 <!-- {{< doublepage right=block/5pics left=block/tagesablauf_sonnhalde background=yellow border=stripes >}} -->
