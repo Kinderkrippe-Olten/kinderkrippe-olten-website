@@ -13,4 +13,4 @@ Title: Kinderkrippe Olten
 {{< blog >}}
 </a>
 
-{{< team >}}
+{{< team-section title="Unser Team" >}}

@@ -1,10 +1,10 @@
 {{/*
   get-team-image.html
-  
+
   Returns a processed image for a team member
-  
+
   Usage: {{ $image := partial "get-team-image.html" (dict "picture" $picture "name" $name) }}
-  
+
   Returns an image resource or empty string if none available
 */}}
 
@@ -16,7 +16,7 @@
 {{ $finalImage := "" }}
 
 {{ if $imageResource }}
-  {{ $finalImage = $imageResource.Fill "400x400 webp q90" }}
+  {{ $finalImage = $imageResource.Fill "400x400 webp q90 top" }}
 {{ else }}
   {{ $pictureHash := sha256 $picture }}
   {{ $seed := substr $pictureHash 0 8 }}

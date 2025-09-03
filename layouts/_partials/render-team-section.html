@@ -1,8 +1,10 @@
 <div class="uk-container-expanded kko-team">
 <div class="uk-container">
 {{ $siteFilter := "" }}
+{{ $title := "Unser Team" }}
 {{ if isset . "siteFilter" }}{{ $siteFilter = .siteFilter }}{{ end }}
-<h2>Unser Team</h2>
+{{ if isset . "title" }}{{ $title = .title }}{{ end }}
+<h2>{{ $title }} </h2>
   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
     uk-slider="finite: false; autoplay: true; autoplay-interval: 2000;">
     <ul class="uk-slider-items">

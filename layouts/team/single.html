@@ -6,7 +6,7 @@
         <h1 class="kko-team-title kko-single-page-title">{{ .Title }}</h1>
         {{ .Content }}
         {{ if .Params.Filter }}
-        {{ partial "render-team-grid.html" (dict "siteFilter" .Params.Filter "Site" .Site) }}
+        {{ partial "render-team-grid.html" (dict "siteFilter" .Params.Filter "Site" .Site "Titel" .Title ) }}
         {{ else }}
         {{ partial "render-team-grid.html" . }}
         {{ end }}

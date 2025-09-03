@@ -19,6 +19,8 @@ sublinks:
     href: /verein
   - title: "Angebot"
     href: /angebot
+  - title: "Freie Stellen"
+    href: /angebot#stellen
   - title: "Team"
     href: /team
   - title: "Eltern"

@@ -10,4 +10,5 @@ Title: Verein Kinderkrippe Olten
 
 {{< doublepage right=block/sponsoren_verein left=block/mitgliedschaft_verein background=yellow border=stripes >}}
 
-{{< team-section siteFilter="verein" >}}
+{{< team-section siteFilter="verein" title="Unser Vorstand" >}}
+  
