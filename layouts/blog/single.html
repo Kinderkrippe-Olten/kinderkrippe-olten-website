@@ -4,7 +4,7 @@
 {{ partial "single-page-header.html" . }}
 <div class="uk-container uk-container-xsmall">
     <div class="kko-blog-content kko-single-page-content">
-    <h1 class="kko-blog-title">{{ .Title }}</h1>
+    <!-- <h1 class="kko-blog-title">{{ .Title }}</h1> -->
     <div class="kko-blog-byline">
         {{ partial "get-svg.html" (dict "path" (printf "images/icons/%s" $groupInfo.groupIcon) "class" "kko-group-icon") }}
         <div class="kko-blog-meta">
