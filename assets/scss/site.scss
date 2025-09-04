@@ -29,6 +29,8 @@ $kko-base-blue: #2d468b;
 $kko-base-red: #ee8984;
 $kko-base-green: #65d08f;
 
+$kko-base-grey-blue: #c8d7fa;
+
 $kko-blog-yellow: #ffde68;
 $kko-blog-light-blue: #76cadd;
 $kko-blog-red: #ee8984;
@@ -108,7 +110,7 @@ $modal-container-width: 778px !default;
 // Handle empty h1 headers in blocks
 .kko-block h1:empty {
   // Hide completely on small screens
-  @media (max-width: $breakpoint-small - 1px) {
+  @media (max-width: #{$breakpoint-small - 1px}) {
     display: none;
   }
   
@@ -122,12 +124,216 @@ $modal-container-width: 778px !default;
 }
 
 // Target blocks that start with empty h1 and pull them up with higher z-index
-@media (max-width: $breakpoint-small - 1px) {
-  .kko-block:has(h1:empty:first-child) {
-    margin-top: -4rem;
+@media (max-width: #{$breakpoint-small - 1px}) {
+  .kko-block h1:empty:first-child + * {
+    margin-top: -3rem;
+  }
+}
+
+
+// Hide toggle button when search overlay is active
+body.search-active .kko-search-toggle {
+  opacity: 0;
+  visibility: hidden;
+}
+
+// Hide scrollbars globally while maintaining scroll functionality
+html {
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE and Edge
+}
+
+html::-webkit-scrollbar {
+  display: none; // Chrome, Safari, Opera
+}
+
+// Search Overlay
+.kko-search-overlay {
+  position: fixed;
+  top: 5cqw; // Align with kko-close-button mobile
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-height: 50vh;
+  border-radius: 30px;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+
+  @media (min-width: $breakpoint-small) {
+    top: 2cqw; // Align with kko-close-button desktop
+    left: 75%; // Center over right column (50% + 25%)
+    width: 35%; // 70% of right column width
+    max-height: 60vh;
+  }
+
+  @media (min-width: $breakpoint-medium) {
+    width: 30%; // Slightly narrower for better centering
+    max-height: 70vh;
+  }
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .kko-search-container {
     position: relative;
-    padding-top: 0;
-    z-index: 10;
-    background: inherit; // Ensure background covers any overlap
+    width: 100%;
+    background: $kko-base-beige;
+    border-radius: 30px;
+    padding: 1px;
+    max-height: 100%;
+    overflow-y: auto;
+    transform: translateY(-100%);
+    transition: transform 0.4s ease;
+  }
+
+  &.active .kko-search-container {
+    transform: translateY(0);
+  }
+
+  .kko-search-header {
+    margin: 0;
+    padding: 1px;
+
+    .kko-search-input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .kko-search-input {
+      width: 100%;
+      padding: 1rem 3rem 1rem 1.5rem;
+      border: none;
+      border-radius: 29px;
+      background: $kko-base-blue;
+      color: white;
+      font-size: 1.1rem;
+      outline: none;
+      font-family: $global-font-family;
+      transition: border-radius 0.2s ease;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      &:focus {
+        background: darken($kko-base-blue, 5%);
+        box-shadow: 0 0 0 3px rgba($kko-base-yellow, 0.3);
+      }
+
+      @media (max-width: $breakpoint-small) {
+        font-size: 1rem;
+        padding: 0.8rem 2.5rem 0.8rem 1.2rem;
+      }
+    }
+
+    .kko-search-input-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+      pointer-events: none;
+      filter: invert(1) brightness(100%);
+
+      @media (max-width: $breakpoint-small) {
+        width: 14px;
+        height: 14px;
+        right: 0.8rem;
+      }
+    }
+  }
+  
+  &.has-results .kko-search-header {
+    padding: 1px 1px 0.5rem 1px;
+    
+    .kko-search-input-wrapper .kko-search-input {
+      border-radius: 29px 29px 0 0;
+    }
+  }
+
+  .kko-search-results {
+    margin: 0;
+    background: $kko-base-beige;
+    border-radius: 0 0 29px 29px;
+    overflow-y: auto;
+    max-height: 40vh;
+    height: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none; // IE and Edge
+
+    &::-webkit-scrollbar {
+      display: none; // Chrome, Safari, Opera
+    }
+    
+    &.show {
+      height: auto;
+      opacity: 1;
+      visibility: visible;
+      margin: 0.5rem 1px 0 1px;
+    }
+
+    .kko-search-result {
+      padding: 1.5rem 2rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      position: relative;
+
+      &:hover {
+        background: lighten($kko-base-yellow, 25%);
+      }
+
+      &:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 2rem;
+        right: 2rem;
+        height: 1px;
+        background: lighten($kko-base-blue, 40%);
+      }
+
+      .result-title {
+        font-weight: 600;
+        color: $kko-base-blue;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+      }
+
+      .result-excerpt {
+        font-size: 0.9rem;
+        color: $kko-base-blue;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+      }
+
+      .result-section {
+        font-size: 0.8rem;
+        color: $kko-base-blue;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+      }
+
+      @media (max-width: $breakpoint-small) {
+        padding: 1rem 1.5rem;
+
+        .result-title {
+          font-size: 1rem;
+        }
+
+        .result-excerpt {
+          font-size: 0.85rem;
+        }
+      }
+    }
   }
 }
