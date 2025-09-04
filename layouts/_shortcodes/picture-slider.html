@@ -18,9 +18,11 @@
         {{ if eq .ResourceType "image" }}
           {{ $webp := .Resize "800x webp" }}
           <li class="uk-height-1-1">
-            <div class="kko-slider-pic uk-height-1-1 uk-flex uk-flex-center uk-flex-middle">
-              <img src="{{ $webp.RelPermalink }}" alt="{{ .Name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
-            </div>
+            <a href="{{ $webp.RelPermalink }}">
+              <div class="kko-slider-pic uk-height-1-1 uk-flex uk-flex-center uk-flex-middle">
+                <img src="{{ $webp.RelPermalink }}" alt="{{ .Name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+              </div>
+            </a>
           </li>
         {{ end }}
       {{ end }}

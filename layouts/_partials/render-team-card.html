@@ -25,7 +25,9 @@
 <div class="uk-card uk-card-default uk-card-hover">
   {{ if $finalImage }}
     <div class="uk-card-media-top">
-      <img src="{{ $finalImage.RelPermalink }}" alt="{{ $firstname }} {{ $lastname }}" />
+      <a href="{{ $finalImage.RelPermalink }}">
+        <img src="{{ $finalImage.RelPermalink }}" alt="{{ $firstname }} {{ $lastname }}" />
+      </a>
     </div>
   {{ end }}
   <div class="uk-card-body {{ if $cardColor }}kko-color-{{ $cardColor }}{{ end }}">

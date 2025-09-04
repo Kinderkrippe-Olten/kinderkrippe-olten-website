@@ -6,6 +6,7 @@ Title: Downloads
 
 - Pädagogische Konzept
 - Reglemente
+- Tarifblatt
 - Formulare
 - Statuten
 

@@ -14,7 +14,9 @@
 {{ with .Page.Resources.GetMatch $src }}
   {{ $webp := .Resize "800x webp" }}
   <figure class="kko-blog-pic{{ if $float }} kko-float-{{ $float }}{{ end }}">
-    <img src="{{ $webp.RelPermalink }}" alt="{{ $alt }}" />
+    <a href="{{ $webp.RelPermalink }}">
+      <img src="{{ $webp.RelPermalink }}" alt="{{ $alt }}" />
+    </a>
     <figcaption>{{ $.Inner }}</figcaption>
   </figure>
 {{ else }}
