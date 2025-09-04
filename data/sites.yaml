@@ -5,7 +5,7 @@ sonnhalde:
     papagei:
       Icon: papagei.svg
       Name: Papagei
-      Color: blue
+      Color: pink
     balu:
       Icon: balu.svg
       Name: Balu
@@ -16,7 +16,7 @@ sonnhalde:
       Color: red
 hagmatt:
   Name: Hagmatt
-  Color: Green
+  Color: light-green
   Groups:
     fisch:
       Icon: fisch.svg
@@ -26,3 +26,6 @@ hagmatt:
       Icon: frosch.svg
       Name: Frosch
       Color: green
+verein:
+  Name: Verein Kinderkrippe Olten
+  Color: purple
