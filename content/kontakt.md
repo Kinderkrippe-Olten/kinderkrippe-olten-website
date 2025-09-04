@@ -5,5 +5,5 @@ Title: Kontakt
 {{< title >}}Kontakt Infos{{< /title >}}
 
 
-<!-- {{< doublepage right=block/5pics left=block/tagesablauf_sonnhalde background=yellow border=stripes >}} -->
+{{< doublepage right=block/kontakt_verein left=block/kontakt_kitas background=yellow border=stripes >}}
 
