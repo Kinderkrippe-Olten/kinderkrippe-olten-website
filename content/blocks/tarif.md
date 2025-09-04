@@ -22,7 +22,7 @@ Der Geschwisterrabatt wird auf Antrag der Erziehungsberechtigen für das
 jeweils ältere Kind berechnet Bei Empfängern von Betreuungsgutscheinen ist
 der Geschwisterrabatt bereits berücksichtigt.
 
-Einschreibegebühren und weitere Details siehe [Tarifblatt](docs/KK-Olten-Tarifblatt-240918.pdf).
+Einschreibegebühren und weitere Details siehe [Tarifblatt](/docs/KK-Olten-Tarifblatt-240918.pdf).
 
 ## Subventionierung
 

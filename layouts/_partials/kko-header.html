@@ -3,7 +3,9 @@
   uk-sticky="show-on-up: true; cls-active: kko-header-active; sel-target: .kko-header"
 >
   <div class="kko-logo">
-    {{- partial "get-svg.html" "images/kko-logo-and-name.svg" -}}
+    <a href="/" class="uk-link-reset">
+      {{- partial "get-svg.html" "images/kko-logo-and-name-color.svg" -}}
+    </a>
   </div>
   <div class="kko-pulldown-menu kko-background-blue
   ">
@@ -21,6 +23,18 @@
         });
       </script>
 
+    <button class="kko-search-toggle">
+      {{ $searchIcon := resources.Get "images/icons/search.png" }}
+      {{ if $searchIcon }}
+        <img src="{{ $searchIcon.RelPermalink }}" alt="Search">
+      {{ else }}
+        <svg width="16" height="16" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <circle fill="none" stroke="currentColor" stroke-width="1.1" cx="9" cy="9" r="7" />
+          <path fill="none" stroke="currentColor" stroke-width="1.1" d="M14,14 L18,18 L14,14 Z" />
+        </svg>
+      {{ end }}
+    </button>
+
     <button class="kko-bookmark">
       {{- partial "get-svg.html" "images/kko-bookmark.svg" -}}
     </button>
@@ -31,6 +45,131 @@
           document.body.classList.add("kko-bookmark-active");
         });
       });
+    </script>
+
+    <!-- Search functionality -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchToggle = document.querySelector('.kko-search-toggle');
+      const searchOverlay = document.getElementById('kko-search-overlay');
+      const searchInput = document.getElementById('kko-search-input');
+      const searchResults = document.getElementById('kko-search-results');
+      let searchIndex = null;
+      let searchTimeout = null;
+
+      // Load search index
+      fetch('/index.json')
+        .then(response => response.json())
+        .then(data => {
+          searchIndex = data;
+        })
+        .catch(error => {
+          console.error('Error loading search index:', error);
+        });
+
+      // Simple search function
+      function search(query) {
+        if (!searchIndex || query.length < 2) {
+          return [];
+        }
+
+        const searchTerm = query.toLowerCase();
+        return searchIndex.filter(item => {
+          return item.title.toLowerCase().includes(searchTerm) ||
+                 item.content.toLowerCase().includes(searchTerm) ||
+                 (item.tags && item.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
+        }).slice(0, 8); // Limit to 8 results
+      }
+
+      // Display search results
+      function displayResults(results) {
+        if (results.length === 0) {
+          searchResults.innerHTML = '<div class="kko-search-result">Keine Ergebnisse gefunden</div>';
+        } else {
+          searchResults.innerHTML = results.map(result => `
+            <div class="kko-search-result" onclick="window.location.href='${result.href}'">
+              <div class="result-title">${result.title}</div>
+              <div class="result-excerpt">${result.content}</div>
+              <div class="result-section">${result.section || 'Seite'}</div>
+            </div>
+          `).join('');
+        }
+        searchResults.classList.add('show');
+        searchOverlay.classList.add('has-results');
+      }
+
+      // Hide results
+      function hideResults() {
+        searchResults.classList.remove('show');
+        searchOverlay.classList.remove('has-results');
+      }
+
+      // Open search overlay
+      function openSearch() {
+        searchOverlay.classList.add('active');
+        document.body.classList.add('search-active');
+        document.body.style.overflow = 'hidden';
+        // Focus input after animation
+        setTimeout(() => {
+          searchInput.focus();
+        }, 300);
+      }
+
+      // Close search overlay
+      function closeSearch() {
+        searchOverlay.classList.remove('active');
+        document.body.classList.remove('search-active');
+        document.body.style.overflow = '';
+        searchInput.value = '';
+        hideResults();
+      }
+
+      // Event listeners
+      if (searchToggle) {
+        searchToggle.addEventListener('click', openSearch);
+      }
+
+      // Close on overlay background click
+      if (searchOverlay) {
+        searchOverlay.addEventListener('click', function(e) {
+          if (e.target === searchOverlay) {
+            closeSearch();
+          }
+        });
+      }
+
+      // Search input event listeners
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          clearTimeout(searchTimeout);
+          const query = e.target.value.trim();
+
+          if (query.length < 2) {
+            hideResults();
+            return;
+          }
+
+          // Debounce search
+          searchTimeout = setTimeout(() => {
+            const results = search(query);
+            displayResults(results);
+          }, 300);
+        });
+
+        searchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closeSearch();
+          }
+        });
+      }
+
+      // Close search on escape key globally
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+          closeSearch();
+        }
+      });
+    });
     </script>
   </div>
 </header>
