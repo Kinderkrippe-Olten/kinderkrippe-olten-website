@@ -298,8 +298,8 @@
   site: verein
 
 - firstname: Melanie
-  lastname: Von Arx
-  picture: Melanie_Von_Arx.jpg
+  lastname: von Arx
+  picture: Melanie_von_Arx.jpg
   function:
     - Elternvertretung
   site: verein
@@ -330,13 +330,6 @@
   picture: Gabriela_Wanner.jpg
   function:
     - Sicherheitsbeauftragte
-  site: verein
-
-- firstname: Ellen
-  lastname: Schmid
-  picture: Ellen_Schmid.jpg
-  function:
-    - Aktuarin
   site: verein
 
 - firstname: Fritz
