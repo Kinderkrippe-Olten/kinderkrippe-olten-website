@@ -23,4 +23,4 @@ gehören ebenso dazu wie das gemeinsame Essen.
 
 [Virtuelle Tour](https://goo.gl/maps/CASSFFMQiyccfrtz8)
 
-Download [Pädagogisches Konzept Sonnhalde](konzept_sonnhalde.pdf)
+Download [Pädagogisches Konzept Sonnhalde](/docs/kitas/Paedagogisches-Konzept-Sonnhalde-240118.pdf)

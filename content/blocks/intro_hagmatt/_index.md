@@ -15,3 +15,5 @@ anregenden und abwechslungsreichen Tagesablauf: Spiele, Aussenaktivitäten im
 eigenen Garten oder in nahe gelegenen Parkanlagen, kreatives Arbeiten wie
 Malen und Basteln sowie Geschichten gehören ebenso dazu wie das gemeinsame
 Essen.
+
+Download [Pädagogisches Konzept Hagmatt](/docs/kitas/Paedagogisches-Konzept-Hagmatt-240118.pdf)

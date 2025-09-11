@@ -113,7 +113,7 @@ $modal-container-width: 778px !default;
   @media (max-width: #{$breakpoint-small - 1px}) {
     display: none;
   }
-  
+
   // Show as invisible content on wide screens
   @media (min-width: $breakpoint-small) {
     &::before {
@@ -248,10 +248,10 @@ html::-webkit-scrollbar {
       }
     }
   }
-  
+
   &.has-results .kko-search-header {
     padding: 1px 1px 0.5rem 1px;
-    
+
     .kko-search-input-wrapper .kko-search-input {
       border-radius: 29px 29px 0 0;
     }
@@ -273,7 +273,7 @@ html::-webkit-scrollbar {
     &::-webkit-scrollbar {
       display: none; // Chrome, Safari, Opera
     }
-    
+
     &.show {
       height: auto;
       opacity: 1;
@@ -334,6 +334,29 @@ html::-webkit-scrollbar {
           font-size: 0.85rem;
         }
       }
+    }
+  }
+}
+
+// Table styles for tagesablauf tables
+table {
+  thead {
+    display: none;
+  }
+  
+  td, th {
+    vertical-align: top;
+    // padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+
+    &:nth-child(1),
+    &:nth-child(3) {
+      letter-spacing: 0.15em;
+      font-size: 0.9em;
+    }
+
+    &:nth-child(4) {
+      padding-left: 1rem;
     }
   }
 }

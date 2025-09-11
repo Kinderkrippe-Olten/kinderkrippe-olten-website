@@ -4,20 +4,19 @@ background: beige
 ---
 # Öffnungszeiten
 
-Die Krippen sind Montag bis Freitag von 6.30 - 18.00 Uhr geöffnet.
+Die Kitas sind Montag bis Freitag von 6.30 - 18.00 Uhr geöffnet.
 
-Die Krippe bleibt an den folgenden Tagen
+Die Kitas bleiben an den folgenden Tagen geschlossen:
 
-- 1./2. Januar
+- Neujahr und Berchtoldstag (1./2. Januar)
 - Karfreitag bis und mit Ostermontag
-- 1. Mai (Tag der Arbeit)
+- Tag der Arbeit (1. Mai)
 - Auffahrt
 - Pfingstmontag
 - Fronleichnam
-- 1. August (Nationalfeiertag)
-- 15. August (Maria Himmelfahrt)
-- 1. November (Allerheiligen)
-- 24. Dezember bis und mit 2. Januar
-- während den Sommerferien 2 Wochen
+- Nationalfeiertag (1. August)
+- Maria Himmelfahrt (15. August)
+- Allerheiligen (1. November)
+- Heiligabend bis Silvester (24.-31. Dezember)
 
-und während der 2-wöchigen Sommerferien und zwischen Weihnachten und Neujahr geschlossen.
+Während der letzten beiden Juli-Wochen machen wir Betriebsferien.

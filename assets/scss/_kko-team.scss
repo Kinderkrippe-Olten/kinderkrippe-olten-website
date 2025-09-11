@@ -17,9 +17,23 @@
         .uk-card-media-top {
             flex: 3;
             overflow: hidden;
+            position: relative;
             
             img {
                 object-fit: cover;
+                pointer-events: none;
+                user-select: none;
+            }
+            
+            &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0);
+                pointer-events: none;
             }
         }
         
@@ -78,11 +92,25 @@
         .uk-card-media-top {
             flex: 3;
             overflow: hidden;
+            position: relative;
             
             img {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
+                pointer-events: none;
+                user-select: none;
+            }
+            
+            &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0);
+                pointer-events: none;
             }
         }
         
