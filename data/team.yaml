@@ -315,14 +315,7 @@
   lastname: Riner
   picture: Simone_Riner.jpg
   function:
-    - Sicherheitsbeauftragte
-  site: verein
-
-- firstname: Ronny
-  lastname: Jager
-  picture: Ronny_Jager.jpg
-  function:
-    - Ärztlicher Berater
+    - Elternvertretung
   site: verein
 
 - firstname: Ellen
@@ -344,6 +337,13 @@
   picture: Fritz_Zaucker.jpg
   function:
     - Webmaster
+  site: verein
+
+- firstname: Ronny
+  lastname: Jager
+  picture: Ronny_Jager.jpg
+  function:
+    - Ärztlicher Berater
   site: verein
 
 - firstname: Anne
