@@ -1,4 +1,7 @@
 
+// Configurable minimum height for two-column layout
+$kko-menu-min-height: 800px !default;
+
 .kko-menu {
   container: kko-menu / size;
   background-color: $kko-base-blue;
@@ -12,6 +15,30 @@
   @media (min-width: $breakpoint-small) {
     height: 100vh;
     width:600px;
+  }
+
+  // Two-column layout for sub-menu on shorter screens
+  // May be a bit too simplistic but works ok in practice
+  // Done by Claude with some manual adjustments by Fritz
+  @media (max-height: $kko-menu-min-height) {
+    .kko-sub-menu {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      height: 25cqw;
+      align-content: flex-start;
+      justify-content: flex-start;
+      gap: 0 2rem;
+      max-width: calc(40% + 2rem + 35%);
+
+      a {
+        width: 25%;
+
+        .kko-menu-item {
+          white-space: nowrap;
+        }
+      }
+    }
   }
 
   a {
