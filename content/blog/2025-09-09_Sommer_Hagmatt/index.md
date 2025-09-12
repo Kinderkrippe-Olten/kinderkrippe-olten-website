@@ -22,9 +22,6 @@ Garten wurde kurzerhand zu einer Wasserrutsche umfunktioniert.  Auch im Pool
 wurden die letzten Runden geschwommen bevor dann Ende August der Herbst sich
 erblicken liess.
 
-{{< blog-pic src="tafel.jpeg" float="right" >}}
-Sponsoren
-{{< /blog-pic >}}
 
 
 {{< picture-slider dir="gallery" height="250px" >}}
