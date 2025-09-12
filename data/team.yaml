@@ -318,6 +318,13 @@
     - Sicherheitsbeauftragte
   site: verein
 
+- firstname: Ronny
+  lastname: Jager
+  picture: Ronny_Jager.jpg
+  function:
+    - Ärztlicher Berater
+  site: verein
+
 - firstname: Ellen
   lastname: Schmid
   picture: Ellen_Schmid.jpg
