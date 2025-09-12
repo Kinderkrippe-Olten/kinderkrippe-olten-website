@@ -284,7 +284,7 @@
 
 - firstname: Matthias
   lastname: Otto
-  picture: Matthias_Otto_Zaucker.jpg
+  picture: Matthias_Otto.jpg
   function:
     - Finanzen
   site: verein
@@ -306,7 +306,7 @@
 
 - firstname: Barbara
   lastname: Müller
-  picture: Barbara_Müller.jpg
+  picture: Barbara_Mueller.jpg
   function:
     - Personalwesen
   site: verein
@@ -325,9 +325,9 @@
     - Aktuarin
   site: verein
 
-- firstname: Gabriela
+- firstname: Gabriella
   lastname: Wanner
-  picture: Gabriela_Wanner.jpg
+  picture: Gabriella_Wanner.jpg
   function:
     - Sicherheitsbeauftragte
   site: verein
