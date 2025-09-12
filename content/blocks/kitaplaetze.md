@@ -1,10 +1,10 @@
 ---
-Title: Kita Plätze
+Title: Kita-Plätze
 ---
 
-# Kita Plätze
+# Kita-Plätze
 
-Bei Interesse melden Sie sich bitte
+Bei Interesse melden Sie sich bitte bei der jeweiligen Kita:
 
 ## Hagmatt
 
