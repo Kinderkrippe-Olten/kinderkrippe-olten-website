@@ -343,15 +343,20 @@ table {
   thead {
     display: none;
   }
-  
+
   td, th {
     vertical-align: top;
     // padding-top: 0.25rem;
     padding-bottom: 0.25rem;
 
     &:nth-child(1),
+    &:nth-child(2),
     &:nth-child(3) {
-      letter-spacing: 0.15em;
+      font-family: 'Source Code Pro', monospace;
+    }
+
+    &:nth-child(1),
+    &:nth-child(3) {
       font-size: 0.9em;
     }
 
