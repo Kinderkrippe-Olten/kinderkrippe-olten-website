@@ -31,5 +31,7 @@
 {{ $pictureSrc := ((( $block.Resources.Get $pictureFile).Fill "400x400").Process "webp").RelPermalink }}
 
 <div class="kko-circle kko-circle-{{ printf "%d-%d" $layout $index }}">
+  <a href="{{ $pictureFile.Permalink }}" target="_blank" rel="noopener">
   <img src="{{ $pictureSrc }}" alt="{{ $pictureAlt }}" title="{{ $pictureTitle }}" class="kko-circle">
+  </a>
 </div>
