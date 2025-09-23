@@ -1,5 +1,6 @@
 # Tagesablauf
 
+<div class="tagesablauf-table">
 
 |       |   |       |           |
 |------:|:-:|------:|-----------|
@@ -12,3 +13,5 @@
 | 14:15 | - | 16:15 | Nachmittagsprogramm (Freispiel, Sequenz, Spaziergang, Spielplatz & Zvieri )|
 | 16:15 | - | 17:45 | Abholen der Kinder, Übergabe|
 | 18:00	|   |       | Schliessen der Krippe |
+
+</div>

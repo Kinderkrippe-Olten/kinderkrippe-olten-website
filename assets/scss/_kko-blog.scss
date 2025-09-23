@@ -29,22 +29,31 @@
 
         .uk-card-body {
             flex: 2;
-            overflow: hidden;
             padding: 1rem;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            h3 {
-                font-size: 1.5rem;
-                line-height: 1.2;
-                color: $kko-base-blue;
-                text-decoration: none;
+            min-height: 100px;
+            
+            .kko-blog-content {
+                flex: 0 0 auto;
+                display: flex;
+                flex-direction: column;
+                
+                h3 {
+                    font-size: 1.5rem;
+                    line-height: 1.2;
+                    color: $kko-base-blue;
+                    text-decoration: none;
+                    margin-bottom: 0;
+                }
             }
 
             .kko-blog-footer {
                 display: flex;
                 font-size: 0.8rem;
                 flex-direction: row;
+                flex: 0 0 auto;
+                margin-top: auto;
 
                 .kko-blog-icon {
                     margin-right: 0.5rem;

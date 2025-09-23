@@ -338,15 +338,23 @@ html::-webkit-scrollbar {
   }
 }
 
-// Table styles for tagesablauf tables
+// Default table styles
 table {
+  td, th {
+    vertical-align: top;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+// Table styles for tagesablauf tables
+.tagesablauf-table table {
   thead {
     display: none;
   }
 
   td, th {
     vertical-align: top;
-    // padding-top: 0.25rem;
     padding-bottom: 0.25rem;
 
     &:nth-child(1),
@@ -362,6 +370,30 @@ table {
 
     &:nth-child(4) {
       padding-left: 1rem;
+    }
+  }
+}
+
+// Table styles for tarif tables
+.tarif-table {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  
+  table {
+    td, th {
+      vertical-align: top;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+      padding-left: 2rem;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:nth-child(2),
+      &:nth-child(3) {
+        white-space: nowrap;
+      }
     }
   }
 }

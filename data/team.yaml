@@ -110,7 +110,7 @@
 
 - firstname: Alex
   lastname: Constantini
-  picture: Alex_Constantini.jpg
+  picture: Alex_Constantini.png
   function:
     - Aushilfe
   site: hagmatt
@@ -151,13 +151,17 @@
     - Expertin
   site: sonnhalde
 
-- firstname: Sara
-  lastname: Kamber
-  picture: Sara_Kamber.jpg
+- firstname: Vanessa
+  lastname: Imhof
+  picture: Vanessa_Imhof.jpg
   function:
-    - Erzieherin
+    - Stv. Kita-Leitung
+    - Miterzieherin
+  education:
+    - Berufsbildnerin
   group: regenbogen
   site: sonnhalde
+
 - firstname: Miriam
   lastname: Colagiacomo
   picture: Miriam_Colagiacomo.jpg
@@ -168,6 +172,7 @@
     - Expertin
   group: papagei
   site: sonnhalde
+
 - firstname: Judith
   lastname: Celik
   picture: Judith_Celik.jpg
@@ -179,6 +184,14 @@
   site: sonnhalde
 
 # - break
+
+- firstname: Sara
+  lastname: Kamber
+  picture: Sara_Kamber.jpg
+  function:
+    - Erzieherin
+  group: regenbogen
+  site: sonnhalde
 
 - firstname: Beata
   lastname: Klutzka
@@ -198,16 +211,6 @@
   education:
     - Berufsbildnerin
   group: papagei
-  site: sonnhalde
-
-- firstname: Vanessa
-  lastname: Imhof
-  picture: Vanessa_Imhof.jpg
-  function:
-    - Miterzieherin
-  education:
-    - Berufsbildnerin
-  group: regenbogen
   site: sonnhalde
 
 - firstname: Noemi
@@ -280,28 +283,11 @@
     - Präsident
   site: verein
 
-
-
 - firstname: Matthias
   lastname: Otto
   picture: Matthias_Otto.jpg
   function:
     - Finanzen
-  site: verein
-
-- firstname: Christian
-  lastname: Beyer
-  picture: Christian_Beyer.jpg
-  function:
-    - Elternvertretung Sonnhalde
-    - Etatführer
-  site: verein
-
-- firstname: Melanie
-  lastname: von Arx
-  picture: Melanie_von_Arx.jpg
-  function:
-    - Elternvertretung Hagmatt
   site: verein
 
 - firstname: Barbara
@@ -311,18 +297,33 @@
     - Personalwesen
   site: verein
 
-- firstname: Simone
-  lastname: Riner
-  picture: Simone_Riner.jpg
-  function:
-    - Elternvertretung
-  site: verein
-
 - firstname: Ellen
   lastname: Schmid
   picture: Ellen_Schmid.jpg
   function:
     - Aktuarin
+  site: verein
+
+- firstname: Christian
+  lastname: Beyer
+  picture: Christian_Beyer.png
+  function:
+    - Etatführer
+    - Elternvertretung Sonnhalde
+  site: verein
+
+- firstname: Melanie
+  lastname: von Arx
+  picture: Melanie_von_Arx.jpg
+  function:
+    - Elternvertretung Hagmatt
+  site: verein
+
+- firstname: Simone
+  lastname: Riner
+  picture: Simone_Riner.png
+  function:
+    - Elternvertretung
   site: verein
 
 - firstname: Gabriella
@@ -339,13 +340,6 @@
     - Webmaster
   site: verein
 
-- firstname: Ronny
-  lastname: Jager
-  picture: Ronny_Jager.jpg
-  function:
-    - Ärztlicher Berater
-  site: verein
-
 - firstname: Anne
   lastname: Peter
   picture: Anne_Peter.jpg
@@ -359,3 +353,11 @@
   function:
     - Beisitzerin
   site: verein
+
+- firstname: Ronny
+  lastname: Jager
+  picture: Ronny_Jager.jpg
+  function:
+    - Ärztlicher Berater
+  site: verein
+

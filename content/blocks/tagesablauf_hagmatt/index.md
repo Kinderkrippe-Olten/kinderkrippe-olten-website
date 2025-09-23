@@ -1,6 +1,8 @@
 
 # Tagesablauf
 
+<div class="tagesablauf-table">
+
 |       |   |       |           |
 |------:|:-:|------:|-----------|
 |  6:30 | - |  9:00	| Eintreffen der Kinder, Spielen |
@@ -13,3 +15,5 @@
 | 15:00 | - | 15:30 | Zvieri|
 | 16:30 | - | 17:45 | Abholen der Kinder, Übergabe|
 | 18:00	| 	|       | Schliessen der Krippe|
+
+</div>

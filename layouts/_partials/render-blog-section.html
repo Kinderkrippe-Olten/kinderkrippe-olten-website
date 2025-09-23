@@ -1,6 +1,6 @@
 <div class="uk-container-expanded kko-blog">
 <div class="uk-container">
-<h2>Blog</h2>
+<h2>Kita-Geschichten</h2>
   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
     uk-slider="finite: false; autoplay: true; autoplay-interval: 7000;">
     <ul class="uk-slider-items">
@@ -27,9 +27,11 @@
               {{ warnf "No teaser image found for blog post '%s'. Add a teaser.* file to %s" .Title .File.Dir }}
             {{ end }}
             <div class="uk-card-body ">
-              <h3 class="uk-card-title">
-                {{ $title }}
-              </h3>
+              <div class="kko-blog-content">
+                <h3 class="uk-card-title">
+                  {{ $title }}
+                </h3>
+              </div>
               <div class="kko-blog-footer">
                 <div class="kko-blog-icon">
                   {{ partial "get-svg.html" (dict "path" (printf "images/icons/%s" $groupInfo.groupIcon) "class" "kko-group-icon") }}
