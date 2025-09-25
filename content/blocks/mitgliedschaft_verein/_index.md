@@ -6,7 +6,7 @@ Title: Mitgliedschaft
 
 Sie können unserem Verein als aktives Mitglied oder als Gönner unterstützen.
 
-## Mitglieder 
+## Mitglieder
 
 Als Mitglied können Sie sich aktiv für die Belange der Krippen und des
 Vereins engagieren.  Sie werden regelmässig über die aktuellen Vereins- und
@@ -19,7 +19,7 @@ unterstützen und aktiv zu beeinflussen.  Die schriftliche Beitrittserklärung
 kann in einer der beiden Krippen abgegeben oder an den Vorstand gesendet
 werden.  Über die Aufnahme entscheidet die nächste Generalversammlung.
 
-## Gönner 
+## Gönner
 
 Als Gönner unterstützen sie den Verein mit einer von Ihnen gewählten
 jährlichen Zuwendung.  Sie werden regelmässig über die aktuellen Vereins-
@@ -29,9 +29,9 @@ kann von der Steuer abgesetzt werden.
 
 ## Online Anmeldung
 
-Sie können sich auch mit dem nachstehenden Formular als Mitglied oder Gönner anmelden.
+Sie können sich in Kürze auch mit dem nachstehenden Formular als Mitglied oder Gönner anmelden.
 
-{{< formkeep_extended exampletoken "Formular abschicken" >}}
+<!-- {{< formkeep_extended exampletoken "Formular abschicken" >}}
   <input type="text" name="Vorname" placeholder="Vorname">
   <input type="text" name="Nachname" placeholder="Nachname">
   <input type="text" name="Strasse" placeholder="Strasse und
@@ -44,4 +44,4 @@ Sie können sich auch mit dem nachstehenden Formular als Mitglied oder Gönner a
   <input type="checkbox" name="Member" value="1">Ich will Mitglied werden<br>
   <textarea cols="50" rows="10" placeholder="Nachricht"></textarea><br>
 {{</ formkeep_extended >}}
-(muss noch gestylt und mit Mailversand versehen werden)
+(muss noch gestylt und mit Mailversand versehen werden) -->
