@@ -69,11 +69,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0  # Get all history for proper branch handling
-          # For PRs from forks, we need to specify the ref explicitly
-          ref: ${{ github.event.pull_request.head.sha }}
-          # For fork PRs, we need to fetch from the fork
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -212,6 +208,10 @@ jobs:
             cp -r public/* current-site/branch-${BRANCH}/
           fi
 
+      - name: Add CNAME file for custom domain
+        run: |
+          echo "kinderkrippe-olten.ch" > current-site/CNAME
+
       - name: Generate preview index
         run: |
           cat > current-site/previews.html << 'EOL'
@@ -286,6 +286,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        
-# END
-# end
