@@ -88,11 +88,10 @@ jobs:
 
       - name: Prepare site directory
         run: |
+          mkdir -p current-site
           if [ -f current-site/artifact.tar ]; then
             tar xf current-site/artifact.tar -C current-site
             rm current-site/artifact.tar
-          else
-            mkdir -p current-site
           fi
           
           # Always fetch main to ensure we have the latest main site
