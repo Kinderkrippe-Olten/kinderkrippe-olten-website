@@ -33,4 +33,4 @@ Einschreibegebühren und weitere Details siehe [Tarifblatt](/docs/KK-Olten-Tarif
 ## Subventionierung
 
 Die Einwohnergemeinde Olten unterstützt die familienergänzende Betreuung von
-Kindern finanziell durch [Betreuungsgutscheine](http://www.tagesstrukturen.olten.ch/).
+Kindern finanziell durch [Betreuungsgutscheine](https://www.tagesstrukturen.olten.ch/).
