@@ -6,7 +6,7 @@ mainlinks:
     href: /sonnhalde
     color: red
   - title: "Anmeldung"
-    href: /anmeldung
+    href: /angebot#kitas
     color: blue
   - title: "Geschichten"
     href: /#blog
@@ -17,8 +17,8 @@ sublinks:
     href: /
   - title: "Über uns"
     href: /verein
-  - title: "Angebot"
-    href: /angebot
+  - title: "Freie Plätze"
+    href: /angebot#kitas
   - title: "Freie Stellen"
     href: /angebot#stellen
   - title: "Team"

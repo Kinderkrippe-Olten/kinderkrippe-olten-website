@@ -1,5 +1,5 @@
 ---
-Title: Unser Vorstand
+Title: Vorstand
 Filter: verein
 ---
 

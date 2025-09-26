@@ -2,9 +2,11 @@
 Title: Kita-Plätze
 ---
 
+<a name="kitas" style="color: inherit; text-decoration: inherit"></a>
+
 # Kita-Plätze
 
-Bei Interesse melden Sie sich bitte bei der jeweiligen Kita:
+Bei Interesse melden Sie sich bitte direkt bei der jeweiligen Kita:
 
 ## Hagmatt
 
