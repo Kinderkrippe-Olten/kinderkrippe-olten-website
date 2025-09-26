@@ -270,7 +270,7 @@ jobs:
             ${{ github.event.pull_request.head.repo.full_name != github.repository && '⚠️ Note: This PR is from a fork. Additional security checks were performed.' || '' }}
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./current-site
           retention-days: 7
