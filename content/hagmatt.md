@@ -6,4 +6,4 @@ Title: Hagmatt
 
 <!-- {{< doublepage right=block/5pics left=block/tagesablauf_hagmatt background=beige border=stripes >}} -->
 
-{{< team-section siteFilter="hagmatt" title="Unser Team" >}}
+{{< team-section siteFilter="hagmatt" title="Unser Hagmatt Team" >}}
