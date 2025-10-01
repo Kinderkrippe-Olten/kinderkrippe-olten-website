@@ -1,3 +1,4 @@
 [tools]
 "aqua:gohugoio/hugo/hugo-extended" = "latest"
 "aqua:sass/dart-sass" = "1.89.1"
+node = "latest"
