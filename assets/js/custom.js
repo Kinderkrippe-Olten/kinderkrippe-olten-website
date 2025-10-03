@@ -3,14 +3,26 @@
     'use strict';
 
     function checkOrientation() {
-        // Check if device is mobile (max-width 768px) and in landscape mode
-        const isMobile = window.matchMedia('(max-width: 768px)').matches;
-        const isLandscape = window.matchMedia('(orientation: landscape)').matches;
         const modal = document.getElementById('kko-landscape-warning');
-
         if (!modal) return;
 
-        if (isMobile && isLandscape) {
+        // More reliable mobile detection using multiple methods
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+                        window.matchMedia('(max-width: 926px)').matches; // iPhone 12 Pro Max width
+
+        // Check orientation using multiple methods for iOS compatibility
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const isLandscape = windowWidth > windowHeight;
+
+        // Alternative: use orientation API if available
+        const orientationAngle = window.orientation !== undefined ? Math.abs(window.orientation) === 90 : false;
+        const mediaLandscape = window.matchMedia('(orientation: landscape)').matches;
+
+        // Combine checks for maximum compatibility
+        const isActuallyLandscape = isLandscape || orientationAngle || mediaLandscape;
+
+        if (isMobile && isActuallyLandscape && windowHeight < 500) {
             // Show modal using UIKit
             UIkit.modal(modal).show();
         } else {
@@ -28,10 +40,21 @@
 
     // Check on orientation change
     window.addEventListener('orientationchange', function() {
-        // Small delay to ensure orientation has fully changed
-        setTimeout(checkOrientation, 100);
+        // Longer delay for iOS to ensure DOM has updated
+        setTimeout(checkOrientation, 300);
     });
 
     // Also listen to resize events as backup
-    window.addEventListener('resize', checkOrientation);
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(checkOrientation, 100);
+    });
+
+    // For iOS, also check on screen orientation change API if available
+    if (screen.orientation) {
+        screen.orientation.addEventListener('change', function() {
+            setTimeout(checkOrientation, 300);
+        });
+    }
 })();
