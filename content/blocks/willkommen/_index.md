@@ -17,4 +17,4 @@ Wir nehmen jedes einzelne Kind als Individuum wahr.  Unser gut ausgebildetes
 fördert es seinen geistigen, emotionalen, sozialen und motorischen
 Fähigkeiten.
 
-Weitere Informationen finden Sie in unserem [Leitbild](docs/Leitbild-KK-2015-web.pdf).
+Weitere Informationen finden Sie in unserem [Leitbild](docs/verein/KK-Olten-Leitbild-2015.pdf).

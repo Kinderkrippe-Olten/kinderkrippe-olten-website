@@ -7,6 +7,8 @@ Seit über 50 Jahren bietet die Kinderkrippe Olten an zwei bahnhofnahen
 Standorten professionelle und liebevolle Betreuung für Kinder im
 Vorschulalter.
 
+Download [Jahresprogramm 2025](/docs/kitas/KK-Olten-Jahresprogramm_2025.pdf)
+
 ## Kita Hagmatt
 
 Zwei Gruppen - den Fröschen und Fischen -  und insgesamt 23 Plätze,

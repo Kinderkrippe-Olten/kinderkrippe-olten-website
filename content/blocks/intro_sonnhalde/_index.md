@@ -7,8 +7,8 @@ Title: Kita Sonnhalde
 Die Kinderkrippe liegt bahnhofsnah an der [Sonnhaldenstrasse
 44](https://maps.app.goo.gl/Uvtr9uzRCQGKUJC6A).
 
-Die Krippe bietet 28 Kindern in drei altersgemischten Gruppen (Balu,
-Papagei, Regenbogen) einen strukturierten, anregenden und
+Die Krippe bietet 28 Kindern in drei altersgemischten Gruppen (*Balu*,
+*Papagei* und *Regenbogen*) einen strukturierten, anregenden und
 abwechslungsreichen Tagesablauf.
 
 - Spiele
@@ -23,4 +23,4 @@ gehören ebenso dazu wie das gemeinsame Essen.
 
 [Virtuelle Tour](https://goo.gl/maps/CASSFFMQiyccfrtz8)
 
-Download [Pädagogisches Konzept Sonnhalde](/docs/kitas/Paedagogisches-Konzept-Sonnhalde-240118.pdf)
+Download [Pädagogisches Konzept Sonnhalde](/docs/kitas/KK-Olten-Paedagogisches-Konzept-Sonnhalde_2024-01-18.pdf)
