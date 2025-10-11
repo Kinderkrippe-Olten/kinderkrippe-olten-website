@@ -1,4 +1,4 @@
 [tools]
-"aqua:gohugoio/hugo/hugo-extended" = "latest"
 "aqua:sass/dart-sass" = "1.89.1"
-node = "latest"
+"aqua:gohugoio/hugo/hugo-extended" = "0.151.0"
+node = "24.9.0"
