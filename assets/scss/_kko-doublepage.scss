@@ -107,6 +107,15 @@
           // }
 
         }
+
+        // Hide empty headers in right column to prevent extra spacing in single-column layout
+        .kko-doublepage-right h1:empty {
+          display: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          height: 0 !important;
+          line-height: 0 !important;
+        }
       }
     }
 
@@ -120,5 +129,14 @@
     padding-right: 4rem;
     padding-bottom: 3rem;
 
+    // Reduce spacing between stacked blocks in single-column layout
+    @media (max-width: $breakpoint-small) {
+      .kko-doublepage-left & {
+        padding-bottom: 1.5rem;
+      }
 
+      .kko-doublepage-right & {
+        padding-top: 1.5rem;
+      }
+    }
   }
