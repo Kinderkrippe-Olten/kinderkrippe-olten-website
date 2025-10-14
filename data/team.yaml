@@ -208,7 +208,13 @@
   picture: Anuschka_Gilgen.jpg
   function:
     - Aushilfe
-  group: papagei
+  site: sonnhalde
+
+- firstname: Daniela
+  lastname: Bächtold
+  picture: Daniela_Bächtold.png
+  function:
+    - Aushilfe
   site: sonnhalde
 
 - firstname: Noemi
@@ -224,7 +230,8 @@
   lastname: Richener
   picture: Cheyenne_Richener.jpg
   function:
-    - Fachfrau Betreuung Kind, 3. Lehrjahr
+    - Fachfrau Betreuung Kind
+    - 3. Lehrjahr
   group: regenbogen
   site: sonnhalde
 
@@ -240,7 +247,9 @@
   lastname: Maurer
   picture: Ladina_Maurer.jpg
   function:
-    - Fachfrau Betreuung Kind, 1. Lehrjahr
+    - Fachfrau Betreuung Kind
+    - 1. Lehrjahr
+  group: papagei
   site: sonnhalde
 
 - firstname: Helena
