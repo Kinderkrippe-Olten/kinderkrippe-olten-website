@@ -189,7 +189,7 @@
   lastname: Kamber
   picture: Sara_Kamber.jpg
   function:
-    - Erzieherin
+    - Gruppenleiterin
   group: regenbogen
   site: sonnhalde
 
@@ -207,9 +207,7 @@
   lastname: Gilgen
   picture: Anuschka_Gilgen.jpg
   function:
-    - Miterzieherin
-  education:
-    - Berufsbildnerin
+    - Aushilfe
   group: papagei
   site: sonnhalde
 
@@ -218,7 +216,7 @@
   picture: Noemi_Bielser.jpg
   function:
     - Fachfrau Betreuung Kind
-    - 1. Lehrjahr
+    - 2. Lehrjahr
   group: regenbogen
   site: sonnhalde
 
@@ -227,7 +225,7 @@
   picture: Cheyenne_Richener.jpg
   function:
     - Fachfrau Betreuung Kind
-    - 2. Lehrjahr
+    -3. Lehrjahr
   group: regenbogen
   site: sonnhalde
 
@@ -235,7 +233,7 @@
   lastname: Sinani
   picture: Elmedina_Sinani.jpg
   function:
-    - Fachfrau Betreuung Kind
+    - Miterzieherin
   group: papagei
   site: sonnhalde
 
@@ -243,8 +241,16 @@
   lastname: Maurer
   picture: Ladina_Maurer.jpg
   function:
+    - Fachfrau Betreuung Kind, 1. Lehrjahr
+  site: sonnhalde
+
+- firstname: Helena
+  lastname: Palushhaj
+  picture: Helena_Palushhaj.jpg
+  function:
     - Praktikantin
   site: sonnhalde
+
 
 - firstname: Monika
   picture: Monika.jpg
