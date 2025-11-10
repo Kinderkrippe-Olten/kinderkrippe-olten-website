@@ -217,6 +217,14 @@
     - Aushilfe
   site: sonnhalde
 
+- firstname: Daniela
+  lastname: Bächtold
+  picture: Daniela_Baechtold.jpg
+  function:
+    - Aushilfe
+  group: papagei
+  site: sonnhalde
+
 - firstname: Noemi
   lastname: Bielser
   picture: Noemi_Bielser.jpg
@@ -254,7 +262,7 @@
 
 - firstname: Helena
   lastname: Palushhaj
-  picture: Helena_Palushhaj.png
+  picture: Helena_Palushhaj.jpg
   function:
     - Praktikantin
   site: sonnhalde
