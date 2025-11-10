@@ -7,7 +7,7 @@
     {{ $pattern := printf "%s/%s/*.png" $basePath $part }}
     {{ $images := resources.Match $pattern }}
     {{ if $images }}
-      <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slider>
+      <div class="uk-position-relative uk-visible-toggle uk-light kko-autoslide-slider" tabindex="-1" uk-slider>
         <ul class="uk-slider-items uk-child-width-1-1">
           {{ range $images }}
             <li>
@@ -24,4 +24,60 @@
   {{ end }}
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const minigameBody = document.querySelector('.kko-minigame-body');
+  const sliders = Array.from(document.querySelectorAll('.kko-autoslide-slider'));
+
+  if (!minigameBody || sliders.length === 0) return;
+
+  let isMouseOver = false;
+  let autoplayTimeout = null;
+
+  // Track mouse over the entire minigame body
+  minigameBody.addEventListener('mouseenter', function() {
+    isMouseOver = true;
+    if (autoplayTimeout) {
+      clearTimeout(autoplayTimeout);
+      autoplayTimeout = null;
+    }
+  });
+
+  minigameBody.addEventListener('mouseleave', function() {
+    isMouseOver = false;
+    scheduleNextSlide();
+  });
+
+  // Function to pick a random slider and move it
+  function moveRandomSlider() {
+    if (isMouseOver) return;
+
+    // Pick a random slider
+    const randomSlider = sliders[Math.floor(Math.random() * sliders.length)];
+    const slider = UIkit.slider(randomSlider);
+
+    // Randomly choose next or previous
+    const direction = Math.random() > 0.5 ? 'next' : 'previous';
+    slider.show(direction);
+
+    // Schedule the next slide
+    scheduleNextSlide();
+  }
+
+  // Schedule next slide with random delay between 2-4 seconds
+  function scheduleNextSlide() {
+    if (autoplayTimeout) {
+      clearTimeout(autoplayTimeout);
+    }
+
+    const randomDelay = Math.random() * 2000 + 2000; // 2000-4000ms
+    autoplayTimeout = setTimeout(moveRandomSlider, randomDelay);
+  }
+
+  // Start the autoplay with initial random delay
+  scheduleNextSlide();
+});
+</script>
+
 {{ partial "minigame-footer.html" . }}
