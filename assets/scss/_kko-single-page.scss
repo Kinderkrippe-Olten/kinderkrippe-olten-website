@@ -4,7 +4,7 @@
     background-color: $kko-base-red;
 
     @media (min-width: $breakpoint-small) {
-        padding-top: 1rem;
+        padding-top: 0rem;
 
         &::before,
         &::after {
@@ -37,6 +37,8 @@
 
 .kko-single-page-header {
     background-color: $kko-base-red;
+    padding-top: 1rem;
+
     .kko-logo {
         display: none;
         fill: $kko-base-blue;
