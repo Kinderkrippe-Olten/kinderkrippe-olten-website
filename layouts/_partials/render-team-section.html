@@ -1,4 +1,9 @@
-<div class="uk-container-expanded kko-team">
+{{ $background := .background }}
+{{ $backgroundClass := "" }}
+{{ if $background }}
+  {{ $backgroundClass = printf "kko-background-%s" $background }}
+{{ end }}
+<div class="uk-container-expanded kko-team {{ $backgroundClass }}">
 <div class="uk-container">
 {{ $siteFilter := "" }}
 {{ $title := "Unser Team" }}

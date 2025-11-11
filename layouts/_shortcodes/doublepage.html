@@ -3,6 +3,8 @@
 {{ $leftParam := .Get "left" }}
 {{ $rightParam := .Get "right" }}
 {{ $background := (or (.Get "background") "beige") }}
+{{ $backgroundLeft := .Get "backgroundLeft" }}
+{{ $backgroundRight := .Get "backgroundRight" }}
 {{ $border := (or (.Get "border") "none") }}
 
 {{/* Check if both left and right parameters are provided */}}
@@ -30,12 +32,18 @@
 
 {{/* Determine background classes for each side */}}
 {{ $leftColorClass := "" }}
-{{ if $leftBackground }}
+{{/* Priority: 1. backgroundLeft parameter, 2. component background, 3. none */}}
+{{ if $backgroundLeft }}
+  {{ $leftColorClass = printf "kko-background-%s" $backgroundLeft }}
+{{ else if $leftBackground }}
   {{ $leftColorClass = printf "kko-background-%s" $leftBackground }}
 {{ end }}
 
 {{ $rightColorClass := "" }}
-{{ if $rightBackground }}
+{{/* Priority: 1. backgroundRight parameter, 2. component background, 3. none */}}
+{{ if $backgroundRight }}
+  {{ $rightColorClass = printf "kko-background-%s" $backgroundRight }}
+{{ else if $rightBackground }}
   {{ $rightColorClass = printf "kko-background-%s" $rightBackground }}
 {{ end }}
 

@@ -1,4 +1,9 @@
-<div class="uk-container-expanded kko-blog">
+{{ $background := .background }}
+{{ $backgroundClass := "" }}
+{{ if $background }}
+  {{ $backgroundClass = printf "kko-background-%s" $background }}
+{{ end }}
+<div class="uk-container-expanded kko-blog {{ $backgroundClass }}">
 <div class="uk-container">
 <h2>Kita-Geschichten</h2>
   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"

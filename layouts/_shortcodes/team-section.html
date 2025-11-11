@@ -2,4 +2,5 @@
 {{ $siteFilter := .Get "siteFilter" }}
 {{/* $title := "Unser Team" */}}
 {{ $title := .Get "title" }}
-{{ partial "render-team-section.html" (dict "siteFilter" $siteFilter "Site" .Page.Site "title" $title) }}
+{{ $background := .Get "background" }}
+{{ partial "render-team-section.html" (dict "siteFilter" $siteFilter "Site" .Page.Site "title" $title "background" $background) }}

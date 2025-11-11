@@ -1,2 +1,3 @@
 {{/* layouts/shortcodes/blog.html */}}
-{{ partial "render-blog-section.html" . }}
+{{ $background := .Get "background" }}
+{{ partial "render-blog-section.html" (dict "Page" .Page "background" $background) }}

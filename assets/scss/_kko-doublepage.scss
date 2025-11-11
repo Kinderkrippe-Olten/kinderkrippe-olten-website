@@ -10,7 +10,7 @@
     background-color: $kko-base-yellow;
   }
 
-  .kko-background-ligh-blue {
+  .kko-background-light-blue {
     background-color: $kko-blog-light-blue;
   }
 
@@ -28,6 +28,32 @@
 
   .kko-doublepage {
     overflow: hidden;
+
+    // Ensure left and right columns fill full height to show background
+    .kko-doublepage-left,
+    .kko-doublepage-right {
+      min-height: 100%;
+
+      // Ensure background color classes on these divs take precedence
+      &.kko-background-green {
+        background-color: $kko-base-green !important;
+      }
+      &.kko-background-red {
+        background-color: $kko-base-red !important;
+      }
+      &.kko-background-yellow {
+        background-color: $kko-base-yellow !important;
+      }
+      &.kko-background-blue {
+        background-color: $kko-base-blue !important;
+      }
+      &.kko-background-beige {
+        background-color: $kko-base-beige !important;
+      }
+      &.kko-background-light-blue {
+        background-color: $kko-blog-light-blue !important;
+      }
+    }
 
     .kko-half-page {
 
