@@ -12,8 +12,8 @@ Die nachfolgenden Tarife gelten ab August 2022.
 |:---|---:|---:|
 |     	 	                |   halbtags**	|    ganztags |
 | 	Baby (bis 18 Monate)*	| 97 / 124 CHF	| 177 CHF     |
-| 	Kind	                | 70 / 83	CHF     | 129 CHF     |
-| 	Kindergartenbegleitung<br> über Mittag	| 11 CHF | |
+| 	Kind	                | 70 / 83	CHF | 129 CHF     |
+| 	Kindergarten&shy;begleitung<br> über Mittag	| 11 CHF | |
 
 </div>
 
