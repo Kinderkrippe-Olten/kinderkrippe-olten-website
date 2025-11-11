@@ -145,3 +145,73 @@ $kko-menu-min-height: 700px !default;
     }
   }
 }
+
+// Standalone kko-button class for use outside the menu
+// Matches the styling of main menu items
+.kko-button {
+  display: inline-block;
+  position: relative;
+  margin-bottom: 1.5cqw;
+  color: $kko-base-blue;
+  padding: 1.3cqw 3cqw;
+  border-radius: 100cqw;
+  font-size: 3.2cqw;
+  text-decoration: none !important;
+  background-color: $kko-base-yellow;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+
+  // Automatic arrow icon before text using CSS
+  // Arrow color matches text color using mask
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 3.5cqw;
+    height: 3.5cqw;
+    margin-right: 0.8cqw;
+    background-color: currentColor;
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><path d="M1.41,11.86v-1.67h16.62s-6.18-5.84-6.18-5.84l1.12-1.14,7.62,7.32v.93s-7.62,7.35-7.62,7.35l-1.14-1.16,6.14-5.78H1.41Z"/></svg>');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><path d="M1.41,11.86v-1.67h16.62s-6.18-5.84-6.18-5.84l1.12-1.14,7.62,7.32v.93s-7.62,7.35-7.62,7.35l-1.14-1.16,6.14-5.78H1.41Z"/></svg>');
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    vertical-align: middle;
+    position: relative;
+    top: -0.2cqw;
+  }
+
+  // Color variants
+  &.kko-color-green {
+    background-color: $kko-base-green;
+
+    &:hover {
+      background-color: lighten($kko-base-green, 10%);
+    }
+  }
+
+  &.kko-color-red {
+    background-color: $kko-base-red;
+
+    &:hover {
+      background-color: lighten($kko-base-red, 10%);
+    }
+  }
+
+  &.kko-color-yellow {
+    background-color: $kko-base-yellow;
+
+    &:hover {
+      background-color: lighten($kko-base-yellow, 10%);
+    }
+  }
+
+  &.kko-color-blue {
+    background-color: $kko-blog-light-blue;
+
+    &:hover {
+      background-color: lighten($kko-blog-light-blue, 10%);
+    }
+  }
+}
