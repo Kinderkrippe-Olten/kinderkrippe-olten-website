@@ -27,8 +27,8 @@ erhalten und geben sie auch nicht weiter.
 ## Datenaufbewahrung
 
 Da die meisten unserer Geschäftspartner über lange Zeit mit uns in Kontakt
-stehen, werden diese nicht automatisch gelöscht. Unsere
-datenschutz\-verantwortliche Person steht für Anfragen zu Datenlöschung und
+stehen, werden diese nicht automatisch gelöscht. Unsere für den
+Datenschutz verantwortliche Person steht für Anfragen zu Datenlöschung und
 Auskunft jederzeit zur Verfügung.
 
 Unsere Daten werden ausschliesslich in der Schweiz gespeichert.

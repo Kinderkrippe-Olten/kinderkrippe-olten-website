@@ -25,12 +25,12 @@ Kind bereits länger als 18 Monate in der Krippe ist und kein Anspruch auf
 Betreuungsgutscheine der Stadt Olten besteht.
 
 Der Geschwisterrabatt wird auf Antrag der Erziehungsberechtigen für das
-jeweils ältere Kind berechnet. Bei Empfängern von Betreuungs\-gutscheinen ist
+jeweils ältere Kind berechnet. Bei Empfängern von Betreuungs&shy;gutscheinen ist
 der Geschwisterrabatt bereits berücksichtigt.
 
 Einschreibegebühren und weitere Details siehe [Tarifblatt](/docs/KK-Olten-Tarifblatt-240918.pdf).
 
-## Subventionierung
+## Finanzielle Unterstützung
 
 Die Einwohnergemeinde Olten unterstützt die familienergänzende Betreuung von
 Kindern finanziell durch [Betreuungsgutscheine](https://www.tagesstrukturen.olten.ch/).
