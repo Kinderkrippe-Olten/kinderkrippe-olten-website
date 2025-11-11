@@ -33,8 +33,8 @@ Einschreibegebühren und weitere Details siehe [Tarifblatt](/docs/KK-Olten-Tarif
 ## Finanzielle Unterstützung
 
 Die Einwohnergemeinde Olten unterstützt die familienergänzende Betreuung von
-Kindern finanziell durch [Betreuungsgutscheine](https://www.tagesstrukturen.olten.ch/).
+Kindern finanziell durch Betreuungsgutscheine.
 
-<a href="/link" class="kko-button kko-color-yellow">
+<a href="https://www.schulen.olten.ch/betreuungsgutscheine" class="kko-button kko-color-yellow">
   Betreuungsgutscheine beantragen
 </a>
