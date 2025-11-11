@@ -1,6 +1,5 @@
 .kko-single-page {
-    padding-top: 10rem;
-    padding-bottom: 5rem;
+    padding-top: 5rem;
     background-color: $kko-base-red;
 
     @media (min-width: $breakpoint-small) {
@@ -62,6 +61,7 @@
         color: $kko-base-blue;
 
         @media (min-width: $breakpoint-small) {
+            // padding-bottom: 3em;
             font-size: 4rem;
         }
     }
