@@ -87,18 +87,34 @@ $kko-menu-min-height: 700px !default;
 
       &.kko-color-green {
         background-color: $kko-base-green;
+
+        &:hover {
+          background-color: lighten($kko-base-green, 10%);
+        }
       }
 
       &.kko-color-red  {
         background-color: $kko-base-red;
+
+        &:hover {
+          background-color: lighten($kko-base-red, 10%);
+        }
       }
 
       &.kko-color-yellow  {
         background-color: $kko-base-yellow;
+
+        &:hover {
+          background-color: lighten($kko-base-yellow, 10%);
+        }
       }
 
       &.kko-color-blue  {
         background-color: $kko-blog-light-blue;
+
+        &:hover {
+          background-color: lighten($kko-blog-light-blue, 10%);
+        }
       }
     }
   }
@@ -111,6 +127,11 @@ $kko-menu-min-height: 700px !default;
       margin-bottom: 0.8cqw;
       color: $kko-base-beige;
       font-size: 3.2cqw;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
 
       span {
         padding-right: 0.8cqw;
