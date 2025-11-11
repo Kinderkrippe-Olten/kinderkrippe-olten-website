@@ -16,34 +16,14 @@
     <div class="kko-pulldown-menu kko-background-blue">
       {{- partial "render-menu.html" . -}}
 
-      <button class="kko-close-button">
-        {{- partial "get-svg.html" "images/kko-bookmark.svg" -}}
-      </button>
-      <script>
-        const closeButtons = document.querySelectorAll(".kko-close-button");
-        closeButtons.forEach((button) => {
-          button.addEventListener("click", function () {
-            document.body.classList.remove("kko-bookmark-active");
-          });
-        });
-      </script>
-
-    <button class="kko-search-toggle">
-      {{ $searchIcon := resources.Get "images/icons/search.png" }}
-      {{ if $searchIcon }}
-        <img src="{{ $searchIcon.RelPermalink }}" alt="Search">
-      {{ else }}
-        <svg width="16" height="16" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <circle fill="none" stroke="currentColor" stroke-width="1.1" cx="9" cy="9" r="7" />
-          <path fill="none" stroke="currentColor" stroke-width="1.1" d="M14,14 L18,18 L14,14 Z" />
-        </svg>
-      {{ end }}
-    </button>
-
-    <button class="kko-bookmark">
-      {{- partial "get-svg.html" "images/kko-bookmark.svg" -}}
-    </button>
     <script>
+      const closeButtons = document.querySelectorAll(".kko-close-button");
+      closeButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          document.body.classList.remove("kko-bookmark-active");
+        });
+      });
+
       const bookmarks = document.querySelectorAll(".kko-bookmark");
       bookmarks.forEach((bookmark) => {
         bookmark.addEventListener("click", function () {
@@ -55,7 +35,7 @@
     <!-- Search functionality -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const searchToggle = document.querySelector('.kko-search-toggle');
+      const searchToggles = document.querySelectorAll('.kko-search-toggle');
       const searchOverlay = document.getElementById('kko-search-overlay');
       const searchInput = document.getElementById('kko-search-input');
       const searchResults = document.getElementById('kko-search-results');
@@ -130,9 +110,9 @@
       }
 
       // Event listeners
-      if (searchToggle) {
-        searchToggle.addEventListener('click', openSearch);
-      }
+      searchToggles.forEach((toggle) => {
+        toggle.addEventListener('click', openSearch);
+      });
 
       // Close on overlay background click
       if (searchOverlay) {

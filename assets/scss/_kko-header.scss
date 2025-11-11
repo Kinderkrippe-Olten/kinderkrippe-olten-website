@@ -37,86 +37,16 @@ header.kko-header {
     }
   }
 
-  .kko-close-button,
   .kko-bookmark {
     background: none;
     border: none;
     padding: 0;
   }
 
-  .kko-close-button {
-    position: absolute;
-    top: 5cqw;
-    right: 0cqw;
-    width: 12cqw;
-
-    @media (min-width: $breakpoint-small) {
-      width: 4cqw;
-      right: 0cqw;
-      top: 2cqw;
-    }
-
-    svg {
-      width: 100%;
-      height: auto;
-
-      polygon#bookmark {
-        fill: none !important;
-      }
-
-      path#burger {
-        fill: none !important;
-      }
-
-      g#cross rect {
-        fill: $kko-base-beige !important;
-      }
-    }
-  }
-
   @media (min-width: $breakpoint-small) {
     &:not(.kko-header-active).kko-menu-page-inserted .kko-bookmark {
       display: none;
     }
-  }
-
-  .kko-search-toggle {
-    width: 5cqw; // Smaller size
-    right: 20cqw; // Move further left
-    display: block;
-    position: absolute;
-    height: 0;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    margin-top: 6cqw; // Push down to align with search field icon
-
-    @media (min-width: $breakpoint-small) {
-      width: 2cqw; // Smaller size on desktop
-      right: 12cqw; // Move further left on desktop
-      margin-top: 3cqw; // Push down on desktop
-    }
-
-    img {
-      width: 100%;
-      height: auto;
-    }
-  }
-
-  // Make search toggle white when bookmark menu is active
-  body.kko-bookmark-active header.kko-header .kko-search-toggle img {
-    filter: invert(1) brightness(100%); // Force white icon on menu page
-  }
-
-  // Make search toggle black by default
-  .kko-search-toggle img {
-    filter: none; // Black icon by default
-  }
-
-  // Make search toggle white when there's a kko-menu anywhere in the document
-  html:has(.kko-menu) .kko-search-toggle img {
-    filter: invert(1) brightness(100%); // White icon when menu is on page
   }
 
   .kko-bookmark {

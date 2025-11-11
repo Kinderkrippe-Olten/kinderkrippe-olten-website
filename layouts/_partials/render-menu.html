@@ -1,13 +1,24 @@
-{{ $menu := .Site.Data.menu }} 
-{{ $arrow := partial "get-svg.html" "images/arrow.svg" }} 
+{{ $menu := .Site.Data.menu }}
+{{ $arrow := partial "get-svg.html" "images/arrow.svg" }}
 {{/* Render the menu with the color logo and main links */}}
 <div class="kko-menu">
+  <button class="kko-search-toggle">
+    <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <circle fill="none" stroke="currentColor" stroke-width="1" cx="9" cy="9" r="5" />
+      <line stroke="currentColor" stroke-width="1" stroke-linecap="round" x1="13" y1="13" x2="18" y2="18" />
+    </svg>
+  </button>
+
+  <button class="kko-close-button">
+    {{- partial "get-svg.html" "images/kko-bookmark.svg" -}}
+  </button>
+
   <a href="/" style="color: inherit; text-decoration: inherit;">
     <div class="kko-color-logo">
       {{- partial "get-svg.html" "images/kko-color-head.svg" -}}
     </div>
     <div class="kko-name">Kinderkrippe<br />Olten</div>
-  </a>    
+  </a>
   <div class="kko-main-menu">
     {{ range $menu.mainlinks }}
     <a href="{{ .href }}"

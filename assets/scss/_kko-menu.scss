@@ -4,6 +4,7 @@ $kko-menu-min-height: 700px !default;
 
 .kko-menu {
   container: kko-menu / size;
+  position: relative;
   background-color: $kko-base-blue;
   color: $kko-base-beige;
   padding-left: 5cqw;
@@ -144,6 +145,83 @@ $kko-menu-min-height: 700px !default;
       }
     }
   }
+
+  // Close button and search toggle positioning
+  .kko-close-button,
+  .kko-search-toggle {
+    position: absolute;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    top: 2rem;
+    width: 3rem;
+
+    @media (min-width: $breakpoint-small) {
+      width: 3rem;
+      top: 2rem;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .kko-close-button {
+    right: 1rem;
+    display: none; // Hidden by default on home page
+
+    @media (min-width: $breakpoint-small) {
+      right: 1rem;
+    }
+
+    svg {
+      polygon#bookmark {
+        fill: none !important;
+      }
+
+      path#burger {
+        fill: none !important;
+      }
+
+      g#cross rect {
+        fill: $kko-base-beige !important;
+        stroke-width: 3px;
+      }
+    }
+  }
+
+  .kko-search-toggle {
+    right: 5rem; // To the left of close button
+
+    @media (min-width: $breakpoint-small) {
+      right: 5rem; // To the left of close button on desktop
+    }
+
+    img {
+      filter: invert(1) brightness(100%); // White icon in menu
+    }
+
+    svg {
+      fill: none;
+      stroke: $kko-base-beige;
+
+      circle, line {
+        stroke: $kko-base-beige;
+      }
+    }
+  }
+}
+
+// Show close button only when dropdown menu is active
+body.kko-bookmark-active .kko-menu .kko-close-button {
+  display: block;
 }
 
 // Standalone kko-button class for use outside the menu
