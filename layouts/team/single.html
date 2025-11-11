@@ -1,8 +1,9 @@
 {{ define "main" }}
-<div class="kko-team-page kko-single-page">
+<!-- <div class="kko-team-page kko-single-page"> -->
+<div class="kko-single-page">
 {{ partial "single-page-header.html" . }}
 <div class="uk-container">
-    <div class="kko-team-content kko-single-page-content">
+    <div class="kko-team-content kko-single-page-content uk-container">
         <!-- <h1 class="kko-team-title kko-single-page-title">{{ .Title }}</h1> -->
         {{ .Content }}
         {{ if .Params.Filter }}
