@@ -1,10 +1,11 @@
 .kko-single-page {
     padding-top: 10rem;
     padding-bottom: 5rem;
-    
+    background-color: $kko-base-red;
+
     @media (min-width: $breakpoint-small) {
         padding-top: 1rem;
-        
+
         &::before,
         &::after {
             position: fixed;
@@ -35,6 +36,7 @@
 }
 
 .kko-single-page-header {
+    background-color: $kko-base-red;
     .kko-logo {
         display: none;
         fill: $kko-base-blue;
@@ -43,14 +45,14 @@
             display: block;
             max-width: 40%;
             padding-left: 3rem;
-            padding-bottom: 4rem;
+            padding-bottom: 1rem;
         }
     }
 }
 
 .kko-single-page-content {
     max-width: 60em;
-    
+
     .kko-single-page-title {
         font-size: 3rem;
         line-height: 1.0;
