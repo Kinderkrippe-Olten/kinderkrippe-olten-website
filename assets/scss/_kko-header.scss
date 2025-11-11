@@ -10,9 +10,10 @@ body.kko-bookmark-active header.kko-header div.kko-pulldown-menu {
 header.kko-header {
   container: kko-header / size;
   position: relative;
+  // this is needed to show the pulldown menu on scroll back
+  // Fritz, 2025-11-11
   height: 1px;
   margin-bottom: -1px;
-  ;
 
   .kko-logo {
     display: none;
@@ -104,7 +105,7 @@ header.kko-header {
   body.kko-bookmark-active header.kko-header .kko-search-toggle img {
     filter: invert(1) brightness(100%); // Force white icon on menu page
   }
-  
+
   // Make search toggle black by default
   .kko-search-toggle img {
     filter: none; // Black icon by default
