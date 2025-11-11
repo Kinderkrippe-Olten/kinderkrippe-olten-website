@@ -3,6 +3,8 @@
     // margin-bottom: 4rem;
     padding-top: 3rem;
     padding-bottom: 4rem;
+    background-color: $kko-base-yellow;
+
     .uk-slider-items {
         gap: 1rem;
 
@@ -140,7 +142,7 @@
 }
 
 .kko-team-page {
-    background-color: $kko-base-beige;
+    background-color: $kko-base-red;
 
     .kko-team-title {
         color: $kko-base-blue;
@@ -148,6 +150,6 @@
     }
 
     .kko-team-content {
-        padding: 2rem 0;
+        // padding: 2rem 0;
     }
 }
