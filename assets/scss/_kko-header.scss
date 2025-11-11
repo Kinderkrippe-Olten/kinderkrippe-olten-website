@@ -1,10 +1,6 @@
 body.kko-bookmark-active header.kko-header div.kko-pulldown-menu {
-  top: #{$kko-border-stripe-width * 3};
+  top: 0;
   transition: top 0.4s ease-in;
-
-  @media (min-width: $breakpoint-small) {
-    top: 0;
-  }
 }
 
 header.kko-header {
@@ -28,12 +24,11 @@ header.kko-header {
     position: absolute;
     right: 0;
     width: 100%;
-    top: calc(-100vh + #{$kko-border-stripe-width * 6});
+    top: -100vh;
     transition: top 0.1s ease-out;
 
     @media (min-width: $breakpoint-small) {
       width: 50%;
-      top: -100vh;
     }
   }
 
