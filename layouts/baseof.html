@@ -15,10 +15,10 @@
         <div class="kko-search-header">
           <div class="kko-search-input-wrapper">
             <input type="search" id="kko-search-input" placeholder="Suchen ..." class="kko-search-input" autocomplete="off">
-            {{ $searchIcon := resources.Get "images/icons/search.png" }}
-            {{ if $searchIcon }}
-              <img src="{{ $searchIcon.RelPermalink }}" alt="Search" class="kko-search-input-icon">
-            {{ end }}
+            <svg class="kko-search-input-icon" width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle fill="none" stroke="currentColor" stroke-width="2" cx="9" cy="9" r="5" />
+              <line stroke="currentColor" stroke-width="2" stroke-linecap="round" x1="13" y1="13" x2="18" y2="18" />
+            </svg>
           </div>
         </div>
         <div id="kko-search-results" class="kko-search-results"></div>
