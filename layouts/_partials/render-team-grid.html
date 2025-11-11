@@ -25,9 +25,19 @@
         {{ $site := .site }}
         {{ $group := .group }}
         {{ $picture := .picture }}
+        {{ $education := .education }}
 
         {{ if or (not $siteFilter) (eq $site $siteFilter) }}
-        <div>
+        {{/* Build tooltip content if education exists */}}
+        {{ $tooltipContent := "" }}
+        {{ if $education }}
+          {{ $tooltipContent = "<strong>Ausbildung:</strong><br>" }}
+          {{ range $education }}
+            {{ $tooltipContent = printf "%s• %s<br>" $tooltipContent . }}
+          {{ end }}
+        {{ end }}
+
+        <div {{ if $tooltipContent }}uk-tooltip="title: {{ $tooltipContent }}; pos: top"{{ end }}>
           {{ partial "render-team-card.html" (dict "firstname" $firstname "lastname" $lastname "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
         </div>
         {{ end }}

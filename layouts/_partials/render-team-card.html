@@ -12,6 +12,7 @@
 {{ $picture := .picture }}
 {{ $site := .site }}
 {{ $group := .group }}
+{{ $education := .education }}
 
 {{ $teamContext := dict "Params" (dict "site" $site "group" $group) "Site" .Site }}
 {{ $groupInfo := partial "get-group-data.html" $teamContext }}

@@ -13,21 +13,32 @@
   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
     uk-slider="finite: false; autoplay: true; autoplay-interval: 2000;">
     <ul class="uk-slider-items">
-      {{ range $.Site.Data.team }}
-        {{ if and (reflect.IsMap .) .firstname }}
-          {{ $firstname := .firstname }}
-          {{ $lastname := .lastname }}
-          {{ $function := .function }}
-          {{ $site := .site }}
-          {{ $group := .group }}
-          {{ $picture := .picture }}
-          {{ $sect := .sect }}
+      {{ range $index, $member := $.Site.Data.team }}
+        {{ if and (reflect.IsMap $member) $member.firstname }}
+          {{ $firstname := $member.firstname }}
+          {{ $lastname := $member.lastname }}
+          {{ $function := $member.function }}
+          {{ $site := $member.site }}
+          {{ $group := $member.group }}
+          {{ $picture := $member.picture }}
+          {{ $sect := $member.sect }}
+          {{ $education := $member.education }}
 
           {{ if and (not $sect) (or (not $siteFilter) (eq $site $siteFilter)) }}
             <li>
               {{ $teamLink := "/team/" }}
               {{ if $siteFilter }}{{ $teamLink = printf "/team/%s/" $siteFilter }}{{ end }}
-              <a href="{{ $teamLink }}" class="uk-link-reset">
+
+              {{/* Build tooltip content if education exists */}}
+              {{ $tooltipContent := "" }}
+              {{ if $education }}
+                {{ $tooltipContent = "<strong>Ausbildung:</strong><br>" }}
+                {{ range $education }}
+                  {{ $tooltipContent = printf "%s• %s<br>" $tooltipContent . }}
+                {{ end }}
+              {{ end }}
+
+              <a href="{{ $teamLink }}" class="uk-link-reset" {{ if $tooltipContent }}uk-tooltip="title: {{ $tooltipContent }}; pos: top"{{ end }}>
                 {{ partial "render-team-card.html" (dict "firstname" $firstname "lastname" $lastname "function" $function "picture" $picture "site" $site "group" $group "Site" $.Site) }}
               </a>
             </li>
@@ -39,3 +50,25 @@
   </div>
 </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Find all team sliders
+  const teamSliders = document.querySelectorAll('.kko-team [uk-slider]');
+
+  teamSliders.forEach(function(sliderElement) {
+    // Get the UIkit slider component
+    UIkit.util.on(sliderElement, 'itemshown', function() {
+      // Reinitialize tooltips on all visible links after slide change
+      const links = sliderElement.querySelectorAll('a[uk-tooltip]');
+      links.forEach(function(link) {
+        // Remove and re-add the tooltip component
+        if (UIkit.tooltip(link)) {
+          UIkit.tooltip(link).$destroy();
+        }
+        UIkit.tooltip(link);
+      });
+    });
+  });
+});
+</script>
