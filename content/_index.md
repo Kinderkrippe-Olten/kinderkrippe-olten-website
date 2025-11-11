@@ -5,7 +5,7 @@ Title: Kinderkrippe Olten
 
 {{< doublepage left=block/willkommen right=block/kitas backgroundLeft=green backgroundRight=red border=stripes >}}
 
-{{< doublepage left=block/zeiten right=block/3pics backgroundLeft=blue backgroundRight=green border=stripes >}}
+{{< doublepage left=block/zeiten right=block/3pics backgroundLeft=yellow backgroundRight=green border=stripes >}}
 
 <!-- {{< doublepage left=block/3pics right=block/blog background=beige backgroundRight=blue border=stripes >}} -->
 
