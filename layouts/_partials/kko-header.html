@@ -7,9 +7,14 @@
       {{- partial "get-svg.html" "images/kko-logo-and-name-color.svg" -}}
     </a>
   </div>
-  <div class="kko-pulldown-menu kko-background-blue
-  ">
-    {{- partial "render-menu.html" . -}}
+
+  <div class="uk-container kko-header-inner">
+    <button class="kko-bookmark kko-bookmark-header">
+      {{- partial "get-svg.html" "images/kko-bookmark.svg" -}}
+    </button>
+
+    <div class="kko-pulldown-menu kko-background-blue">
+      {{- partial "render-menu.html" . -}}
 
       <button class="kko-close-button">
         {{- partial "get-svg.html" "images/kko-bookmark.svg" -}}
@@ -171,5 +176,6 @@
       });
     });
     </script>
+    </div>
   </div>
 </header>

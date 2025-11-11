@@ -19,6 +19,9 @@ header.kko-header {
     display: none;
   }
 
+  .kko-header-inner {
+    position: relative;
+  }
 
   .kko-pulldown-menu {
     display: block;
@@ -44,12 +47,12 @@ header.kko-header {
   .kko-close-button {
     position: absolute;
     top: 5cqw;
-    right: 7cqw;
+    right: 0cqw;
     width: 12cqw;
 
     @media (min-width: $breakpoint-small) {
       width: 4cqw;
-      right: 5cqw;
+      right: 0cqw;
       top: 2cqw;
     }
 
@@ -125,7 +128,7 @@ header.kko-header {
 
     @media (min-width: $breakpoint-small) {
       width: 4cqw;
-      right: 5cqw;
+      right: 0cqw;
     }
 
     svg {
