@@ -15,7 +15,7 @@ berufliche Zukunft und freuen uns auf weitere gemeinsame Jahr mit ihr.
 
 
 {{< blog-pic src="jubilaeum.jpg" >}}
-Foto: v.l. Barbara Müller (Personalverantwortliche), Monika (Jubilarin) und Anne Peter (Leiterin Sonnhalde)
+v.l. Barbara Müller (Personalverantwortliche), Monika (Jubilarin) und Anne Peter (Leiterin Sonnhalde)
 {{< /blog-pic >}}
 
 
