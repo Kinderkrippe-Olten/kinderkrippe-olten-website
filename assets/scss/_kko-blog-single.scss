@@ -8,6 +8,8 @@
         hyphens: auto;
     }
     .kko-blog-content {
+        padding-top: 2em;
+        padding-bottom: 2em;
         max-width: 60em;
         .kko-blog-title {
             font-size: 3rem;
@@ -49,7 +51,7 @@
                 @media (min-width: $breakpoint-small) {
                     float: left;
                     width: 30%;
-                   
+
                     padding-right: 2.5rem;
                 }
             }
