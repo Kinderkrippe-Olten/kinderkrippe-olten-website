@@ -137,7 +137,7 @@
   site: hagmatt
 
 
-- sect: KitaSonnhalde
+- sect: Kita Sonnhalde
 
 - firstname: Anne
   lastname: Peter
@@ -331,6 +331,7 @@
   lastname: von Arx
   picture: Melanie_von_Arx.jpg
   function:
+    - Kommunikation
     - Elternvertretung Hagmatt
   site: verein
 
