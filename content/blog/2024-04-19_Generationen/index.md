@@ -7,7 +7,7 @@ Site: hagmatt
 ---
 # Generationennachmittag
 
-An diesem Freitag Nachmittag erwarteten die Kinder der Hagmatt eine spezielle Aktivität die wir zuvor noch nie so erleben durften.
+**An diesem Freitag Nachmittag erwarteten die Kinder der Hagmatt eine spezielle Aktivität die wir zuvor noch nie so erleben durften.**
 
 Am 19. April war es soweit, die Kinder durften gemeinsam mit ein paar Betreuerinnen einen Besuch im Alters- und Demenzzentrum St. Martin hier in Olten machen.
 

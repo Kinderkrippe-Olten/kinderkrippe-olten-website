@@ -7,7 +7,7 @@ Site: hagmatt
 ---
 # Spielzeug verreist in die Ferien
 
-Die Kinderkrippe Hagmatt verzichtete während fast drei Monaten auf Spielzeug. Die Kinder lernten in dieser Zeit ihre persönlichen Grenzen besser kennen und entwickelten fantasievolle Spielideen mit den zur Verfügung stehenden Alltagsgegenständen und Naturmaterialien. Das Projekt «Spielzeugfreie Zeit» ist Teil der Suchtprävention und wurde durch die Suchthilfe Ost begleitet.
+**Die Kinderkrippe Hagmatt verzichtete während fast drei Monaten auf Spielzeug. Die Kinder lernten in dieser Zeit ihre persönlichen Grenzen besser kennen und entwickelten fantasievolle Spielideen mit den zur Verfügung stehenden Alltagsgegenständen und Naturmaterialien. Das Projekt «Spielzeugfreie Zeit» ist Teil der Suchtprävention und wurde durch die Suchthilfe Ost begleitet.**
 
 Die Bälleli aus dem Bällelibad reisten nach Australien, die Puppen nach Italien und den Duplo-Zug zog es nach Schweden – so verabschiedeten sich die 39 Kinder der Kinderkrippe Hagmatt von ihren Spielsachen in der Kita. Das Projekt «Spielzeugfreie Zeit» dauerte von Mai bis Mitte Juli. In dieser Zeit standen den Kindern nur Alltagsgegenstände wie Wäscheklammern oder Kartonschachteln sowie Naturmaterialien wie Tannzapfen als Spielgeräte zur Verfügung. Die Kinder entschieden selbst, was sie damit spielen wollen, und entwickelten damit ihre persönlichen Kompetenzen weiter.
 

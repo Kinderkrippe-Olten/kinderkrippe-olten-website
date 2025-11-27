@@ -1,13 +1,14 @@
 ---
 Title: Einweihungsfest Hagmatt
 TeaserTitle: Einweihung Spielgarten
+Autor: Melanie von Arx
 Date: 2025-06-14
 Site: hagmatt
 # Group: frosch
 ---
 # Mehr Platz, mehr Qualität, mehr Sonne
 
-Ein sonniger Samstag, ein neues Kapitel für die Kita Hagmatt – mit Anbau, Spielplatz und vielen strahlenden Gesichtern. Das Einweihungsfest des neuen Anbaus und Spielgartens war ein voller Erfolg.
+**Ein sonniger Samstag, ein neues Kapitel für die Kita Hagmatt – mit Anbau, Spielplatz und vielen strahlenden Gesichtern. Das Einweihungsfest des neuen Anbaus und Spielgartens war ein voller Erfolg.**
 
 
 {{< blog-pic src="tafel.jpeg" float="right" >}}

@@ -1,12 +1,13 @@
 ---
 Title: Ballonwettbewerb
 TeaserTitle: Ballon-wettbewerb
+Autor: Melanie von Arx
 Date: 2025-11-13
 Site: hagmatt
 ---
 # Preisübergabe des Ballonwettbewerbs
 
-Anlässlich unseres Eröffnungsfestes der Kita Hagmatt im Frühling 2025 durften die kleinen und grossen Besucher:innen nicht nur den neuen Spielgarten und Anbau entdecken, sondern auch ihre Hoffnung auf einen tollen Preis in den Himmel steigen lassen – beim grossen Ballonwettbewerb. Rund 100 bunte Ballone wurden gemeinsam in die Luft geschickt.
+**Anlässlich unseres Eröffnungsfestes der Kita Hagmatt im Frühling 2025 durften die kleinen und grossen Besucher:innen nicht nur den neuen Spielgarten und Anbau entdecken, sondern auch ihre Hoffnung auf einen tollen Preis in den Himmel steigen lassen – beim grossen Ballonwettbewerb. Rund 100 bunte Ballone wurden gemeinsam in die Luft geschickt.**
 
 Im Rahmen des stimmungsvollen Laternenumzugs vom 13. November 2025 durften wir die drei Hauptpreise offiziell übergeben. Die drei weitesten Ballonflüge führten quer durch die Schweiz bis über die Grenze nach Deutschland – mit beeindruckenden Distanzen von fast 70 Kilometern.
 
