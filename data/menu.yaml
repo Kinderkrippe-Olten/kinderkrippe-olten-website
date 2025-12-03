@@ -5,6 +5,9 @@ mainlinks:
   - title: "Kita Sonnhalde"
     href: /sonnhalde
     color: red
+  - title: "Hort Bifang/Säli"
+    href: /#hort
+    color: grey-blue
   - title: "Anmeldung"
     href: /angebot#kitas
     color: blue
