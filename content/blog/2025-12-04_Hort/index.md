@@ -1,6 +1,6 @@
 ---
 Title: Eröffnung Hort
-TeaserTitle: Schülerhort Bifang/Säli
+TeaserTitle: Schülerhort Bifang-Säli
 Autor: Franco Giori und Melanie von Arx
 Date: 2025-12-04
 Site: hort
