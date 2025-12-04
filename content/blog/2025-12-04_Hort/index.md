@@ -16,9 +16,11 @@ Seit rund 65 Jahren bietet der Verein Kinderkrippe Olten eine professionelle und
 für Kinder im Babyalter bis zum Schuleintritt an. Nun erweitert der Verein dieses Angebot: Mit einem
 neuen Hort für Kindergarten- und Schulkinder auf der rechten Stadtseite.
 
-{{< blog-pic src="MM_SchuelerhortBifang-Saeli.jpeg" >}}
+{{< blog-pic src="SchuelerhortBifangSaeli.jpg" >}}
 Beim künftigen Eingang des Schülerhorts Bifang-Säli: Franco Giori, Präsident der
 Kinderkrippe Olten, und Stadtrat Nils Loeffel
 (Bild: Melanie von Arx)
 {{< /blog-pic >}}
 
+Weitere Informationen finden Sie in dieser
+[Medienmitteilung](/docs/kitas/KK-Olten-Medienmitteilung_Hort_2025.pdf).
