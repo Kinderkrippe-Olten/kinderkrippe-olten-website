@@ -5,15 +5,17 @@ mainlinks:
   - title: "Kita Sonnhalde"
     href: /sonnhalde
     color: red
-  - title: "Hort Bifang-Säli"
+  - title: "Schülerhort Bifang-Säli"
     href: /#hort
-    color: grey-blue
+    color: light-blue
+  - type: spacer
+    height: 1em  
   - title: "Anmeldung"
     href: /angebot#kitas
-    color: blue
+    color: yellow
   - title: "Geschichten"
     href: /#blog
-    color: yellow
+    color: pink
 
 sublinks:
   - title: "Home"

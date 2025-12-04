@@ -26,6 +26,10 @@
     background-color: $kko-base-beige;
   }
 
+  .kko-background-pink {
+    background-color: $kko-blog-pink;
+  }
+
   .kko-doublepage {
     overflow: hidden;
 
@@ -52,6 +56,9 @@
       }
       &.kko-background-light-blue {
         background-color: $kko-blog-light-blue !important;
+      }
+      &.kko-background-pink {
+        background-color: $kko-blog-pink !important;
       }
     }
 

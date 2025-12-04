@@ -11,7 +11,7 @@ Title: Kinderkrippe Olten
 
 
 <a name="blog" style="color: inherit; text-decoration: inherit">
-{{< blog background="beige">}}
+{{< blog background="pink">}}
 </a>
 
-{{< team-section title="Unser Team" background="red" >}}
+{{< team-section title="Unser Team" background="yellow" >}}

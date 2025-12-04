@@ -117,6 +117,14 @@ $kko-menu-min-height: 700px !default;
           background-color: lighten($kko-blog-light-blue, 10%);
         }
       }
+
+      &.kko-color-pink  {
+        background-color: $kko-blog-pink;
+
+        &:hover {
+          background-color: lighten($kko-blog-pink, 10%);
+        }
+      }
     }
   }
 

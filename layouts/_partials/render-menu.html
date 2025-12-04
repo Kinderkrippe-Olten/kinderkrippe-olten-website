@@ -21,11 +21,17 @@
   </a>
   <div class="kko-main-menu">
     {{ range $menu.mainlinks }}
-    <a href="{{ .href }}"
-      ><div class="kko-menu-item kko-color-{{ .color }}">
-        <span class="kko-arrow">{{ $arrow }}</span>{{ .title }}
-      </div></a
-    >
+      {{ if or (eq .title "") (eq .type "spacer") }}
+        {{/* Render spacer */}}
+        <div class="kko-menu-spacer" {{ if .height }}style="height: {{ .height }};"{{ end }}></div>
+      {{ else }}
+        {{/* Render normal menu item */}}
+        <a href="{{ .href }}"
+          ><div class="kko-menu-item kko-color-{{ .color }}">
+            <span class="kko-arrow">{{ $arrow }}</span>{{ .title }}
+          </div></a
+        >
+      {{ end }}
     {{ end }}
   </div>
   <div class="kko-sub-menu">
