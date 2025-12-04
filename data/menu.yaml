@@ -9,7 +9,7 @@ mainlinks:
     href: /#hort
     color: light-blue
   - type: spacer
-    height: 1em  
+    height: 0.75em  
   - title: "Anmeldung"
     href: /angebot#kitas
     color: yellow
