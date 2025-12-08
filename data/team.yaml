@@ -236,12 +236,13 @@
   group: regenbogen
   site: sonnhalde
 
-- firstname: Elmedina
-  lastname: Sinani
-  picture: Elmedina_Sinani.jpg
+- firstname: Vanessa
+  lastname: Strebel
+  # picture: Vanessa_Strebel.jpg
+  picture: ../Coming_Soon.png
   function:
     - Miterzieherin
-  group: papagei
+  # group: papagei
   site: sonnhalde
 
 - firstname: Ladina
@@ -321,7 +322,8 @@
 
 - firstname: Christian
   lastname: Beyer
-  picture: Christian_Beyer.png
+  # picture: Christian_Beyer.jpg
+  picture: ../Coming_Soon.png
   function:
     - Etatführer
     - Elternvertretung Sonnhalde
