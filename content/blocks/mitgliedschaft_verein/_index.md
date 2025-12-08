@@ -29,19 +29,8 @@ kann von der Steuer abgesetzt werden.
 
 ## Online Anmeldung
 
-Sie können sich in Kürze auch mit dem nachstehenden Formular als Mitglied oder Gönner anmelden.
+Mit dem nachstehenden Formular können Sie sich als Mitglied oder Gönner anmelden.
 
-<!-- {{< formkeep_extended exampletoken "Formular abschicken" >}}
-  <input type="text" name="Vorname" placeholder="Vorname">
-  <input type="text" name="Nachname" placeholder="Nachname">
-  <input type="text" name="Strasse" placeholder="Strasse und
-  Hausnummer"><br>
-  <input type="text" name="PLZ" placeholder="Postleitzahl">
-  <input type="text" name="Stadt" placeholder="Stadt">
-  <input type="email" name="Email" placeholder="Email">
-  <input type="tel" name="Telefon" placeholder="079 123 4567">
-  <input type="text" name="Spende" placeholder="Gönnerspende in CHF"><br>
-  <input type="checkbox" name="Member" value="1">Ich will Mitglied werden<br>
-  <textarea cols="50" rows="10" placeholder="Nachricht"></textarea><br>
-{{</ formkeep_extended >}}
-(muss noch gestylt und mit Mailversand versehen werden) -->
+<a href="https://forms.gle/XdUyZX88juYxmKXb8" class="kko-button kko-color-blue">
+Anmeldung Gönner / Mitgliedschaft
+</a>
