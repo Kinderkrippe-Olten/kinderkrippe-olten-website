@@ -242,7 +242,7 @@
   picture: ../Coming_Soon.png
   function:
     - Miterzieherin
-  # group: papagei
+  group: papagei
   site: sonnhalde
 
 - firstname: Ladina
