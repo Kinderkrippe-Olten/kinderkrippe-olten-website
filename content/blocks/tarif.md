@@ -8,27 +8,29 @@ Die nachfolgenden Tarife gelten ab August 2022.
 
 <div class="tarif-table">
 
-| | | |
+<!-- | | | |
 |:---|---:|---:|
 |     	 	                |   halbtags**	|    ganztags |
 | 	Baby (bis 18 Monate)*	| 97 / 124 CHF	| 177 CHF     |
 | 	Kind	                | 70 / 83	CHF | 129 CHF     |
-| 	Kindergarten&shy;begleitung<br> über Mittag	| 11 CHF | |
+| 	Kindergarten&shy;begleitung<br> über Mittag	| 11 CHF | | -->
 
+
+| | | |
+|:---|---:|---:|
+|                                             | Kind | Kleinkind* |
+| Halbtags ohne<br> Mittagessen               |  70  | 97         |
+| Halbtags mit<br> Mittagessen**              |  83  | 124
+| Ganztags                                    | 129  | 177        |
+| Kindergarten&shy;begleitung<br> über Mittag |  11  |            |
 </div>
 
-\*&nbsp;&nbsp;&nbsp;Das Mindestalter beträgt 14 Wochen.<br>
-\** Der höhere Betrag schliesst die Betreuung während des Mittagessens ein.
 
-Ab dem zweiten Kind wird eine Ermässigung von 10% gewährt, sofern das erste
-Kind bereits länger als 18 Monate in der Krippe ist und kein Anspruch auf
-Betreuungsgutscheine der Stadt Olten besteht.
 
-Der Geschwisterrabatt wird auf Antrag der Erziehungsberechtigen für das
-jeweils ältere Kind berechnet. Bei Empfängern von Betreuungs&shy;gutscheinen ist
-der Geschwisterrabatt bereits berücksichtigt.
+\*&nbsp;&nbsp;&nbsp;Bis 18 Monate, Mindestalter 14 Wochen.<br>
+\** Verpflegung und Betreuung
 
-Einschreibegebühren und weitere Details siehe
+Ab dem zweiten Kind wird unter bestimmten Bedingungen eine Ermässigung von 10% gewährt. Weitere Details siehe
 
  <a href="/docs/kitas/KK-Olten-Tarifblatt_2024-09-18.pdf" class="kko-button kko-color-yellow">Tarifblatt</a>
 
