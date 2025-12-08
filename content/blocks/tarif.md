@@ -19,8 +19,8 @@ Die nachfolgenden Tarife gelten ab August 2022.
 | | | |
 |:---|---:|---:|
 |                                             | Kind | Kleinkind* |
-| Halbtags ohne<br> Mittagessen               |  70  | 97         |
-| Halbtags mit<br> Mittagessen**              |  83  | 124
+| Halbtags ohne Mittagessen               |  70  | 97         |
+| Halbtags mit Mittagessen**              |  83  | 124
 | Ganztags                                    | 129  | 177        |
 | Kindergarten&shy;begleitung<br> über Mittag |  11  |            |
 </div>
