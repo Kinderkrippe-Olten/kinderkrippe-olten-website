@@ -1,17 +1,13 @@
 ---
 Title: Freie Stellen
 ---
-
-<a name="stellen" style="color: inherit; text-decoration: inherit"></a>
-
-# Offene Stellen
+<h1><a name="stellen" style="color: inherit; text-decoration: inherit">Offene Stellen</a></h1>
 
 <!-- Derzeit keine offenen Stellen. -->
 
 ## Kita Hagmatt
 
 - [Miterzieher:in 60-80% per 1.4.2026](/docs/stellen/Hagmatt-Miterzieherin-20251204.pdf)
-
 
 ## Kita Sonnhalde
 

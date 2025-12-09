@@ -2,9 +2,7 @@
 Title: Kita-Plätze
 ---
 
-<a name="kitas" style="color: inherit; text-decoration: inherit"></a>
-
-# Betreuungsplätze
+<h1><a name="kitas" style="color: inherit; text-decoration: inherit">Betreuungsplätze</a></h1>
 
 Bei Interesse melden Sie sich bitte direkt bei der jeweiligen Einrichtung.
 
