@@ -8,12 +8,12 @@ Title: Freie Stellen
 
 <!-- Derzeit keine offenen Stellen. -->
 
-## Hagmatt
+## Kita Hagmatt
 
 - [Miterzieher:in 60-80% per 1.4.2026](/docs/stellen/Hagmatt-Miterzieherin-20251204.pdf)
 
 
-## Sonnhalde
+## Kita Sonnhalde
 
 - [Praktikant:in 80-100% per sofort](/docs/stellen/PraktikantIn-Sonnhalde-2025.pdf)
 - [Pädagogische Fachperson 40% per
