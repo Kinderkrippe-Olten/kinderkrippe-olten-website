@@ -8,5 +8,5 @@ Title: Downloads
 - [Pädagogisches Konzept Hagmatt](/docs/kitas/KK-Olten-Paedagogisches-Konzept-Hagmatt_2024-01-18.pdf)
 - [Pädagogisches Konzept Sonnhalde](/docs/kitas/KK-Olten-Paedagogisches-Konzept-Sonnhalde_2024-01-18.pdf)
 
-- [Tarifblatt](/docs/verein/KK-Olten-Tarifblatt_2024-09-18.pdf)
+- [Tarifblatt](/docs/kitas/KK-Olten-Tarifblatt_2024-09-18.pdf)
 - [Statuten](/docs/verein/KK-Olten-Statuten_2022-12-05.pdf)
