@@ -322,8 +322,7 @@
 
 - firstname: Christian
   lastname: Beyer
-  # picture: Christian_Beyer.jpg
-  picture: ../Coming_Soon.png
+  picture: Christian_Beyer.jpg
   function:
     - Etatführer
     - Elternvertretung Sonnhalde
