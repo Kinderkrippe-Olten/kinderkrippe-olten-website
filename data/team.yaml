@@ -6,6 +6,7 @@
   function:
     - Krippenleiterin
   education:
+    - FaBe K EZF
     - dipl. Krippenleitung
     - eidg. dipl. Teamleitung in sozialen und sozialmedizin. Institutionen
   site: hagmatt
@@ -17,6 +18,7 @@
     - Stv. Krippenleiterin
     - Gruppenleiterin
   education:
+    - FaBe K EFZ
     - Berufsbildberin
   group: fisch
   site: hagmatt
@@ -27,7 +29,8 @@
   function:
     - Gruppenleiterin
   education:
-  - Berufsbildnerin
+    - FaBe K EZF
+    - Berufsbildnerin
   group: frosch
   site: hagmatt
 
@@ -38,6 +41,8 @@
   picture: Michelle_Von_Burg.jpg
   function:
     - Miterzieherin
+  education:
+    - FaBe K EZF
   group: frosch
   site: hagmatt
 
@@ -46,6 +51,8 @@
   picture: Andrea_Zehntner.jpg
   function:
     - Miterzieherin
+  education:
+    - FaBe K EZF
   group: fisch
   site: hagmatt
 
@@ -54,6 +61,9 @@
   picture: Fabienne_Munzinger.jpg
   function:
     - Miterzieherin
+  education:
+    - FaBe K EZF
+    - Berufsbildnerin
   group: frosch
   site: hagmatt
 
@@ -62,6 +72,9 @@
   picture: Erika_Huber.jpg
   function:
     - Miterzieherin
+  education:
+    - FaBe K EZF
+    - Berufsbildnerin
   group: fisch
   site: hagmatt
 
