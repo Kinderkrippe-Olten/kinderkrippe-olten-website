@@ -6,7 +6,7 @@
   function:
     - Krippenleiterin
   education:
-    - FaBe K EZF
+    - FaBe K EFZ
     - dipl. Krippenleitung
     - eidg. dipl. Teamleitung in sozialen und sozialmedizin. Institutionen
   site: hagmatt
@@ -19,7 +19,7 @@
     - Gruppenleiterin
   education:
     - FaBe K EFZ
-    - Berufsbildberin
+    - Berufsbildnerin
   group: fisch
   site: hagmatt
 
@@ -29,7 +29,7 @@
   function:
     - Gruppenleiterin
   education:
-    - FaBe K EZF
+    - FaBe K EFZ
     - Berufsbildnerin
   group: frosch
   site: hagmatt
@@ -42,7 +42,7 @@
   function:
     - Miterzieherin
   education:
-    - FaBe K EZF
+    - FaBe K EFZ
   group: frosch
   site: hagmatt
 
@@ -52,7 +52,7 @@
   function:
     - Miterzieherin
   education:
-    - FaBe K EZF
+    - FaBe K EFZ
   group: fisch
   site: hagmatt
 
@@ -62,7 +62,7 @@
   function:
     - Miterzieherin
   education:
-    - FaBe K EZF
+    - FaBe K EFZ
     - Berufsbildnerin
   group: frosch
   site: hagmatt
@@ -73,7 +73,7 @@
   function:
     - Miterzieherin
   education:
-    - FaBe K EZF
+    - FaBe K EFZ
     - Berufsbildnerin
   group: fisch
   site: hagmatt
@@ -82,7 +82,7 @@
   lastname: Schwarzenbach
   picture: Jaime_Schwarzenbach.jpg
   function:
-    - Fachfrau Betreuung Kind
+    - Lernende Fachfrau Betreuung Kind
     - 3. Lehrjahr
   group: fisch
   site: hagmatt
@@ -91,7 +91,7 @@
   lastname: Adele
   picture: Merci_Adele.jpg
   function:
-    - Fachfrau Betreuung Kind
+    - Lernende Fachfrau Betreuung Kind
     - 1. Lehrjahr
   group: fisch
   site: hagmatt
@@ -100,7 +100,7 @@
   lastname: Mba
   picture: Caroline_Mba.jpg
   function:
-    - Fachfrau Betreuung Kind
+    - Lernende Fachfrau Betreuung Kind
     - 2. Lehrjahr
   group: frosch
   site: hagmatt
@@ -158,9 +158,10 @@
   function:
     - Krippenleiterin
   education:
-    - dipl Kitaleitung
-    - eidg. dipl. Teamleitung
+    - staatlich anerkannte Erzieherin
     - Berufsbildnerin
+    - dipl Krippenleitung
+    - eidg. dipl. Teamleitung in sozialen und sozialmedizinischen Institutionen
     - Expertin
   site: sonnhalde
 
@@ -169,6 +170,7 @@
   picture: Vanessa_Imhof.jpg
   function:
     - Stv. Kita-Leitung
+    - FaBe K EFZ
     - Miterzieherin
   education:
     - Berufsbildnerin
@@ -181,6 +183,7 @@
   function:
     - Gruppenleiterin
   education:
+    - FaBe K EFZ
     - Berufsbildnerin
     - Expertin
   group: papagei
@@ -192,6 +195,7 @@
   function:
     - Gruppenleiterin
   education:
+    - FaBe K EFZ
     - Berufsbildnerin
   group: balu
   site: sonnhalde
@@ -203,16 +207,20 @@
   picture: Sara_Kamber.jpg
   function:
     - Gruppenleiterin
+  education:
+    - FaBe K EFZ
+    - Berufsbildnerin
   group: regenbogen
   site: sonnhalde
 
-- firstname: Beata
-  lastname: Klutzka
-  picture: Beata_Klutzka.jpg
+- firstname: Lucia
+  lastname: Colonna
+#  picture: Lucia_Colonna.jpg
+  picture: ../Coming_Soon.png
   function:
     - Miterzieherin
   education:
-    - Berufsbildnerin
+    - FaBe K EFZ
   group: balu
   site: sonnhalde
 
@@ -223,12 +231,27 @@
     - Aushilfe
   site: sonnhalde
 
+- firstname: Laurin
+  lastname: Mayer
+#  picture: Laurin_Mayer.jpg
+  picture: ../Coming_Soon.png
+  function:
+    - Aushilfe
+  site: sonnhalde
+
+- firstname: Louis
+  lastname: Galic
+#  picture: Louis_Galic.jpg
+  picture: ../Coming_Soon.png
+  function:
+    - Aushilfe
+  site: sonnhalde
+
 - firstname: Daniela
   lastname: Bächtold
   picture: Daniela_Baechtold.jpg
   function:
     - Aushilfe
-  group: papagei
   site: sonnhalde
 
 - firstname: Noemi
@@ -255,6 +278,8 @@
   picture: ../Coming_Soon.png
   function:
     - Miterzieherin
+  education:
+    - FaBe K EFZ
   group: papagei
   site: sonnhalde
 
@@ -268,8 +293,8 @@
   site: sonnhalde
 
 - firstname: Helena
-  lastname: Palushhaj
-  picture: Helena_Palushhaj.jpg
+  lastname: Palushaj
+  picture: Helena_Palushaj.jpg
   function:
     - Praktikantin
   site: sonnhalde
@@ -280,6 +305,8 @@
   function:
     - Köchin
     - Miterzieherin
+  education:
+    - Kleinkinderzieherin
   site: sonnhalde
 
 - firstname: Karin
