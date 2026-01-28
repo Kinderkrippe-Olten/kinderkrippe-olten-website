@@ -170,9 +170,9 @@
   picture: Vanessa_Imhof.jpg
   function:
     - Stv. Kita-Leitung
-    - FaBe K EFZ
     - Miterzieherin
   education:
+    - FaBe K EFZ
     - Berufsbildnerin
   group: regenbogen
   site: sonnhalde
@@ -236,7 +236,7 @@
 #  picture: Laurin_Mayer.jpg
   picture: ../Coming_Soon.png
   function:
-    - Aushilfe
+    - Praktikant
   site: sonnhalde
 
 - firstname: Louis
