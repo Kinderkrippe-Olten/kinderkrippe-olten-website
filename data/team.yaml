@@ -215,8 +215,7 @@
 
 - firstname: Lucia
   lastname: Colonna
-#  picture: Lucia_Colonna.jpg
-  picture: ../Coming_Soon.png
+  picture: Lucia_Colonna.jpg
   function:
     - Miterzieherin
   education:
@@ -233,16 +232,14 @@
 
 - firstname: Laurin
   lastname: Mayer
-#  picture: Laurin_Mayer.jpg
-  picture: ../Coming_Soon.png
+  picture: Laurin_Mayer.jpg
   function:
     - Praktikant
   site: sonnhalde
 
 - firstname: Louis
   lastname: Galic
-#  picture: Louis_Galic.jpg
-  picture: ../Coming_Soon.png
+  picture: Louis_Galic.jpg
   function:
     - Aushilfe
   site: sonnhalde
@@ -274,8 +271,7 @@
 
 - firstname: Vanessa
   lastname: Strebel
-  # picture: Vanessa_Strebel.jpg
-  picture: ../Coming_Soon.png
+  picture: Vanessa_Strebel.jpg
   function:
     - Miterzieherin
   education:
