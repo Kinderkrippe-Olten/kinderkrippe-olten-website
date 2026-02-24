@@ -5,7 +5,7 @@ Title: Schülerhort Bifang-Säli
 
 Um der Nachfrage nach Betreuung von Kindergarten- und Schulkindern auf der rechten
 Aareseite gerecht zu werden, eröffnen wir zum Schuljahr 2026/2027
-im Rickenbachsaal der Friedenskirche einen Hort mit 24 Plätzen.
+im Riggenbachsaal der Friedenskirche einen Hort mit 24 Plätzen.
 
 Weitere Informationen finden Sie in dieser
 [Medienmitteilung](/docs/kitas/KK-Olten-Medienmitteilung_Hort_2025.pdf).
