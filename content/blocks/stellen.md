@@ -7,7 +7,9 @@ Title: Freie Stellen
 
 ## Kita Hagmatt
 
-- [Miterzieher:in 60-80% per 1.4.2026](/docs/stellen/Hagmatt-Miterzieherin-20251204.pdf)
+Zur Zeit keine offenen Stellen.
+
+# - [Miterzieher:in 60-80% per 1.4.2026](/docs/stellen/Hagmatt-Miterzieherin-20251204.pdf)
 
 ## Kita Sonnhalde
 
