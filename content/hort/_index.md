@@ -1,3 +1,3 @@
 ---
-title: Schülerhort
+title: Hort
 ---

@@ -1,7 +1,7 @@
 ---
-Title: Schülerhort Bifang-Säli
+Title: Hort Bifang-Säli
 ---
-<h1><a name="hort" style="color: inherit; text-decoration: inherit">Schülerhort Bifang-Säli</a></h1>
+<h1><a name="hort" style="color: inherit; text-decoration: inherit">Hort Bifang-Säli</a></h1>
 
 Um der Nachfrage nach Betreuung von Kindergarten- und Schulkindern auf der rechten
 Aareseite gerecht zu werden, eröffnen wir zum Schuljahr 2026/2027

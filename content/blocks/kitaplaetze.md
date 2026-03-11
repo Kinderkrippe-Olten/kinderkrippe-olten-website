@@ -18,7 +18,7 @@ Krippenleiterin Frau Anne Peter<br>
 Tel. 062 296 18 81<br>
 [sonnhalde@kinderkrippe-olten.ch](mailto:sonnhalde@kinderkrippe-olten.ch)
 
-## Schülerhort Bifang-Säli
+## Hort Bifang-Säli
 
 Unverbindliche Voranmeldungen an
 
