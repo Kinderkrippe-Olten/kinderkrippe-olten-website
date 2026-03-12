@@ -1,4 +1,4 @@
 [tools]
 "aqua:sass/dart-sass" = "1.89.1"
 node = "24.9.0"
-hugo-extended = "0.152.2"
+hugo-extended = "latest"
