@@ -7,8 +7,8 @@
 <div class="uk-container">
 {{ $siteFilter := "" }}
 {{ $title := "Unser Team" }}
-{{ if isset . "siteFilter" }}{{ $siteFilter = .siteFilter }}{{ end }}
-{{ if isset . "title" }}{{ $title = .title }}{{ end }}
+{{ if reflect.IsMap . }}{{ with .siteFilter }}{{ $siteFilter = . }}{{ end }}{{ end }}
+{{ if reflect.IsMap . }}{{ with .title }}{{ $title = . }}{{ end }}{{ end }}
 <h2>{{ $title }} </h2>
   <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1"
     uk-slider="finite: false; autoplay: true; autoplay-interval: 2000;">

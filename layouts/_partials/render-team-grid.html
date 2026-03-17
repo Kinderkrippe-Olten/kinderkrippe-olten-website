@@ -3,7 +3,7 @@
   {{ $currentSection := "" }}
   {{ $gridOpen := false }}
   {{ $siteFilter := "" }}
-  {{ if isset . "siteFilter" }}{{ $siteFilter = .siteFilter }}{{ end }}
+  {{ if reflect.IsMap . }}{{ with .siteFilter }}{{ $siteFilter = . }}{{ end }}{{ end }}
 
   {{ range $.Site.Data.team }}
     {{ if reflect.IsMap . }}
