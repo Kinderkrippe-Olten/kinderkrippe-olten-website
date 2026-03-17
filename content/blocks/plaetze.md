@@ -1,10 +1,16 @@
 ---
-Title: Kita-Plätze
+Title: Hort und Kita-Plätze
 ---
 
 <h1><a name="kitas" style="color: inherit; text-decoration: inherit">Betreuungsplätze</a></h1>
 
 Bei Interesse melden Sie sich bitte direkt bei der jeweiligen Einrichtung.
+
+## Hort Bifang-Säli
+
+Anmeldung per August 2026 bitte an
+
+[hort@kinderkrippe-olten.ch](mailto:hort@kinderkrippe-olten.ch)
 
 ## Kita Hagmatt
 
@@ -17,10 +23,4 @@ Tel. 062 212 64 65<br>
 Krippenleiterin Frau Anne Peter<br>
 Tel. 062 296 18 81<br>
 [sonnhalde@kinderkrippe-olten.ch](mailto:sonnhalde@kinderkrippe-olten.ch)
-
-## Hort Bifang-Säli
-
-Unverbindliche Voranmeldungen an
-
-[hort@kinderkrippe-olten.ch](mailto:hort@kinderkrippe-olten.ch)
 

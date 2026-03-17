@@ -3,7 +3,11 @@ Title: Freie Stellen
 ---
 <h1><a name="stellen" style="color: inherit; text-decoration: inherit">Offene Stellen</a></h1>
 
-<!-- Derzeit keine offenen Stellen. -->
+
+## Hort Bifang-Säli
+
+- [Hortleiter:in per 1.7.2026 oder nach Vereinbarung](/docs/stellen/Hort-Leitung-20260316.pdf)
+- [Hortbetreuer:in per 1.8.2026 oder nach Vereinbarung](/docs/stellen/Hort-Betreuung-20260317.pdf)
 
 ## Kita Hagmatt
 

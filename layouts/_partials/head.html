@@ -7,10 +7,12 @@
         {{ end }}
     </title>
     {{ $sassResource := resources.Get "scss/site.scss" }}
-    {{ $sassOptions := dict 
+    {{ $sassOptions := dict
         "transpiler" "dartsass"
         "fingerprint" true
         "targetPath" "css/main.css"
+        "quietDeps" true
+        "silenceDeprecations" (slice "import")
     }}
     {{ $style := css.Sass $sassOptions $sassResource }}
     {{ $secureStyle := $style | resources.Fingerprint "sha512" }}
