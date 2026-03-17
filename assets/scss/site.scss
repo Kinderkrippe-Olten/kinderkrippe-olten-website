@@ -340,6 +340,11 @@ html::-webkit-scrollbar {
   }
 }
 
+// List item spacing
+ul li, ol li {
+  margin-bottom: 0.4rem;
+}
+
 // Default table styles
 table {
   td, th {
