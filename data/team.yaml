@@ -46,6 +46,16 @@
   group: frosch
   site: hagmatt
 
+- firstname: Fabienne
+  lastname: Hintermann
+  picture: Fabienne_Hintermann.jpg
+  function:
+    - Miterzieherin
+  education:
+    - FaBe K EFZ
+  group: frosch
+  site: hagmatt
+
 - firstname: Andrea
   lastname: Zehntner
   picture: Andrea_Zehntner.jpg
@@ -111,6 +121,14 @@
   function:
     - Praktikantin
   group: frosch
+  site: hagmatt
+
+- firstname: Lea
+  lastname: Grolimund
+  picture: Lea_Grolimund.jpg
+  function:
+    - Praktikantin
+#  group: frosch+fisch
   site: hagmatt
 
 - firstname: Anna
