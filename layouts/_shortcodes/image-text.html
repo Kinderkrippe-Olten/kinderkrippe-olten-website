@@ -1,5 +1,5 @@
 {{ $title := .Get "title" }}
-{{ $image := $.Page.Parent.Resources.Get (.Get "src") }}
+{{ $image := $.Page.Resources.Get (.Get "src") }}
 {{ $pos := .Get "pos" }}
 {{ $ratio := .Get "ratio" }}
 {{ if not $image }}

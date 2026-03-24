@@ -5,10 +5,10 @@ background: red
 # Willkommen
 
 Die familienergänzende Betreuung in den Kinderkrippen Sonnhalde und Hagmatt
-unterstützt Sie als Eltern in Ihrer Funktion.  Sie wissen Ihr Kind kompetent
-und liebevoll betreut.
+sowie im Hort Bifang-Säli unterstützt Sie als Eltern in Ihrer Funktion. Sie
+wissen Ihre Kinder kompetent und liebevoll betreut.
 
-Ihr Kind, vom Baby- bis zum Vorschulalter, lernt sich in einer sozial- und
+Vom Babyalter bis zum Ende der Primarschulzeit, lernt sich ihr Kind in einer sozial- und
 altersgemischten Gruppe zu bewegen,  eine ideale Ergänzung zum Alltag in der
 Kleinfamilie.  Die Gruppe dient als Lernfeld, in dem Kinder Toleranz und
 Rücksicht üben, aber auch Freundschaften pflegen können.

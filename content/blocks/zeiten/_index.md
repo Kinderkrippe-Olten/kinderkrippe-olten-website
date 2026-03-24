@@ -2,7 +2,7 @@
 Title: Öffnungszeiten
 background: beige
 ---
-# Öffnungszeiten
+## Öffnungszeiten
 
 Die Kitas sind Montag bis Freitag von 6.30 - 18.00 Uhr geöffnet.
 

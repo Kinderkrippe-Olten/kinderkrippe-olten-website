@@ -102,6 +102,7 @@ $modal-container-width: 778px !default;
 @import "kko-blog-single";
 @import "kko-team";
 @import "kko-landscape-warning";
+@import "kko-banner";
 
 // hide the menu on mobile
 @media (max-width: $breakpoint-small) {

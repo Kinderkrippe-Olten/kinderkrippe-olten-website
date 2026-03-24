@@ -1,0 +1,6 @@
+{{ $alt := .Get "alt" | default "" }}
+{{ $image := $.Page.Resources.Get (.Get "src") }}
+{{ if not $image }}
+    {{ errorf "image not found: %v" (.Get "src") }}
+{{ end }}
+{{ partial "image-banner.html" (dict "image" $image "alt" $alt) | safeHTML }}
