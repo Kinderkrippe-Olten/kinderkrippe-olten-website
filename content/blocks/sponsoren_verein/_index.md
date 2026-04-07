@@ -12,7 +12,7 @@ wir Ihren Beitrag einsetzen können.
 
 ## Spenden
 
-Bank-Verbindung: IBAN CH72 0076 1595 3351 7200 5 (Aargauer Kantonalbank)
+Bank-Verbindung: IBAN CH72 0076 1595 3351 7200 5 (Aargauische Kantonalbank)
 oder PC-Konto 46-3677-2.  Bitte den Vermerk "Spende Krippe Sonnhalde",
 "Spende Krippe Hagmatt", oder "Spende Hort Bifang-Säli" anbringen.
 
