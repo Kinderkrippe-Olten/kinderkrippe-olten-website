@@ -5,6 +5,8 @@ mainlinks:
   - title: "Kita Sonnhalde"
     href: /sonnhalde
     color: red
+  - type: spacer
+    height: 0.75em
   - title: "Hort Bifang-Säli"
     href: /#hort
     color: light-blue
