@@ -6,15 +6,14 @@ Title: Freie Stellen
 
 ## Hort Bifang-Säli
 
-- [Hortleiter:in per 1.7.2026 oder nach Vereinbarung](/docs/stellen/Hort-Leitung-20260316.pdf)
 - [Hortbetreuer:in per 1.8.2026 oder nach Vereinbarung](/docs/stellen/Hort-Betreuung-20260317.pdf)
 
 ## Kita Hagmatt
 
-Zur Zeit keine offenen Stellen.
+<!--Zur Zeit keine offenen Stellen. -->
 
-<!-- - [Miterzieher:in 60-80% per 1.4.2026](/docs/stellen/Hagmatt-Miterzieherin-20251204.pdf)
--->
+- [Aushilfe per sofort oder nach Vereinbarung](/docs/stellen/Hagmatt-Aushilfe-20260423.pdf)
+
 
 ## Kita Sonnhalde
 
