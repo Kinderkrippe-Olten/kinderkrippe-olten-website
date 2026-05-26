@@ -10,3 +10,4 @@ Title: Downloads
 
 - [Tarifblatt](/docs/kitas/KK-Olten-Tarifblatt_2024-09-18.pdf)
 - [Statuten](/docs/verein/KK-Olten-Statuten_2022-12-05.pdf)
+- [Beitrittsformular Verein](/docs/verein/KK-Olten-Vereinsbeitritt_2026-05-25.pdf)
