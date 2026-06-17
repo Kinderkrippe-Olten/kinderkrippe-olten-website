@@ -6,7 +6,8 @@ Title: Freie Stellen
 
 ## Hort Bifang-Säli
 
-- [Hortbetreuer:in per 1.8.2026 oder nach Vereinbarung](/docs/stellen/Hort-Betreuung-20260317.pdf)
+- [Aushilfe (kein Fixpensum) per 1.8.2026 oder nach
+  Vereinbarung](/docs/stellen/Hort-Aushilfe-20260617.pdf)
 
 ## Kita Hagmatt
 
