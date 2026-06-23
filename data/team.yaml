@@ -344,6 +344,28 @@
     - Kaufmännische Angestellte
   site: sonnhalde
 
+- sect: Hort Bifang-Säli
+
+- firstname: Eliane
+  lastname: Flückier
+  picture: Eliane_Flückiger.jpg
+  function:
+    - Hortleiterin
+  education:
+    - FaBe K
+    - Kindheitspädagogin HF
+  site: bifang-säli
+
+- firstname: Jessica
+  lastname: Neukomm
+  picture: Jessica_Neukomm.jpg
+  function:
+    - Köchin
+    - Betreuungsassistenz
+  education:
+    - Bäcker-Konditorin
+  site: bifang-säli
+
 - sect: Vorstand Verein Kinderkrippe Olten
 
 - firstname: Franco

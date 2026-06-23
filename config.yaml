@@ -1,6 +1,6 @@
 baseURL: https://kinderkrippe-olten.ch/
 title: Kinderkrippe Olten 
-languageCode: de-ch
+locale: de-ch
 outputs:
   home: ["HTML", "JSON"]
 params:

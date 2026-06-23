@@ -3,7 +3,7 @@ Title: Eröffnung Hort
 TeaserTitle: Hort Bifang-Säli
 Autor: Franco Giori und Melanie von Arx
 Date: 2025-12-04
-Site: hort
+Site: bifang-säli
 ---
 # Kinderkrippe Olten eröffnet 2026 den Hort Bifang-Säli
 

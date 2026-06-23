@@ -22,7 +22,6 @@ Tel. 062 296 18 81<br>
 
 **Hort Bifang-Säli**<br>
 <a href="mailto: hort@kinderkrippe-olten.ch">hort@kinderkrippe-olten.ch</a>
-<!-- Reiserstrasse 89<br>
+Reiserstrasse 89<br>
 4600 Olten<br>
-Tel. 062 296 18 81<br> -->
-
+<!--Tel. 062 296 18 81<br> -->

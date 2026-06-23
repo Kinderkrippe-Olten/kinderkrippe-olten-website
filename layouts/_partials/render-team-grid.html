@@ -5,7 +5,7 @@
   {{ $siteFilter := "" }}
   {{ if reflect.IsMap . }}{{ with .siteFilter }}{{ $siteFilter = . }}{{ end }}{{ end }}
 
-  {{ range $.Site.Data.team }}
+  {{ range hugo.Data.team }}
     {{ if reflect.IsMap . }}
       {{ if .sect }}
         {{ if $gridOpen }}

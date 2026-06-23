@@ -20,7 +20,7 @@
 
 {{/* Try to infer site from group if site is missing */}}
 {{ if and (not $site) $group }}
-  {{ range $siteKey, $siteData := .Site.Data.sites }}
+  {{ range $siteKey, $siteData := hugo.Data.sites }}
     {{ if index $siteData.Groups $group }}
       {{ $site = $siteKey }}
     {{ end }}
@@ -29,7 +29,7 @@
 
 {{ $siteData := "" }}
 {{ if $site }}
-  {{ $siteData = index .Site.Data.sites $site }}
+  {{ $siteData = index hugo.Data.sites $site }}
 {{ end }}
 {{ $siteName := "" }}
 {{ if and $siteData (reflect.IsMap $siteData) }}
@@ -47,7 +47,7 @@
   {{ else if $name }}
     {{ if $group }}
       {{ $validGroups := slice }}
-      {{ range $siteKey, $siteData := .Site.Data.sites }}
+      {{ range $siteKey, $siteData := hugo.Data.sites }}
         {{ range $groupKey, $_ := $siteData.Groups }}
           {{ $validGroups = $validGroups | append $groupKey }}
         {{ end }}
@@ -59,7 +59,7 @@
   {{ end }}
 {{ else if not $siteData }}
   {{ $validSites := slice }}
-  {{ range $k, $_ := .Site.Data.sites }}{{ $validSites = $validSites | append $k }}{{ end }}
+  {{ range $k, $_ := hugo.Data.sites }}{{ $validSites = $validSites | append $k }}{{ end }}
   {{ if .Title }}
     {{ warnf "Invalid 'site' parameter '%s' for blog post '%s' in %s. Valid sites: %s" $site .Title .File.Path (delimit (sort $validSites) ", ") }}
   {{ else if $name }}
