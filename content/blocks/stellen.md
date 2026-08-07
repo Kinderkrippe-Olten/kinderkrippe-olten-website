@@ -6,24 +6,26 @@ Title: Freie Stellen
 
 ## Hort Bifang-Säli
 
-- [Aushilfe (kein Fixpensum) per 1.8.2026 oder nach
-  Vereinbarung](/docs/stellen/Hort-Aushilfe-20260617.pdf)
+<!-- Zur Zeit keine offenen Stellen. -->
+
+- [Aushilfe (kein Fixpensum) per 1.8.2026](/docs/stellen/Hort-Aushilfe-20260617.pdf)
+  </br>oder nach Vereinbarung
+- [Pädagogische Fachperson (30 – 50%) per 1.9.2026](/docs/stellen/Hort-Pädagogische-Fachperson-20260805.pdf)
+  </br>oder nach Vereinbarung
+
 
 ## Kita Hagmatt
 
 <!--Zur Zeit keine offenen Stellen. -->
 
-- [Aushilfe per sofort oder nach Vereinbarung](/docs/stellen/Hagmatt-Aushilfe-20260423.pdf)
+- [Aushilfe per sofort](/docs/stellen/Hagmatt-Aushilfe-20260423.pdf)
+  </br>oder nach Vereinbarung
 
 
 ## Kita Sonnhalde
 
-Zur Zeit keine offenen Stellen.
+<!-- Zur Zeit keine offenen Stellen. -->
 
-<!-- - [Praktikant:in 80-100% per sofort](/docs/stellen/PraktikantIn-Sonnhalde-2025.pdf)
-- [Pädagogische Fachperson 40% per
-  1.1.2026](/docs/stellen/Sonnhalde-Paedagogische-Fachperson-20260101.pdf)
-- [Praktikant:in per 1.8.2026](/docs/stellen/PraktikantIn-Sonnhalde-20260801.pdf)
--->
-
+- [Koch oder Köchin (10% und Ferienvertretung) per 1.9.2026](/docs/stellen/Sonnhalde-Köchin-20260728.pdf)
+  </br>oder nach Vereinbarung
 
