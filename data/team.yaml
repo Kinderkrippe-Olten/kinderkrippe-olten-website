@@ -346,9 +346,9 @@
 
 - sect: Hort Bifang-Säli
 
-- firstname: Eliane
+- firstname: Elaine
   lastname: Flückier
-  picture: Eliane_Flückiger.jpg
+  picture: Elaine_Flückiger.jpg
   function:
     - Hortleiterin
   education:
@@ -364,6 +364,15 @@
     - Betreuungsassistenz
   education:
     - Bäcker-Konditorin
+  site: bifang-säli
+
+- firstname: Naomi
+  lastname: Köbeli
+  picture: Naomi_Köbeli.jpg
+  function:
+    - Pädagogische Fachperson
+  education:
+    - FaBe K
   site: bifang-säli
 
 - sect: Vorstand Verein Kinderkrippe Olten
