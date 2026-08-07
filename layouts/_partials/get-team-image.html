@@ -15,18 +15,13 @@
 {{ $imageResource := resources.Get $imagePath }}
 {{ $finalImage := "" }}
 
+{{ if not $imageResource }}
+  {{ warnf "get-team-image.html: no image at %q, falling back to placeholder" $imagePath }}
+  {{ $imageResource = resources.Get "images/team/Coming_Soon.jpg" }}
+{{ end }}
+
 {{ if $imageResource }}
   {{ $finalImage = $imageResource.Fill "400x400 webp q90 top" }}
-{{ else }}
-  {{ $pictureHash := sha256 $picture }}
-  {{ $seed := substr $pictureHash 0 8 }}
-  {{ $placeholderUrl := printf "https://thispersondoesnotexist.com/?seed=%s" $seed }}
-  {{ $placeholderResource := resources.GetRemote $placeholderUrl }}
-  {{ if $placeholderResource }}
-    {{ $smallImage := $placeholderResource.Resize "50x50" }}
-    {{ $pixelatedImage := $smallImage.Resize "400x400" }}
-    {{ $finalImage = $pixelatedImage.Fill "400x400 webp q90" }}
-  {{ end }}
 {{ end }}
 
 {{ return $finalImage }}
