@@ -11,7 +11,7 @@ Weitere Informationen finden Sie in dieser
 
 Anmeldungen bitte ab sofort für August 2026 per Email an [hort@kinderkrippe-olten.ch](mailto:hort@kinderkrippe-olten.ch)
 
-- [Betreuungsreglement](/docs/hort/KK-Olten-Hort-Betreuungsreglement_2026-03-14.pdf)
+- [Betreuungsreglement](/docs/hort/KK-Olten-Hort-Betreuungsreglement_2026-06-30.pdf)
 - [Tarifblatt detailliert](/docs/hort/KK-Olten-Tarifblatt-Hort_2026-06-16.pdf)
 - [Horttarif visualisiert](/docs/hort/KK-Olten_Horttarif_2026.pdf)
 
