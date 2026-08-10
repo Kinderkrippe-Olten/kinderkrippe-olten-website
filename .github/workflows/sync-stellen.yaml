@@ -44,8 +44,12 @@ jobs:
     env:
       # Pinned and checksum-verified rather than piping an install script into a
       # root shell. 'infinitescale' is absent from older rclone builds.
-      RCLONE_VERSION: v1.75.0
-      RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
+      #
+      # Deliberately NOT named RCLONE_*: rclone maps every RCLONE_<FLAG> environment
+      # variable onto the corresponding flag, so RCLONE_VERSION is read as
+      # --version=v1.75.0 and dies on "strconv.ParseBool".
+      PIN_RCLONE_VERSION: v1.75.0
+      PIN_RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
 
     steps:
       - name: Checkout
@@ -54,9 +58,9 @@ jobs:
       - name: Install rclone
         run: |
           set -euo pipefail
-          dir="rclone-${RCLONE_VERSION}-linux-amd64"
-          curl -fsSLO "https://downloads.rclone.org/${RCLONE_VERSION}/${dir}.zip"
-          echo "${RCLONE_SHA256}  ${dir}.zip" | sha256sum -c -
+          dir="rclone-${PIN_RCLONE_VERSION}-linux-amd64"
+          curl -fsSLO "https://downloads.rclone.org/${PIN_RCLONE_VERSION}/${dir}.zip"
+          echo "${PIN_RCLONE_SHA256}  ${dir}.zip" | sha256sum -c -
           unzip -q "${dir}.zip"
           sudo install -m 0755 "${dir}/rclone" /usr/local/bin/rclone
           rm -rf "${dir}" "${dir}.zip"
