@@ -1,0 +1,90 @@
+{{/* layouts/_shortcodes/stellen.html */}}
+{{/*
+Renders the "Offene Stellen" list from the PDFs present in content/docs/stellen/.
+
+  Sections      come from data/stellen.yaml (heading + order).
+  Job postings  are discovered from the PDFs in content/docs/stellen/<dir>/,
+                newest first. Adding a PDF adds an entry, deleting one removes it.
+
+Filename convention:
+
+  <site><sep><YYYYMMDD><sep><link text>.pdf
+
+  <site>       the containing directory's name, compared case-insensitively
+  <sep>        a single space, "-" or "_"
+  <YYYYMMDD>   the posting date -- drives the sort order, and is deliberately
+               not the start date (that belongs in the link text, where it can
+               be phrased freely: "per 1.9.2026", "per sofort", ...)
+  <link text>  used verbatim as the link text; spaces, parentheses, "%",
+               en-dashes and umlauts are all fine
+
+Example:
+
+  sonnhalde 20260728 Koch oder Köchin (10% und Ferienvertretung) per 1.9.2026.pdf
+
+A file that does not match the convention fails the build with errorf, naming the
+file and what was expected. This is deliberate: a mistyped filename would otherwise
+just be missing from the page, which nobody notices. A red build sends the author
+an e-mail instead.
+
+Non-PDF files (notably .gitkeep) are ignored silently.
+*/}}
+{{- $root := "content/docs/stellen" -}}
+{{- $seps := slice " " "-" "_" -}}
+{{- $suffix := "oder nach Vereinbarung" -}}
+{{- $out := "" -}}
+
+{{- range hugo.Data.stellen -}}
+  {{- $dir := .dir -}}
+  {{- $title := .title -}}
+  {{- $path := printf "%s/%s" $root $dir -}}
+  {{- $plen := strings.RuneCount $dir -}}
+  {{- $jobs := slice -}}
+
+  {{- if not (os.FileExists $path) -}}
+    {{- errorf "stellen: directory %q is listed in data/stellen.yaml but does not exist" $path -}}
+  {{- else -}}
+    {{- range (os.ReadDir $path) -}}
+      {{- $name := .Name -}}
+      {{- $ext := path.Ext $name -}}
+      {{- if and (not .IsDir) (eq (lower $ext) ".pdf") -}}
+        {{- $stem := strings.TrimSuffix $ext $name -}}
+        {{- /* prefix + sep + 8 digits + sep + at least one character of link text */ -}}
+        {{- if lt (strings.RuneCount $stem) (add $plen 11) -}}
+          {{- errorf "stellen: %q -- expected %q<sep><YYYYMMDD><sep><link text>.pdf" (printf "%s/%s" $path $name) $dir -}}
+        {{- else if ne (lower (substr $stem 0 $plen)) (lower $dir) -}}
+          {{- errorf "stellen: %q -- filename must start with %q (case-insensitive)" (printf "%s/%s" $path $name) $dir -}}
+        {{- else if not (in $seps (substr $stem $plen 1)) -}}
+          {{- errorf "stellen: %q -- %q must be followed by a space, \"-\" or \"_\"" (printf "%s/%s" $path $name) $dir -}}
+        {{- else if not (findRE "^[0-9]{8}$" (substr $stem (add $plen 1) 8)) -}}
+          {{- errorf "stellen: %q -- expected an 8-digit date YYYYMMDD after %q" (printf "%s/%s" $path $name) $dir -}}
+        {{- else if not (in $seps (substr $stem (add $plen 9) 1)) -}}
+          {{- errorf "stellen: %q -- the date must be followed by a space, \"-\" or \"_\"" (printf "%s/%s" $path $name) $dir -}}
+        {{- else -}}
+          {{- $date := substr $stem (add $plen 1) 8 -}}
+          {{- $text := substr $stem (add $plen 10) -}}
+          {{- /* urlquery encodes UTF-8 correctly but renders spaces as "+";
+                 a literal "+" is already escaped to %2B by then, so this is safe */ -}}
+          {{- $href := printf "/docs/stellen/%s/%s"
+                (replace (urlquery $dir) "+" "%20")
+                (replace (urlquery $name) "+" "%20") -}}
+          {{- $jobs = $jobs | append (dict "sort" (printf "%s %s" $date $text) "href" $href "text" $text) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $out = printf "%s<h2 id=\"%s\">%s</h2>\n" $out (anchorize $title) $title -}}
+
+  {{- if not $jobs -}}
+    {{- $out = printf "%s<p>Zur Zeit keine offenen Stellen.</p>\n" $out -}}
+  {{- else -}}
+    {{- $out = printf "%s<ul>\n" $out -}}
+    {{- range (sort $jobs "sort" "desc") -}}
+      {{- $out = printf "%s<li><a href=\"%s\">%s</a>\n<br>%s</li>\n" $out .href .text $suffix -}}
+    {{- end -}}
+    {{- $out = printf "%s</ul>\n" $out -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $out | safeHTML -}}

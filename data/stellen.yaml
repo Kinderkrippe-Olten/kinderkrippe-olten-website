@@ -1,0 +1,23 @@
+# Sections of the "Offene Stellen" page (content/blocks/stellen.md).
+#
+# Each entry maps a directory under content/docs/stellen/ to a heading.
+# The order here is the order of the sections on the page.
+#
+# The job postings themselves are NOT listed here -- they are discovered from
+# the PDFs in the directory at build time. See layouts/_shortcodes/stellen.html
+# for the filename convention.
+#
+# A site with no open positions keeps its entry here and an (almost) empty
+# directory containing only .gitkeep; it then renders
+# "Zur Zeit keine offenen Stellen."
+#
+# To take a posting down, delete the PDF -- git history keeps it recoverable.
+#
+# Directories not listed here are ignored.
+
+- dir: bifang-säli
+  title: Hort Bifang-Säli
+- dir: hagmatt
+  title: Kita Hagmatt
+- dir: sonnhalde
+  title: Kita Sonnhalde
