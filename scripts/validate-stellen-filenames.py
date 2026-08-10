@@ -142,8 +142,11 @@ def main():
             errors.append((entry + "/", f"not a site listed in {args.sites}"))
             continue
 
-        # Use the repository's spelling, not OpenCloud's, so that a folder created
-        # as "Hagmatt" still lands in content/docs/stellen/hagmatt/.
+        # Validate the filename prefix against the repository's spelling, so a
+        # folder created in OpenCloud as "Hagmatt" still accepts "hagmatt ....pdf".
+        # Paths on stdout keep OpenCloud's spelling, because they must resolve
+        # inside the staging directory on a case-sensitive filesystem; mapping them
+        # onto the repository's spelling is apply-stellen-sync.py's job.
         site = known[entry.casefold()]
 
         for name in sorted(os.listdir(path)):

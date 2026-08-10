@@ -41,6 +41,32 @@ The authoritative list of sites remains `data/stellen.yaml`. A folder in OpenClo
 that is not listed there is reported and ignored — adding a site stays a deliberate
 repository change, because it also needs a heading and a position on the page.
 
+## Connection details
+
+The space URL has the form
+
+```
+https://cloud.kinderkrippe-olten.ch/dav/spaces/<storage-id>$<space-id>
+```
+
+Two properties of it constrain the implementation:
+
+- The path is `/dav/spaces/…`, not the older `/remote.php/dav/spaces/…`.
+- The space ID contains a literal `$`, separating storage ID from space ID. It must
+  never be interpolated into a double-quoted shell string, where `$faf2…` would
+  expand to nothing and yield a silently wrong URL. The value is passed only through
+  environment variables, never spliced into a command line.
+
+The endpoint answers an unauthenticated `PROPFIND` with `401` and offers both
+`Bearer` and `Basic` challenges, so rclone authenticates with Basic using the
+username and an App Token.
+
+`--webdav-vendor` must be **`infinitescale`**. There is no `opencloud` vendor;
+OpenCloud is a fork of ownCloud Infinite Scale, and `owncloud` refers to the older
+PHP implementation. `infinitescale` is absent from older rclone builds (1.68.1, for
+instance), so the workflow installs a current rclone rather than relying on the
+runner's packaged version.
+
 ## Direction and authority
 
 OpenCloud is the source of truth for `content/docs/stellen/`. The sync is a one-way
@@ -62,42 +88,80 @@ punctual, so 15 minutes can become considerably more under load — acceptable f
 ads, and `workflow_dispatch` covers the case where someone wants it live now.
 
 1. Check out the repository.
-2. Install rclone.
-3. `rclone sync` the OpenCloud space into a **staging directory**, not into the
+2. Install rclone — pinned to `v1.75.0` and checksum-verified, rather than piping
+   an install script into a root shell.
+3. `rclone copy` the OpenCloud space into a **staging directory**, not into the
    repository.
-4. Run `scripts/validate-stellen-filenames.sh` over the staging directory.
-5. Copy only the valid PDFs into `content/docs/stellen/<site>/`, and delete
-   repository PDFs that are not in the valid set.
-6. Re-create `.gitkeep` in every site directory.
-7. If the working tree is unchanged, finish without committing.
-8. Otherwise commit and push over SSH using the deploy key.
-9. If any file was rejected, fail the job, listing each offender and the reason.
+4. Run `scripts/apply-stellen-sync.py`, which validates the staged files and makes
+   `content/docs/stellen/` match the validated set.
+5. If the working tree is unchanged, finish without committing.
+6. Otherwise commit, push, and dispatch `deploy-hugo.yaml`.
+7. If any file was rejected, fail the job.
 
-Step 3 is why staging exists. `rclone sync` mirrors everything it finds, including
-files that violate the convention; validation has to sit between the mirror and the
-repository so that one bad file cannot block everyone else's ads.
+Staging exists because rclone fetches everything it finds, including files that
+violate the convention. Validation has to sit between the fetch and the repository
+so that one bad file cannot block everyone else's ads.
 
-Step 6 matters because `.gitkeep` exists only in the repository. A naive mirror
-would delete it, and a site whose folder is empty would then vanish from git — which
-the Hugo shortcode treats as a hard error, not as "no open positions".
+The workflow itself stays thin: three shell steps plus a commit. The decisions live
+in `apply-stellen-sync.py` and `validate-stellen-filenames.py`, which run and are
+tested locally — the only way to get real coverage, since the WebDAV leg is
+unreachable from a development machine.
 
-Step 9 runs last on purpose. The valid ads are already committed, pushed and
+Step 7 runs last on purpose. The valid ads are already committed, pushed and
 deploying by then; the red run is a notification, not a rollback.
 
-## Why the push uses a deploy key
+## Repository update
+
+`scripts/apply-stellen-sync.py` owns the mirror. It invokes the validator as a
+subprocess, maps each staged path onto the repository's spelling of its site
+directory (so a folder created in OpenCloud as `Hagmatt/` still lands in
+`hagmatt/`), then copies added and changed PDFs, removes those no longer present,
+and ensures every site directory still has its `.gitkeep`.
+
+`.gitkeep` needs restoring explicitly because it exists only in the repository —
+OpenCloud has no reason to carry it. A naive mirror would delete it, the now-empty
+site directory would vanish from git, and the Hugo shortcode treats a missing site
+directory as a hard error rather than as "no open positions".
+
+Its exit codes extend the validator's: 0 clean, 1 applied with rejections, 2 could
+not run, 3 wipeout guard tripped. The workflow commits on 0 and 1 and stops on 2
+and 3.
+
+## How the deploy is triggered
 
 A push made with the workflow's `GITHUB_TOKEN` does not trigger other workflows —
-GitHub suppresses it to prevent recursion. The site would sync but never rebuild.
+GitHub suppresses it to prevent recursion. Left alone, the ads would be committed
+and the site would never rebuild.
 
-Pushes authenticated with an SSH deploy key are not suppressed, so the existing
-`deploy-hugo.yaml` (which already fires on `push: branches: ['**']`) runs
-automatically with no modification.
+The original plan was an SSH deploy key, whose pushes are not suppressed. That is
+not available: deploy keys are disabled org-wide on `Kinderkrippe-Olten`, and
+registering one fails with `HTTP 422`.
 
-A deploy key is preferred over a personal access token because it is scoped to this
-one repository rather than to an entire GitHub account.
+Instead the workflow uses the documented exception to the suppression rule:
+`workflow_dispatch` and `repository_dispatch` *can* be triggered by `GITHUB_TOKEN`.
+So the sync pushes with the built-in token and then runs
+`gh workflow run deploy-hugo.yaml --ref "$GITHUB_REF_NAME"`.
 
-A useful consequence: the workflow's own `GITHUB_TOKEN` needs only
-`permissions: contents: read`, since it never writes.
+This is better than the deploy key it replaces. No long-lived credential exists at
+all, so there is nothing to leak, rotate, or silently expire — the token is
+ephemeral and scoped to the run. The cost is one extra line and a
+`workflow_dispatch` trigger on `deploy-hugo.yaml`, which also gives a manual Deploy
+button.
+
+It requires `permissions: contents: write` (to commit) and `actions: write` (to
+dispatch) on the sync workflow.
+
+### Two changes to deploy-hugo.yaml
+
+`workflow_dispatch:` is added as a trigger, and the `deploy` job's condition gains
+`|| github.event_name == 'workflow_dispatch'`.
+
+The second is not cosmetic. That job was gated on `push` or `pull_request` only, so
+a dispatched run would have built the site and skipped publishing it — the sync
+would report success, and the site would never change. The `build` job needed no
+change: it already passes on `github.ref == 'refs/heads/main'`, and `check-pr`
+gates its logic at step level rather than job level, so it does not block a
+dispatched run.
 
 ## Validation
 
@@ -157,23 +221,29 @@ If OpenCloud returns an empty or partial listing — an expired token, a WebDAV
 outage, someone renaming the space — a naive mirror would delete every job ad from
 the live site.
 
-Two safeguards:
+The guard lives in `apply-stellen-sync.py`, which refuses to proceed when the
+validated set is empty while the repository still holds ads, and exits 3. Taking the
+genuinely last ad down is then a `workflow_dispatch` run with `allow_empty` ticked.
 
-- `rclone sync --max-delete` bounds how much a single run may remove from staging.
-- The repository update step refuses to run if the validated set is empty while the
-  repository currently holds PDFs. Taking the last ad down is then a
-  `workflow_dispatch` run with an explicit override input.
+It deliberately does *not* live in rclone. `rclone sync --max-delete` would be
+useless here: the runner is ephemeral, so staging starts empty every run and sync's
+deletion pass has nothing to act on. For the same reason the workflow uses
+`rclone copy` rather than `sync` — the mirror's deletions happen in the repository,
+where the guard can actually see them.
 
-Removing several ads at once is rare; silently emptying the page is unacceptable.
+The guard is narrow on purpose: only the total-wipe case. Bounding deletions to "no
+more than N per run" was considered and dropped — with only a handful of ads live at
+any time, such a bound would trip on legitimate cleanups while adding nothing
+against the failure it is meant to catch, which is an empty listing from an expired
+token or a WebDAV outage.
 
 ## Secrets
 
 | Secret | Purpose |
 |---|---|
-| `OPENCLOUD_WEBDAV_URL` | space URL, `https://<host>/remote.php/dav/spaces/<space-id>/` |
+| `OPENCLOUD_WEBDAV_URL` | space URL, `https://<host>/dav/spaces/<storage-id>$<space-id>` |
 | `OPENCLOUD_USER` | account the App Token belongs to |
-| `OPENCLOUD_TOKEN` | OpenCloud App Token, passed to rclone via `RCLONE_WEBDAV_PASS` (obscured) |
-| `SYNC_DEPLOY_KEY` | private half of the repository deploy key, write access enabled |
+| `OPENCLOUD_TOKEN` | OpenCloud App Token, in plain text; the workflow runs `rclone obscure` on it at runtime, since rclone expects an obscured password in config |
 
 The OpenCloud account should be dedicated to this job and have access only to the
 job-ad space, so a leaked token exposes one folder rather than a person's whole

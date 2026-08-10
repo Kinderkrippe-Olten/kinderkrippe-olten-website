@@ -5,6 +5,10 @@ on:
       - '**'  # Trigger on all branch pushes
   pull_request:
     types: [opened, synchronize, reopened]
+  # Manual deploy button, and how sync-stellen.yaml asks for a rebuild: its push is
+  # made with GITHUB_TOKEN, which does not trigger workflows, and workflow_dispatch
+  # is the documented exception.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -281,7 +285,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    # workflow_dispatch must publish too: it is how sync-stellen.yaml asks for a
+    # deploy, and without it the dispatched run would build the site and silently
+    # skip publishing it.
+    if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

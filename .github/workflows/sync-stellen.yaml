@@ -1,0 +1,144 @@
+name: Sync Stellen from OpenCloud
+
+# Mirrors the job-ad PDFs from the OpenCloud space into content/docs/stellen/.
+# OpenCloud is the source of truth: dropping a PDF in the folder publishes the ad,
+# deleting it takes the ad down. See
+# docs/superpowers/specs/2026-08-10-opencloud-stellen-sync-design.md
+#
+# GitHub suppresses workflow triggers for pushes made with GITHUB_TOKEN, so pushing
+# alone would sync the files but never rebuild the site. workflow_dispatch is the
+# documented exception to that suppression, so this workflow pushes and then
+# explicitly dispatches deploy-hugo.yaml.
+#
+# A deploy key would have avoided the extra step, but deploy keys are disabled
+# org-wide. This is arguably better anyway: no long-lived credential exists to leak,
+# rotate or silently expire.
+
+on:
+  schedule:
+    - cron: '*/15 6-18 * * 1-5'   # UTC; ~07:00-19:00 local in winter, 08:00-20:00 in summer
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Fetch and validate only -- do not commit or push'
+        type: boolean
+        default: false
+      allow_empty:
+        description: 'Permit removing the last remaining job ads (overrides the wipeout guard)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # commit the synced PDFs
+  actions: write    # dispatch deploy-hugo.yaml afterwards
+
+concurrency:
+  group: sync-stellen
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      # Pinned and checksum-verified rather than piping an install script into a
+      # root shell. 'infinitescale' is absent from older rclone builds.
+      RCLONE_VERSION: v1.75.0
+      RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install rclone
+        run: |
+          set -euo pipefail
+          dir="rclone-${RCLONE_VERSION}-linux-amd64"
+          curl -fsSLO "https://downloads.rclone.org/${RCLONE_VERSION}/${dir}.zip"
+          echo "${RCLONE_SHA256}  ${dir}.zip" | sha256sum -c -
+          unzip -q "${dir}.zip"
+          sudo install -m 0755 "${dir}/rclone" /usr/local/bin/rclone
+          rm -rf "${dir}" "${dir}.zip"
+          rclone version | head -1
+
+      - name: Fetch job ads from OpenCloud
+        env:
+          RCLONE_CONFIG_OC_TYPE: webdav
+          RCLONE_CONFIG_OC_VENDOR: infinitescale
+          # Passed as environment values, never spliced into a command line: the
+          # space ID contains a literal '$', which a double-quoted shell string
+          # would expand away and turn into a silently wrong URL.
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p staging
+          # rclone expects an obscured password in config, so obscure the App Token
+          # at runtime; the secret itself holds the plain token.
+          RCLONE_CONFIG_OC_PASS="$(rclone obscure "$OPENCLOUD_TOKEN")"
+          export RCLONE_CONFIG_OC_PASS
+          # copy, not sync: staging starts empty on an ephemeral runner, so there is
+          # nothing for sync's deletion pass to do. The mirror's deletions happen in
+          # the repository, where the wipeout guard can see them.
+          rclone copy OC: staging --max-size 25M --transfers 4 --stats-one-line -v
+          echo "--- fetched ---"
+          find staging -type f -printf '%P\n' | sort
+
+      - name: Apply to the repository
+        id: apply
+        env:
+          DRY_RUN: ${{ inputs.dry_run || false }}
+          ALLOW_EMPTY: ${{ inputs.allow_empty || false }}
+        run: |
+          set -euo pipefail
+          flags=()
+          if [ "$DRY_RUN" = "true" ]; then flags+=(--dry-run); fi
+          if [ "$ALLOW_EMPTY" = "true" ]; then flags+=(--allow-empty); fi
+
+          set +e
+          python3 scripts/apply-stellen-sync.py --staging staging "${flags[@]}" \
+            | tee apply-report.txt
+          rc=${PIPESTATUS[0]}
+          set -e
+
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          # 0 = clean, 1 = applied but something was rejected (commit anyway, fail at
+          # the end), 2 = could not run, 3 = wipeout guard tripped. Stop now on 2/3
+          # so nothing is committed.
+          if [ "$rc" -ge 2 ]; then exit "$rc"; fi
+
+      - name: Commit, push and trigger the deploy
+        if: ${{ inputs.dry_run != true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain content/docs/stellen)" ]; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git config user.name  "kko-websyncer[bot]"
+          git config user.email "websyncer@kinderkrippe-olten.ch"
+          git add -A content/docs/stellen
+          git commit -F - <<EOF
+          Sync job ads from OpenCloud
+
+          $(cat apply-report.txt)
+
+          Applied automatically by .github/workflows/sync-stellen.yaml
+          EOF
+          git push
+
+          # This push was made with GITHUB_TOKEN, so it will NOT trigger
+          # deploy-hugo.yaml on its own. workflow_dispatch is the documented
+          # exception, so ask for the deploy explicitly.
+          gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
+          echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME}"
+
+      - name: Report rejected files
+        if: ${{ steps.apply.outputs.rc == '1' }}
+        run: |
+          echo "::error::Some files in the OpenCloud folder could not be published."
+          echo "The valid ads were published; see 'Apply to the repository' above for"
+          echo "the offending filenames and how to correct them."
+          exit 1
