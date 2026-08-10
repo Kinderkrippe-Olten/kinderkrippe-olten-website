@@ -4,6 +4,9 @@ locale: de-ch
 outputs:
   home: ["HTML", "JSON"]
 params:
+  # Basename of the favicon in assets/img/ -- head.html expects both
+  # assets/img/<favicon>.svg and assets/img/<favicon>.png to exist.
+  favicon: kko
   headercommentblock: |
     <!-- ######################################  
          Content:         Kinderkrippe Olten  
