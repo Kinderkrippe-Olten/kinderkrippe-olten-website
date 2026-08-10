@@ -27,15 +27,23 @@ publishing job ads.
 
 ## Folder mapping
 
-OpenCloud holds three subfolders whose names match the repository's site
-directories, so the mapping is identity:
+The space root holds a `Stellenanzeigen/` folder, and the per-site folders sit
+inside it. The root also carries OpenCloud's own `.space/` metadata, so the sync
+points at `Stellenanzeigen/` rather than the space root:
 
 ```
-OpenCloud space                     repository
-  bifang-säli/   ───────────────▶     content/docs/stellen/bifang-säli/
-  hagmatt/       ───────────────▶     content/docs/stellen/hagmatt/
-  sonnhalde/     ───────────────▶     content/docs/stellen/sonnhalde/
+OpenCloud space                              repository
+  .space/                    (ignored)
+  Stellenanzeigen/
+    Bifang-Säli/   ────────────────────▶     content/docs/stellen/bifang-säli/
+    Hagmatt/       ────────────────────▶     content/docs/stellen/hagmatt/
+    Sonnhalde/     ────────────────────▶     content/docs/stellen/sonnhalde/
 ```
+
+The folder names are capitalised in OpenCloud and lower-case in the repository.
+That is fine: matching is case-insensitive, and `apply-stellen-sync.py` writes to
+the repository's spelling. The subfolder is set by `OPENCLOUD_PATH` in the workflow
+rather than baked into the URL secret, so the layout stays visible in review.
 
 The authoritative list of sites remains `data/stellen.yaml`. A folder in OpenCloud
 that is not listed there is reported and ignored — adding a site stays a deliberate

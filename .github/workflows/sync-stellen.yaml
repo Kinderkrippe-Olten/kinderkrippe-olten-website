@@ -51,6 +51,12 @@ jobs:
       PIN_RCLONE_VERSION: v1.75.0
       PIN_RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
 
+      # Folder inside the space that holds the per-site directories. The space root
+      # also contains OpenCloud's own .space/ metadata, so pointing at the root
+      # would fetch that too and find no site folders. Kept here rather than baked
+      # into the URL secret so the layout is visible in review.
+      OPENCLOUD_PATH: Stellenanzeigen
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -96,7 +102,7 @@ jobs:
           # copy, not sync: staging starts empty on an ephemeral runner, so there is
           # nothing for sync's deletion pass to do. The mirror's deletions happen in
           # the repository, where the wipeout guard can see them.
-          rclone copy OC: staging --max-size 25M --transfers 4 --stats-one-line -v
+          rclone copy "OC:${OPENCLOUD_PATH}" staging --max-size 25M --transfers 4 --stats-one-line -v
           echo "--- fetched ---"
           find staging -type f -printf '%P\n' | sort
 
