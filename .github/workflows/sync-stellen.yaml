@@ -78,6 +78,16 @@ jobs:
           OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
         run: |
           set -euo pipefail
+          # An empty secret surfaces as an opaque "401 Unauthorized" three retries
+          # later. `gh secret set NAME` with no stdin silently stores an empty value,
+          # which is an easy mistake to make and a slow one to diagnose.
+          for v in RCLONE_CONFIG_OC_URL RCLONE_CONFIG_OC_USER OPENCLOUD_TOKEN; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::secret behind $v is empty -- set it in Settings > Secrets and variables > Actions"
+              exit 1
+            fi
+          done
+
           mkdir -p staging
           # rclone expects an obscured password in config, so obscure the App Token
           # at runtime; the secret itself holds the plain token.
