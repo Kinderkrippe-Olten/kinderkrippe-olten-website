@@ -15,10 +15,8 @@ name: Sync Stellen from OpenCloud
 # rotate or silently expire.
 
 on:
-  # TEMPORARILY DISABLED until the first dry run confirms the WebDAV URL points at
-  # the folder holding the three site directories. Re-enable by uncommenting.
-  # schedule:
-  #   - cron: '*/15 6-18 * * 1-5'  # UTC; ~07:00-19:00 local in winter, 08:00-20:00 in summer
+  schedule:
+    - cron: '*/15 6-18 * * 1-5'   # UTC; ~07:00-19:00 local in winter, 08:00-20:00 in summer
   workflow_dispatch:
     inputs:
       dry_run:
