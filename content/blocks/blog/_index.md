@@ -1,8 +1,7 @@
 ---
-Title: Kita-Geschichten
+Title: Geschichten
 background: beige
 ---
-# Kita-Geschichten
+# Geschichten
 
-Texte und Bilder aus den Krippen
-
+Texte und Bilder aus Hort und Kitas
