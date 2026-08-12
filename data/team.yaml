@@ -92,9 +92,8 @@
   lastname: Schwarzenbach
   picture: Jaime_Schwarzenbach.jpg
   function:
-    - Lernende Fachfrau Betreuung Kind
-    - 3. Lehrjahr
-  group: fisch
+    - Miterzieherin
+  group: frosch
   site: hagmatt
 
 - firstname: Merci
@@ -102,7 +101,7 @@
   picture: Merci_Adele.jpg
   function:
     - Lernende Fachfrau Betreuung Kind
-    - 1. Lehrjahr
+    - 2. Lehrjahr
   group: fisch
   site: hagmatt
 
@@ -111,7 +110,7 @@
   picture: Caroline_Mba.jpg
   function:
     - Lernende Fachfrau Betreuung Kind
-    - 2. Lehrjahr
+    - 3. Lehrjahr
   group: frosch
   site: hagmatt
 
@@ -119,16 +118,17 @@
   lastname: Gandoli
   picture: Thifany_Gandoli.jpg
   function:
-    - Praktikantin
+    - Lernende Fachfrau Betreuung Kind
+    - 1. Lehrjahr
   group: frosch
   site: hagmatt
 
-- firstname: Lea
-  lastname: Grolimund
-  picture: Lea_Grolimund.jpg
+- firstname: Evelyn
+  lastname: Weber
+  picture: Evelyn_Weber.jpg
   function:
     - Praktikantin
-#  group: frosch+fisch
+  group: fisch
   site: hagmatt
 
 - firstname: Anna
