@@ -26,4 +26,4 @@ Eliane Flückiger<br>
 Hortleiterin<br>
 Reiserstrasse 89<br>
 4600 Olten<br>
-Tel. 062 526 85 13<br> -->
+Tel. 062 526 85 13<br>
