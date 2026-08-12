@@ -8,19 +8,19 @@ Bei Interesse melden Sie sich bitte direkt bei der jeweiligen Einrichtung.
 
 ## Hort Bifang-Säli
 
-Anmeldung per August 2026 bitte an
-
+Hortleiterin Frau Eliane Flückiger<br>
+Tel. 062 526 85 13<br>
 [hort@kinderkrippe-olten.ch](mailto:hort@kinderkrippe-olten.ch)
 
 ## Kita Hagmatt
 
-Krippenleiterin Frau Antonella Zbinden<br>
-Tel. 062 212 64 65<br>
+Kitaleiterin Frau Antonella Zbinden<br>
+Tel. 062 526 85 11<br>
 [hagmatt@kinderkrippe-olten.ch](mailto:hagmatt@kinderkrippe-olten.ch)
 
 ## Kita Sonnhalde
 
-Krippenleiterin Frau Anne Peter<br>
-Tel. 062 296 18 81<br>
+Kitaleiterin Frau Anne Peter<br>
+Tel. 062 526 85 12<br>
 [sonnhalde@kinderkrippe-olten.ch](mailto:sonnhalde@kinderkrippe-olten.ch)
 
