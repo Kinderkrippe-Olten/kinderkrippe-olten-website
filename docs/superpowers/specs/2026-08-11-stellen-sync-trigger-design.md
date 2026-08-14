@@ -405,8 +405,17 @@ Setup:
 5. The detector signs a short JWT with the key, exchanges it for an installation
    token, and uses that for the dispatch call.
 
-A fine-grained PAT with the same single permission is an acceptable shortcut, with a
-calendar reminder before its expiry.
+A fine-grained PAT with the same single permission is an acceptable shortcut, and is
+what was built (2026-08-14), expiring 2027-08-15.
+
+**The calendar reminder this section originally called for was replaced by a check in
+the heartbeat**, which is strictly better: GitHub returns the presented credential's
+own expiry in the `github-authentication-token-expiration` response header on any
+authenticated request, so `heartbeat.sh` reads it daily and fails the Job once fewer
+than 30 days remain. The expiry then arrives through `StellenDispatcherHeartbeatFailed`
+— an alerting path that already exists — instead of depending on someone having entered
+a date in a calendar a year earlier. Nothing anywhere has to remember the date, and no
+copy of it can drift.
 
 ## Changes to sync-stellen.yaml
 
@@ -528,7 +537,8 @@ part of the deliverable, not an afterthought.
 | Listener pod crash-looping or unscheduled | Ads wait for the daily heartbeat; events during the gap replay on restart | Pod restart alert; heartbeat; durable consumer |
 | Namespace broken, cluster up | Ads publish up to a week late | Weekly cron run; CronJob failure alert |
 | Cluster down | Nothing to publish — uploads are impossible too | Not covered by design; see "Where the backstop lives" |
-| GitHub credential expired or revoked | Ads publish up to a week late | Dispatch call logs an error; weekly cron |
+| GitHub credential nearing expiry | None yet — 30 days of warning | Heartbeat Job fails deliberately; `StellenDispatcherHeartbeatFailed` |
+| GitHub credential expired or revoked | Ads publish up to a week late | Dispatch call logs an error; heartbeat Job fails; weekly cron |
 | OpenCloud token expired | Sync cannot fetch | Weekly cron run fails visibly |
 | Detector fires spuriously | A run reports `no changes` | Harmless |
 | Duplicate dispatches | Queued, second exits at `no changes` | Listener debounce; `cancel-in-progress` stays false deliberately |
