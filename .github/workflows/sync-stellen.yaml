@@ -66,6 +66,36 @@ jobs:
       OPENCLOUD_PATH: Stellenanzeigen
 
     steps:
+      # First, before the checkout and the rclone download, because it needs
+      # neither and because failing here is the cheapest possible failure.
+      #
+      # A separate step rather than three lines inside the fetch: an empty
+      # secret and a broken sync then look different in the Actions tab, and a
+      # dry_run gives a discrete green tick for "the credentials are present"
+      # instead of burying it in the fetch log. That matters most after a change
+      # to OpenCloud's authentication, which is exactly when someone runs this
+      # with dry_run ticked to see whether anything broke.
+      #
+      # Note what it does NOT prove: that the credentials are *valid*. Only the
+      # fetch below can show that, by authenticating.
+      - name: Check OpenCloud secrets are present
+        env:
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+        run: |
+          set -euo pipefail
+          # An empty secret surfaces as an opaque "401 Unauthorized" three retries
+          # later. `gh secret set NAME` with no stdin silently stores an empty value,
+          # which is an easy mistake to make and a slow one to diagnose.
+          for v in RCLONE_CONFIG_OC_URL RCLONE_CONFIG_OC_USER OPENCLOUD_TOKEN; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::secret behind $v is empty -- set it in Settings > Secrets and variables > Actions"
+              exit 1
+            fi
+          done
+          echo "all three OpenCloud secrets are set"
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -92,16 +122,7 @@ jobs:
           OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
         run: |
           set -euo pipefail
-          # An empty secret surfaces as an opaque "401 Unauthorized" three retries
-          # later. `gh secret set NAME` with no stdin silently stores an empty value,
-          # which is an easy mistake to make and a slow one to diagnose.
-          for v in RCLONE_CONFIG_OC_URL RCLONE_CONFIG_OC_USER OPENCLOUD_TOKEN; do
-            if [ -z "${!v:-}" ]; then
-              echo "::error::secret behind $v is empty -- set it in Settings > Secrets and variables > Actions"
-              exit 1
-            fi
-          done
-
+          # The secrets are checked for emptiness in the first step of the job.
           mkdir -p staging
           # rclone expects an obscured password in config, so obscure the App Token
           # at runtime; the secret itself holds the plain token.
