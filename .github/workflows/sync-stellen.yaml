@@ -127,14 +127,14 @@ jobs:
           # so nothing is committed.
           if [ "$rc" -ge 2 ]; then exit "$rc"; fi
 
-      - name: Commit, push and trigger the deploy
+      - name: Commit and push
+        id: commit
         if: ${{ inputs.dry_run != true }}
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain content/docs/stellen)" ]; then
             echo "no changes to commit"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git config user.name  "kko-websyncer[bot]"
@@ -148,12 +148,66 @@ jobs:
           Applied automatically by .github/workflows/sync-stellen.yaml
           EOF
           git push
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
 
-          # This push was made with GITHUB_TOKEN, so it will NOT trigger
-          # deploy-hugo.yaml on its own. workflow_dispatch is the documented
-          # exception, so ask for the deploy explicitly.
+      # The push above was made with GITHUB_TOKEN, which does not trigger workflows,
+      # so the deploy has to be asked for explicitly -- workflow_dispatch being the
+      # documented exception. That makes pushing and deploying two separate actions,
+      # and a run that dies between them (runner failure, manual cancel, a gh API
+      # error) used to strand the commit permanently: the ad sat on main undeployed,
+      # and every later run exited at "no changes to commit" before reaching the
+      # dispatch. Nothing recovered it but an unrelated ad change.
+      #
+      # So when this run pushed, dispatch as before; when it did not, check whether a
+      # previous run left something undeployed and heal it.
+      - name: Trigger the deploy, healing a stranded commit if needed
+        if: ${{ inputs.dry_run != true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUSHED: ${{ steps.commit.outputs.pushed }}
+        run: |
+          set -euo pipefail
+          head="$(git rev-parse HEAD)"
+
+          if [ "$PUSHED" = "true" ]; then
+            gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
+            echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
+            exit 0
+          fi
+
+          # Nothing changed this run. Only ever heal a commit this workflow made
+          # itself: a human commit whose build fails for its own reasons must not be
+          # re-dispatched on every run forever.
+          if [ "$(git log -1 --format='%an')" != "kko-websyncer[bot]" ]; then
+            echo "no changes, and HEAD is not ours -- nothing to do"
+            exit 0
+          fi
+
+          # Best-effort: if the API cannot be reached, leave it for the next run
+          # rather than failing a sync that otherwise succeeded.
+          deployed="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/deployments?environment=github-pages&per_page=1" \
+            --jq '.[0].sha // empty' 2>/dev/null || true)"
+          if [ -z "$deployed" ]; then
+            echo "could not determine the deployed commit -- skipping the heal check"
+            exit 0
+          fi
+          if [ "$head" = "$deployed" ]; then
+            echo "already deployed at ${head}"
+            exit 0
+          fi
+
+          inflight="$(gh run list --workflow=deploy-hugo.yaml --json status \
+            --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length' \
+            2>/dev/null || echo 0)"
+          if [ "$inflight" -gt 0 ]; then
+            echo "a deploy is already queued or running -- letting it finish"
+            exit 0
+          fi
+
+          echo "::warning::${head} was committed by an earlier run but never deployed -- dispatching now"
           gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
-          echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME}"
+          echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
 
       - name: Report rejected files
         if: ${{ steps.apply.outputs.rc == '1' }}
