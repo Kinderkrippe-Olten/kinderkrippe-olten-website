@@ -31,7 +31,6 @@ Non-PDF files (notably .gitkeep) are ignored silently.
 */}}
 {{- $root := "content/docs/stellen" -}}
 {{- $seps := slice " " "-" "_" -}}
-{{- $suffix := "oder nach Vereinbarung" -}}
 {{- $out := "" -}}
 
 {{- range hugo.Data.stellen -}}
@@ -81,7 +80,7 @@ Non-PDF files (notably .gitkeep) are ignored silently.
   {{- else -}}
     {{- $out = printf "%s<ul>\n" $out -}}
     {{- range (sort $jobs "sort" "desc") -}}
-      {{- $out = printf "%s<li><a href=\"%s\">%s</a>\n<br>%s</li>\n" $out .href .text $suffix -}}
+      {{- $out = printf "%s<li><a href=\"%s\">%s</a></li>\n" $out .href .text -}}
     {{- end -}}
     {{- $out = printf "%s</ul>\n" $out -}}
   {{- end -}}

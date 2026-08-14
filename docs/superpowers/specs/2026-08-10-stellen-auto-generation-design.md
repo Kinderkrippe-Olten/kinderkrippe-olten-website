@@ -84,8 +84,7 @@ sonnhalde 20260728 Koch oder Köchin (10% und Ferienvertretung) per 1.9.2026.pdf
 renders as
 
 ```html
-<li><a href="…">Koch oder Köchin (10% und Ferienvertretung) per 1.9.2026</a>
-<br>oder nach Vereinbarung</li>
+<li><a href="…">Koch oder Köchin (10% und Ferienvertretung) per 1.9.2026</a></li>
 ```
 
 The site prefix is redundant with the directory as far as rendering goes. It is
@@ -152,14 +151,16 @@ For each entry in `hugo.Data.stellen`, in file order:
 4. Sort by `"<date> <link text>"` descending — newest posting first within each site,
    with the link text as a tiebreaker so the output is deterministic.
 5. If the result is empty, emit `<p>Zur Zeit keine offenen Stellen.</p>`. Otherwise emit
-   a `<ul>` with one `<li>` per posting: an `<a>` with the link text, then
-   `<br>oder nach Vereinbarung`.
+   a `<ul>` with one `<li>` per posting, containing an `<a>` with the link text and
+   nothing else.
 
 `hugo.Data` is used rather than `site.Data`, which is deprecated as of Hugo v0.156.0.
 The CI workflow pins Hugo 0.158.0, so `hugo.Data` is available there.
 
-"oder nach Vereinbarung" is a constant on every entry, matching all four previous
-entries including "per sofort".
+Earlier versions appended a constant `<br>oder nach Vereinbarung` to every entry,
+matching the four hand-written entries this generator replaced. Removed on the
+customer's request (2026-08-14): anything of the sort now belongs in the link text,
+where the filename controls it per ad.
 
 Offsets are computed with `strings.RuneCount`, not `len`. Hugo's `substr` is rune-based
 while `len` returns bytes, and `bifang-säli` is 11 runes but 12 bytes.
