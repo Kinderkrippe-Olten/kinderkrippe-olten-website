@@ -116,8 +116,8 @@ evidence, not proof.
 ### Subscribe as a durable consumer, not a core subscription
 
 The listener must register a **durable JetStream pull consumer** — name it
-`stellen-dispatcher` — and ack only after a successful dispatch. This is not an
-implementation detail, and the distinction is easy to get wrong in the lossy direction:
+`stellen-dispatcher`. This is not an implementation detail, and the distinction is
+easy to get wrong in the lossy direction:
 
 - A **core** subscription sees only what is published while it is connected. Everything
   arriving during a restart is gone for good.
@@ -135,10 +135,24 @@ Note that the capture command in "The event contract" is a *core* subscription
 (`nats sub main-queue`), because it was used to observe live traffic. Do not take it as
 a model for the listener.
 
+**Acknowledgement is at-most-once, and that is forced rather than chosen.** An earlier
+draft of this section required acking only after a successful dispatch. That cannot be
+implemented with the `nats` CLI: `--ack` acknowledges inside the CLI on receipt, before
+the shell has seen the bytes, and `--raw` discards the `$JS.ACK` reply subject that
+would be needed to do it by hand. Ack-after-dispatch would mean a real client library
+and therefore a custom image.
+
+It is the right trade anyway. Redelivery driven by a failing GitHub token would queue a
+sync run per redelivered message, and debouncing is *inherently* at-most-once — it
+deliberately collapses N acked events into one dispatch that may itself fail. The
+exposure is a few seconds wide, and the daily heartbeat is the net under it. What
+matters is that this is written down as a decision rather than discovered later as a
+surprise.
+
 **Debounce the replay on startup.** A durable consumer that was down for an hour
-delivers every missed event at once, and each would otherwise fire its own dispatch —
-which now queue rather than cancel, since `cancel-in-progress` stays false. Collapse
-whatever arrives in the first few seconds after connecting into a single dispatch. The
+delivers every missed event at once, and each would otherwise fire its own dispatch.
+Collapse whatever arrives in the first few seconds after connecting into a single
+dispatch. The
 debounce exists *because* of durability; the two belong together.
 
 ### A pre-existing exposure, noted in passing
@@ -434,13 +448,23 @@ weekly cron recovers it. The ad sits in the repository, absent from the live sit
 until some unrelated ad change happens to produce a fresh commit. Silent, and
 effectively permanent.
 
-The justification for the change has evaporated anyway: "The event contract" records
-that container operations emit a single event, so the bursts it was meant to collapse
-barely occur. Queued runs are cheap, and a redundant second run exits at `no changes`.
+The justification for the change has evaporated anyway, twice over.
 
-If a future change does introduce real bursts, fix them by debouncing **in the
-listener** — where no commit is at stake — not by cancelling a run that may be
-halfway between pushing and publishing.
+First, "The event contract" records that container operations emit a single event, so
+the bursts it was meant to collapse barely occur.
+
+Second, **GitHub already collapses them**. With `cancel-in-progress: false`, a newly
+queued run in a concurrency group cancels any run that was merely *pending* in that
+group — only the in-progress one is protected. So the group holds at most one running
+plus one pending, and a burst of twenty dispatches costs two runs, not twenty.
+Cancelling a *pending* run is harmless precisely because it has no half-pushed state,
+which is the distinction the wrong reasoning above missed.
+
+That makes debouncing in the listener a nicety rather than load-bearing — worth doing
+because it keeps the run history readable, but not the thing standing between us and a
+queue of redundant runs. Either way, fix bursts **in the listener**, where no commit is
+at stake, and never by cancelling a run that may be halfway between pushing and
+publishing.
 
 ## Where the backstop lives
 
