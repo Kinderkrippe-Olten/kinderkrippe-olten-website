@@ -557,17 +557,37 @@ look internal, and reason enough to prefer the WebDAV fallback if they do.
 1. ~~Find the NATS endpoint; confirm JetStream.~~ **Done 2026-08-14** — see the table
    under "Where it runs".
 2. ~~Capture the event names.~~ **Done 2026-08-14** — see "The event contract".
-3. Create the App, install it on the one repository, store the private key as a Secret.
-   This is now the only thing blocking everything below it.
-4. Build and test the dispatch step on its own: signing, token exchange, and a
-   `workflow_dispatch` with `dry_run` ticked.
-5. Build the listener against the contract above, as a chart plus a service entry in
-   `customers/kko/customer.yaml`. Add the daily heartbeat CronJob in the same chart —
-   it is the primary backstop, not an extra.
-6. Add monitoring on the listener Deployment and the heartbeat CronJob.
-7. **Only then** demote the GitHub cron to weekly. Keeping `*/15` until the detector is
-   proven means a detector fault shows up as wasted runs rather than as job ads silently
-   not publishing.
+3. ~~Create the credential and store it as a Secret.~~ **Done 2026-08-14** — a
+   fine-grained PAT (`Actions: write`, one repository) rather than the App described
+   under "Credential" below, sealed into
+   `customers/kko/services/opencloud-posix/customer-infra-values.yaml`. The App remains
+   the better answer on lifecycle; the PAT needs a calendar reminder before its expiry,
+   and the daily heartbeat is what turns that expiry into a visible failure.
+4. ~~Build and test the dispatch step on its own.~~ **Done 2026-08-14.**
+5. ~~Build the listener, plus the daily heartbeat CronJob.~~ **Done 2026-08-14** —
+   `bases/services/stellen-dispatcher` in `oep-k8s`, with a service entry in
+   `customers/kko/customer.yaml`.
+6. ~~Add monitoring on the listener Deployment and the heartbeat CronJob.~~
+   **Done 2026-08-14.**
+7. ~~Demote the GitHub cron to weekly.~~ **Done 2026-08-14**, on the day the listener
+   went in rather than after the intended soak. Both halves of the event path were
+   proven live first — an upload produced `events.UploadReady` → dispatch → published
+   ad in about three minutes, and a delete produced `events.ItemTrashed` → dispatch —
+   but "worked twice" is not "ran for a week". Until the heartbeat has fired a few
+   times, a listener fault would surface as job ads not publishing rather than as
+   wasted runs, which is the exact failure the original ordering existed to avoid.
+
+Two defects showed up on first deploy, both fixed the same day, and both worth
+remembering as the shape of what goes wrong here:
+
+- The listener crash-looped: `nats sub` refuses a subject together with `--durable`,
+  because the subject filter belongs to the consumer. Loud, and therefore cheap.
+- The mounted GitHub token was `0400` and root-owned while the container runs as uid
+  1000, so it was unreadable. `dispatch.sh` guards with `[ -r ]`, so this one would
+  **not** have crashed anything: the listener would have stayed Running and Ready and
+  published nothing, surfacing a day later as a red heartbeat Job. Silent failures in
+  this design hide behind healthy-looking pods, which is precisely why the heartbeat is
+  the primary backstop rather than the cron.
 
 ## Out of scope
 
