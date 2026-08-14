@@ -135,6 +135,84 @@ jobs:
           echo "--- fetched ---"
           find staging -type f -printf '%P\n' | sort
 
+      # An OpenCloud App Token ALWAYS has an expiry -- the create API requires a
+      # duration and there is no never-expires option -- so this credential will
+      # one day stop working on a date nobody wrote down. The failure is a red
+      # run here and job ads silently ceasing to publish.
+      #
+      # The dispatcher's tokenExpiryWarnDays does NOT cover this. It watches the
+      # GitHub PAT it holds itself, via GitHub's response header; the dispatcher
+      # reaches OpenCloud over NATS and has no App Token at all. The check
+      # belongs with the consumer, which is this workflow.
+      #
+      # Nothing here records the expiry date: it is read back from OpenCloud
+      # using the very token being checked, so it cannot drift out of step the
+      # way a remembered date would.
+      #
+      # DELIBERATELY UNABLE TO BREAK PUBLISHING. Whether an App Token may call
+      # /auth-app/tokens was not verifiable before writing this (the token is a
+      # write-only Actions secret and minting another needs an interactive
+      # login), so every failure path here -- endpoint refuses, response
+      # unparseable, jq missing, clock oddity -- warns and exits 0.
+      # continue-on-error is a second belt for anything unforeseen. If the first
+      # run reports "could not read", the endpoint is closed to app tokens and
+      # the fallback is a recorded date in a repo variable; that is strictly
+      # worse, which is why it is the fallback.
+      - name: Warn if the App Token is close to expiring
+        continue-on-error: true
+        env:
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+          WARN_DAYS: '30'
+        run: |
+          # NOT set -e: this step must never fail the sync.
+          set -uo pipefail
+
+          # The WebDAV URL secret carries a space path; keep only scheme://host.
+          # Never echoed -- GitHub masks exact secret values, not substrings of
+          # them, so printing a derived host would leak part of a secret.
+          base=$(printf '%s' "$RCLONE_CONFIG_OC_URL" | sed -E 's#^(https?://[^/]+).*#\1#')
+          if [ -z "$base" ]; then
+            echo "::warning::App Token expiry check skipped: could not derive the OpenCloud base URL"
+            exit 0
+          fi
+
+          if ! resp=$(curl -fsS --max-time 20 \
+                        -u "${RCLONE_CONFIG_OC_USER}:${OPENCLOUD_TOKEN}" \
+                        "${base}/auth-app/tokens" 2>/dev/null); then
+            echo "::warning::App Token expiry check skipped: /auth-app/tokens could not be read with the App Token (the sync itself succeeded, so the token is valid). If this persists, the endpoint does not accept app-token auth and the expiry must be tracked another way."
+            exit 0
+          fi
+
+          # Prefer OUR token, matched by value, so several tokens on the account
+          # cannot make this report someone else's date. Fall back to the
+          # soonest expiry, which over-warns rather than under-warns.
+          exp=$(printf '%s' "$resp" | jq -r --arg t "$OPENCLOUD_TOKEN" \
+                  'map(select(.token == $t)) | .[0].expiration_date // empty' 2>/dev/null)
+          matched=exact
+          if [ -z "${exp:-}" ]; then
+            exp=$(printf '%s' "$resp" | jq -r \
+                    '[.[].expiration_date] | map(select(. != null)) | sort | .[0] // empty' 2>/dev/null)
+            matched=soonest-of-several
+          fi
+          if [ -z "${exp:-}" ]; then
+            echo "::warning::App Token expiry check skipped: no expiration_date in the /auth-app/tokens response"
+            exit 0
+          fi
+
+          exp_s=$(date -u -d "$exp" +%s 2>/dev/null) || {
+            echo "::warning::App Token expiry check skipped: could not parse expiration_date '$exp'"
+            exit 0
+          }
+          days=$(( (exp_s - $(date -u +%s)) / 86400 ))
+
+          echo "App Token expires ${exp} (in ${days} days, matched: ${matched})"
+          if [ "$days" -le "$WARN_DAYS" ]; then
+            echo "::warning::The OpenCloud App Token expires in ${days} days (${exp}). Job-ad publishing stops when it does. Mint a replacement in OpenCloud as ${RCLONE_CONFIG_OC_USER} and update the OPENCLOUD_TOKEN Actions secret."
+          fi
+          exit 0
+
       - name: Apply to the repository
         id: apply
         env:
