@@ -248,13 +248,6 @@
     - Aushilfe
   site: sonnhalde
 
-- firstname: Laurin
-  lastname: Mayer
-  picture: Laurin_Mayer.jpg
-  function:
-    - Praktikant
-  site: sonnhalde
-
 - firstname: Louis
   lastname: Galic
   picture: Louis_Galic.jpg
@@ -269,18 +262,9 @@
     - Aushilfe
   site: sonnhalde
 
-- firstname: Noemi
+- firstname: Noëmi
   lastname: Bielser
   picture: Noemi_Bielser.jpg
-  function:
-    - Fachfrau Betreuung Kind
-    - 2. Lehrjahr
-  group: regenbogen
-  site: sonnhalde
-
-- firstname: Cheyenne
-  lastname: Richener
-  picture: Cheyenne_Richener.jpg
   function:
     - Fachfrau Betreuung Kind
     - 3. Lehrjahr
@@ -302,7 +286,7 @@
   picture: Ladina_Maurer.jpg
   function:
     - Fachfrau Betreuung Kind
-    - 1. Lehrjahr
+    - 2. Lehrjahr
   group: papagei
   site: sonnhalde
 
@@ -310,9 +294,17 @@
   lastname: Palushaj
   picture: Helena_Palushaj.jpg
   function:
-    - Praktikantin
+    - Fachfrau Betreuuung Kind
+    - 1. Lehrjahr
+  group: balu
   site: sonnhalde
 
+- firstname: Dragana
+  lastname: Markovic
+  picture: Dragana_Markovic.jpg
+  function:
+    - Praktikantin
+  site: sonnhalde
 
 - firstname: Monika
   picture: Monika.jpg
