@@ -66,18 +66,60 @@
         }).slice(0, 8); // Limit to 8 results
       }
 
-      // Display search results
-      function displayResults(results) {
+      // The stretch of page text shown under a result. index.json carries each page's
+      // FULL text, because that is what the matcher above searches -- so without this
+      // every result rendered the whole page body.
+      const EXCERPT_LENGTH = 160;
+
+      // A window around the first match, rather than the opening of the page: a hit
+      // near the end of a long article is the normal case, and showing its first
+      // sentence instead tells the reader nothing about why it matched.
+      function excerptFor(text, query) {
+        if (!text) {
+          return '';
+        }
+        const at = text.toLowerCase().indexOf(query.toLowerCase());
+        const start = at < 0 ? 0 : Math.max(0, at - Math.floor(EXCERPT_LENGTH / 4));
+        const end = start + EXCERPT_LENGTH;
+        return (start > 0 ? '… ' : '') + text.slice(start, end) + (end < text.length ? ' …' : '');
+      }
+
+      // Display search results.
+      //
+      // Built from DOM nodes rather than an innerHTML template. The values below come
+      // from index.json, which indexes every page's text -- and once the
+      // Medienmitteilungen syncer is live, some of that text arrives from a Word
+      // document dropped into OpenCloud rather than from this repository. textContent
+      // cannot execute markup, and attaching a click listener keeps the URL out of an
+      // inline onclick attribute, where a single quote in a href would otherwise close
+      // the string and let the rest run as code.
+      function displayResults(results, query) {
+        searchResults.replaceChildren();
         if (results.length === 0) {
-          searchResults.innerHTML = '<div class="kko-search-result">Keine Ergebnisse gefunden</div>';
+          const empty = document.createElement('div');
+          empty.className = 'kko-search-result';
+          empty.textContent = 'Keine Ergebnisse gefunden';
+          searchResults.append(empty);
         } else {
-          searchResults.innerHTML = results.map(result => `
-            <div class="kko-search-result" onclick="window.location.href='${result.href}'">
-              <div class="result-title">${result.title}</div>
-              <div class="result-excerpt">${result.content}</div>
-              <div class="result-section">${result.section || 'Seite'}</div>
-            </div>
-          `).join('');
+          for (const result of results) {
+            const row = document.createElement('div');
+            row.className = 'kko-search-result';
+            row.addEventListener('click', function() {
+              window.location.href = result.href;
+            });
+            const cells = [
+              ['result-title', result.title],
+              ['result-excerpt', excerptFor(result.content, query)],
+              ['result-section', result.section || 'Seite'],
+            ];
+            for (const [className, value] of cells) {
+              const cell = document.createElement('div');
+              cell.className = className;
+              cell.textContent = value;
+              row.append(cell);
+            }
+            searchResults.append(row);
+          }
         }
         searchResults.classList.add('show');
         searchOverlay.classList.add('has-results');
@@ -137,7 +179,7 @@
           // Debounce search
           searchTimeout = setTimeout(() => {
             const results = search(query);
-            displayResults(results);
+            displayResults(results, query);
           }, 300);
         });
 
