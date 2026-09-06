@@ -358,6 +358,13 @@
     - Bäcker-Konditorin
   site: bifang-säli
 
+- firstname: Elena 
+  lastname: Jaeggi
+  picture: Elena_Jaeggi.jpg
+  function:
+    - Betreuungsassistenz
+  site: bifang-säli
+
 - firstname: Naomi
   lastname: Köbeli
   picture: Naomi_Köbeli.jpg
@@ -366,13 +373,26 @@
   education:
     - FaBe K
   site: bifang-säli
+  
+- firstname: Virginia
+  lastname: Bräsecke
+  picture: Virginia_Bräsecke.jpg
+  function:
+    - Pädagogische Fachperson
+  site: bifang-säli  
 
 - firstname: Anika
   lastname: Gmür
   picture: Anika_Gmür.jpg
   function:
     - Aushilfe
-  education:
+  site: bifang-säli
+
+- firstname: Khaoula
+  lastname: Talbi
+  picture: Khaoula_Talbi.jpg
+  function:
+    - Aushilfe
   site: bifang-säli
 
 - firstname: Siriphon
