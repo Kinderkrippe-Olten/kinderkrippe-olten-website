@@ -5,15 +5,31 @@ name: Test the sync scripts
 # pinned pandoc the sync workflow uses -- otherwise a pin bump passes here and
 # rewrites the corpus there.
 #
-# sync-medienmitteilungen.yaml is in the paths filter because it HOLDS the
-# authoritative pandoc pin. Without it, bumping the pin there alone would run no CI
-# at all -- and the pin-drift check below would never get the chance to fire.
+# The other workflows are in the paths filter because they HOLD the pins the check
+# below compares. A pin bumped in a file this job never runs for is a pin bumped
+# with no cross-check at all -- the filter is what gives the check its chance to
+# fire. deploy-hugo.yaml owns HUGO_VERSION and DART_SASS_VERSION; sync-stellen.yaml
+# owns the second copy of the rclone pin.
 on:
   pull_request:
-    paths: ['scripts/**', 'data/**', '.github/workflows/test-scripts.yaml', '.github/workflows/sync-medienmitteilungen.yaml']
+    # GitHub Actions does not resolve YAML anchors, so this list is repeated
+    # rather than shared.
+    paths:
+      - 'scripts/**'
+      - 'data/**'
+      - '.github/workflows/test-scripts.yaml'
+      - '.github/workflows/sync-medienmitteilungen.yaml'
+      - '.github/workflows/sync-stellen.yaml'
+      - '.github/workflows/deploy-hugo.yaml'
   push:
     branches: [main]
-    paths: ['scripts/**', 'data/**', '.github/workflows/test-scripts.yaml', '.github/workflows/sync-medienmitteilungen.yaml']
+    paths:
+      - 'scripts/**'
+      - 'data/**'
+      - '.github/workflows/test-scripts.yaml'
+      - '.github/workflows/sync-medienmitteilungen.yaml'
+      - '.github/workflows/sync-stellen.yaml'
+      - '.github/workflows/deploy-hugo.yaml'
   workflow_dispatch:
 
 permissions:
@@ -27,25 +43,62 @@ jobs:
       # good intentions.
       PIN_PANDOC_VERSION: '3.11'
       PIN_PANDOC_SHA256: 89d4c9d97818c62a97157f0072844e4602c6cee795bf84abd1aee7273abcda99
+      # The other pins are not used by this job at all. They live here so the check
+      # below has one place to compare against, the same way the pandoc pin does.
+      PIN_RCLONE_VERSION: v1.75.0
+      PIN_RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
+      HUGO_VERSION: 0.158.0
+      DART_SASS_VERSION: 1.98.0
     steps:
       - uses: actions/checkout@v4
 
       # Before the download, because it needs neither the network nor five minutes.
       # Testing a pandoc the syncer does not use is worse than not testing at all: it
       # is a green tick over the exact corpus-wide rewrite the pin exists to prevent.
-      - name: The pandoc pin here must match the one the syncer uses
+      - name: Every pinned version must be the same in every workflow that pins it
         run: |
           set -euo pipefail
-          w=.github/workflows/sync-medienmitteilungen.yaml
-          grep -qF "PIN_PANDOC_VERSION: '${PIN_PANDOC_VERSION}'" "$w" || {
-            echo "::error::pandoc pin drift: PIN_PANDOC_VERSION '${PIN_PANDOC_VERSION}' here is not the one in ${w}. Update both."
-            exit 1
+          medien=.github/workflows/sync-medienmitteilungen.yaml
+          stellen=.github/workflows/sync-stellen.yaml
+          deploy=.github/workflows/deploy-hugo.yaml
+
+          # $1 the file, $2 the exact line that must appear in it, $3 what drifting
+          # would cost. grep -qF, so the value is compared literally.
+          must_hold() {
+            grep -qF "$2" "$1" || {
+              echo "::error::pin drift: '$2' is not in $1. $3 Update every workflow that pins it."
+              exit 1
+            }
+            echo "  ok  $1: $2"
           }
-          grep -qF "PIN_PANDOC_SHA256: ${PIN_PANDOC_SHA256}" "$w" || {
-            echo "::error::pandoc pin drift: PIN_PANDOC_SHA256 here is not the one in ${w}. Update both."
-            exit 1
-          }
-          echo "pandoc pin ${PIN_PANDOC_VERSION} matches ${w}"
+
+          # pandoc GENERATES the committed bytes. Testing a pandoc the syncer does
+          # not use is a green tick over the corpus-wide rewrite the pin prevents.
+          must_hold "$medien" "PIN_PANDOC_VERSION: '${PIN_PANDOC_VERSION}'" \
+            "The fixture test would then run against a pandoc the sync does not use."
+          must_hold "$medien" "PIN_PANDOC_SHA256: ${PIN_PANDOC_SHA256}" \
+            "The fixture test would then run against a pandoc the sync does not use."
+
+          # rclone is pinned twice, once per syncer. Two copies of a checksum are
+          # two chances to update only one of them.
+          for w in "$medien" "$stellen"; do
+            must_hold "$w" "PIN_RCLONE_VERSION: ${PIN_RCLONE_VERSION}" \
+              "The two syncers would then fetch with different rclone versions."
+            must_hold "$w" "PIN_RCLONE_SHA256: ${PIN_RCLONE_SHA256}" \
+              "The two syncers would then fetch with different rclone versions."
+          done
+
+          # Hugo and dart-sass: sync-medienmitteilungen.yaml runs the pre-commit
+          # build check, and it is worth nothing if it builds with a different Hugo
+          # from the one deploy-hugo.yaml publishes with.
+          for w in "$medien" "$deploy"; do
+            must_hold "$w" "HUGO_VERSION: ${HUGO_VERSION}" \
+              "The pre-commit build check would then not be the deploy build."
+            must_hold "$w" "DART_SASS_VERSION: ${DART_SASS_VERSION}" \
+              "The pre-commit build check would then not be the deploy build."
+          done
+
+          echo "all four pins are in step across every workflow that carries them"
 
       - name: Install pandoc, poppler and the imaging libraries
         run: |

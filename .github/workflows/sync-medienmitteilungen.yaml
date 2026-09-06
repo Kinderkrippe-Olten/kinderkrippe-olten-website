@@ -249,8 +249,17 @@ jobs:
       - name: Check the site still builds
         run: |
           set -euo pipefail
-          hugo build --quiet
-          echo "site builds with the applied changes"
+          if hugo build --quiet; then
+            echo "site builds with the applied changes"
+            exit 0
+          fi
+          # A build failure stalls the WHOLE run rather than rejecting the one
+          # folder that caused it -- see the amendment in the design spec for why
+          # that trade was taken. So the message has to say what happened and what
+          # to do, or the maintainer meets a bare Hugo error every Monday.
+          echo "::error::hugo build failed on the applied changes, so NOTHING was committed and no press release published this run. The Hugo error above names a file under content/blog/; find its SyncedFrom: line to get the OpenCloud folder it came from, remove or correct that folder, and re-run this workflow. Until then every run fails here, and the same is true of every OTHER folder waiting to publish."
+          echo "Rejected folders from this run, if any, are reported in the step below."
+          exit 1
 
       - name: Commit and push
         id: commit
@@ -330,9 +339,14 @@ jobs:
       # --max-size dropped before the CLI could ever see the folder.
       #
       # A clean run cannot reach it: rc is '0' and oversized is '0', so both operands
-      # of the condition are false and the step is skipped.
+      # of the condition are false and the step is skipped. always() does not change
+      # that -- it only stops an EARLIER failure from skipping the report as well,
+      # which is how a folder the CLI rejected went unreported whenever the build
+      # step failed in the same run. The empty-string test matters with always():
+      # a run that died before the fetch step leaves `oversized` unset, and '' would
+      # otherwise satisfy != '0' and fire this step with nothing to say.
       - name: Report rejected folders and files too large to fetch
-        if: ${{ steps.apply.outputs.rc == '1' || steps.fetch.outputs.oversized != '0' }}
+        if: ${{ always() && (steps.apply.outputs.rc == '1' || (steps.fetch.outputs.oversized != '' && steps.fetch.outputs.oversized != '0')) }}
         env:
           APPLY_RC: ${{ steps.apply.outputs.rc }}
           OVERSIZED: ${{ steps.fetch.outputs.oversized }}
