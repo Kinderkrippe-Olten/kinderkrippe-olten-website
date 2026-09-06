@@ -4,12 +4,16 @@ name: Test the sync scripts
 # notice pandoc's Markdown output moving. It has to run somewhere, with the SAME
 # pinned pandoc the sync workflow uses -- otherwise a pin bump passes here and
 # rewrites the corpus there.
+#
+# sync-medienmitteilungen.yaml is in the paths filter because it HOLDS the
+# authoritative pandoc pin. Without it, bumping the pin there alone would run no CI
+# at all -- and the pin-drift check below would never get the chance to fire.
 on:
   pull_request:
-    paths: ['scripts/**', 'data/**', '.github/workflows/test-scripts.yaml']
+    paths: ['scripts/**', 'data/**', '.github/workflows/test-scripts.yaml', '.github/workflows/sync-medienmitteilungen.yaml']
   push:
     branches: [main]
-    paths: ['scripts/**', 'data/**', '.github/workflows/test-scripts.yaml']
+    paths: ['scripts/**', 'data/**', '.github/workflows/test-scripts.yaml', '.github/workflows/sync-medienmitteilungen.yaml']
   workflow_dispatch:
 
 permissions:
@@ -19,11 +23,29 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      # Keep in step with sync-medienmitteilungen.yaml.
+      # Kept in step with sync-medienmitteilungen.yaml by the check below, not by
+      # good intentions.
       PIN_PANDOC_VERSION: '3.11'
       PIN_PANDOC_SHA256: 89d4c9d97818c62a97157f0072844e4602c6cee795bf84abd1aee7273abcda99
     steps:
       - uses: actions/checkout@v4
+
+      # Before the download, because it needs neither the network nor five minutes.
+      # Testing a pandoc the syncer does not use is worse than not testing at all: it
+      # is a green tick over the exact corpus-wide rewrite the pin exists to prevent.
+      - name: The pandoc pin here must match the one the syncer uses
+        run: |
+          set -euo pipefail
+          w=.github/workflows/sync-medienmitteilungen.yaml
+          grep -qF "PIN_PANDOC_VERSION: '${PIN_PANDOC_VERSION}'" "$w" || {
+            echo "::error::pandoc pin drift: PIN_PANDOC_VERSION '${PIN_PANDOC_VERSION}' here is not the one in ${w}. Update both."
+            exit 1
+          }
+          grep -qF "PIN_PANDOC_SHA256: ${PIN_PANDOC_SHA256}" "$w" || {
+            echo "::error::pandoc pin drift: PIN_PANDOC_SHA256 here is not the one in ${w}. Update both."
+            exit 1
+          }
+          echo "pandoc pin ${PIN_PANDOC_VERSION} matches ${w}"
 
       - name: Install pandoc, poppler and the imaging libraries
         run: |
@@ -34,6 +56,12 @@ jobs:
           sudo dpkg -i "$deb"
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends poppler-utils python3-pil python3-numpy
+          pandoc --version | head -1
+          pdftohtml -v 2>&1 | head -1
+          # medien_convert.py imports these lazily and the CLI does not catch
+          # ImportError, so a wrong interpreter would surface as a traceback inside a
+          # test rather than as "the imaging libraries are not installed".
+          python3 -c "from PIL import Image; import numpy; print('PIL and numpy import')"
 
       - name: Run every test script
         run: |
