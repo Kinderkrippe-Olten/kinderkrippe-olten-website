@@ -112,3 +112,69 @@ def shape_document(text):
         else:
             body.append("## " + _escape(inner))          # a sub-heading
     return title, body, caption, image_at
+
+
+# --- images ---------------------------------------------------------------
+#
+# Every image is a candidate, from both sources: embedded in the document and loose
+# beside it. The author normally puts the same photo in both places, so the pool has
+# to be de-duplicated -- and the duplicate is NEVER byte-identical, because Word and
+# PDF re-encode and rescale on the way in. Measured on the sample folder:
+#
+#   word/media/image1.jpeg  1385x931  md5 5800d062...
+#   IMG_0090.jpeg           1280x860  md5 120b34a0...   the same photograph
+#
+# so md5/filecmp cannot find it. A normalised 16x16 luminance signature can, and not
+# marginally: the true twin scores 0.0089 while the next-nearest of the other twelve
+# scores 0.9189. Do not "simplify" this to a hash -- it would ship the same photo
+# twice on every page.
+DEDUP_THRESHOLD = 0.15
+# Removes letterhead logos, bullets and rules. A 300x100 logo is 30,000 px.
+MIN_PIXELS = 200 * 200
+
+
+def signature(path, n=16):
+    from PIL import Image
+    import numpy as np
+    grey = Image.open(path).convert("L").resize((n, n), Image.LANCZOS)
+    a = np.asarray(grey, dtype=float)
+    return (a - a.mean()) / (a.std() + 1e-6)
+
+
+def distance(a, b):
+    import numpy as np
+    return float(np.abs(a - b).mean())
+
+
+def _pixels(path):
+    from PIL import Image
+    w, h = Image.open(path).size
+    return w * h
+
+
+def select_images(doc_images, loose_images, threshold=DEDUP_THRESHOLD,
+                  min_pixels=MIN_PIXELS):
+    """(teaser, gallery) from the document's images and the loose files.
+
+    The teaser is the document's own image -- the one the author placed beside the
+    text and the one the Bildlegende describes. Where a loose file is the same photo,
+    the larger copy survives and the other is not repeated in the gallery.
+    """
+    docs = [p for p in doc_images if _pixels(p) >= min_pixels]
+    loose = [p for p in loose_images if _pixels(p) >= min_pixels]
+    sigs = {p: signature(p) for p in docs + loose}
+
+    teaser = docs[0] if docs else None
+    gallery = []
+    for p in loose:
+        twin = next((d for d in docs if distance(sigs[p], sigs[d]) < threshold), None)
+        if twin is None:
+            gallery.append(p)
+        elif twin == teaser and _pixels(p) > _pixels(twin):
+            teaser = p          # keep the higher-resolution copy of the same photo
+    gallery.extend(d for d in docs[1:] if d != teaser)
+
+    gallery.sort(key=os.path.basename)
+    if teaser is None and gallery:
+        teaser = gallery.pop(0)
+    return teaser, gallery

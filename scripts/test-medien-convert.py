@@ -107,6 +107,62 @@ def main():
     check("real docx: caption found",
           caption is not None and caption.startswith("Die Verantwortlichen"), caption)
 
+    # --- de-duplication against the real folder ---
+    import glob
+    import zipfile
+    import tempfile
+    tmp = tempfile.mkdtemp()
+    with zipfile.ZipFile(DOCX) as z:
+        embedded = [z.extract(n, tmp) for n in z.namelist() if n.startswith("word/media/")]
+    loose = sorted(glob.glob(os.path.join(FIXTURES, "IMG_*.jpeg")))
+    check("fixture has 13 loose images", len(loose) == 13, len(loose))
+    check("document embeds exactly one image", len(embedded) == 1, embedded)
+
+    teaser, gallery = medien_convert.select_images(embedded, loose)
+    check("teaser is the document's own image",
+          os.path.basename(teaser) == "image1.jpeg", teaser)
+    check("gallery drops the duplicate: 12 not 13", len(gallery) == 12, len(gallery))
+    check("IMG_0090 recognised as the same photo",
+          not any("IMG_0090" in g for g in gallery),
+          [os.path.basename(g) for g in gallery])
+    check("gallery is filename-ordered",
+          gallery == sorted(gallery, key=os.path.basename), gallery)
+
+    # the margin is wide, not marginal -- guard against a future "simplification"
+    sig_emb = medien_convert.signature(embedded[0])
+    twin = next(g for g in loose if "IMG_0090" in g)
+    other = next(g for g in loose if "IMG_0108" in g)
+    d_twin = medien_convert.distance(sig_emb, medien_convert.signature(twin))
+    d_other = medien_convert.distance(sig_emb, medien_convert.signature(other))
+    check("twin distance well under threshold", d_twin < 0.05, d_twin)
+    check("next-nearest well over threshold", d_other > 0.5, d_other)
+
+    # exact comparison provably cannot do this job
+    import hashlib
+    h = lambda p: hashlib.md5(open(p, "rb").read()).hexdigest()
+    check("duplicate is NOT byte-identical", h(embedded[0]) != h(twin))
+
+    # a logo below the area floor is filtered out
+    from PIL import Image
+    logo = os.path.join(tmp, "logo.png")
+    Image.new("RGB", (300, 100), "white").save(logo)
+    teaser2, gallery2 = medien_convert.select_images([embedded[0], logo], loose)
+    check("small logo filtered from the pool",
+          not any("logo" in g for g in gallery2), gallery2)
+
+    # no document image at all: the first pooled image becomes the teaser
+    teaser3, gallery3 = medien_convert.select_images([], loose)
+    check("teaser falls back to the first loose image",
+          os.path.basename(teaser3) == "IMG_0083.jpeg", teaser3)
+    check("fallback teaser is not also in the gallery",
+          teaser3 not in gallery3 and len(gallery3) == 12, len(gallery3))
+
+    # nothing at all
+    check("no images at all is allowed", medien_convert.select_images([], []) == (None, []))
+
+    import shutil as _sh
+    _sh.rmtree(tmp, ignore_errors=True)
+
     print()
     if failures:
         print(f"{len(failures)} failure(s): {', '.join(failures)}")
