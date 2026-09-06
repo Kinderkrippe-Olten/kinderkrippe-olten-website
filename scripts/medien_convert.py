@@ -17,14 +17,23 @@ import subprocess
 # A paragraph that is one single bold run: the title, the lead, a sub-heading.
 BOLD_RE = re.compile(r"\A\*\*(.+)\*\*\Z", re.S)
 # Pandoc renders an image as ![alt](path) with optional {width=... height=...}
-# attributes, which Goldmark does not understand -- so the whole block is replaced
-# by a blog-pic shortcode rather than passed through.
-IMAGE_RE = re.compile(r"\A!\[[^\]]*\]\(([^)]+)\)(?:\{[^}]*\})?\Z", re.S)
+# attributes, which Goldmark does not understand -- so the markup is REMOVED, and a
+# block that held nothing else marks where the blog-pic shortcode belongs.
+#
+# Removed rather than passed through, everywhere and unconditionally, because the
+# path it carries is the per-run --extract-media directory: letting one reach the
+# page would commit an absolute build-runner path AND make the output differ on
+# every run. The surrounding horizontal whitespace goes with it so that an image
+# set inline in a paragraph does not leave a double space behind.
+IMAGE_RE = re.compile(r"[ \t]*!\[[^\]]*\]\((?:[^)]*)\)(?:\{[^}]*\})?[ \t]*")
 # Swiss postcode + town. Spelled out rather than \p{Lu}: Python's re has no
 # Unicode property classes.
 ADDRESS_RE = re.compile(r"^\d{4}\s+[A-ZÄÖÜ]")
 CAPTION_PREFIX = "bildlegende:"
 LABEL = "MEDIENMITTEILUNG"
+# Stands in for a block that was nothing but images, so the position survives the
+# filtering pass without the markup -- and hence without the temp path -- doing so.
+_IMAGE = object()
 
 
 class ConversionError(Exception):
@@ -101,19 +110,46 @@ def _escape(text):
     return text.replace("{{", "&#123;&#123;")
 
 
+def _strip_images(block):
+    """(the block's text with every image removed, whether it held any)."""
+    if not IMAGE_RE.search(block):
+        return block.strip(), False
+    return IMAGE_RE.sub(" ", block).strip(), True
+
+
 def shape_document(text):
-    """(title, body blocks, caption, index in blocks where the image sat)."""
-    blocks = _blocks(text)
-    if blocks and _plain(blocks[0]).upper() == LABEL:
-        blocks.pop(0)
-    if not blocks:
+    """(title, body blocks, caption, index in blocks where the image sat).
+
+    The images and the MEDIENMITTEILUNG label come out BEFORE the title is chosen.
+    A press release on letterhead opens with the logo and a scanned PDF is images
+    all the way down, so taking blocks[0] as the title made the image markup the
+    title: raw Markdown carrying the --extract-media temp path, a different one on
+    every run, with the label left in place and the real title demoted to an '##'.
+    """
+    items = []
+    for block in _blocks(text):
+        body_text, had_image = _strip_images(block)
+        if had_image and not body_text:
+            items.append(_IMAGE)
+            continue
+        if _plain(body_text).upper() == LABEL:
+            continue
+        items.append(body_text)
+
+    if all(it is _IMAGE for it in items):
+        # Also the honest answer for a scan: the Anleitung's troubleshooting list
+        # already names "kein Text lesen" as a rejection cause.
         raise ConversionError("the document has no text")
 
-    title = _plain(blocks.pop(0))
+    for i, item in enumerate(items):
+        if item is not _IMAGE:
+            title = _plain(items.pop(i))
+            break
+
     body, caption, image_at = [], None, None
 
-    for block in blocks:
-        if IMAGE_RE.match(block.strip()):
+    for block in items:
+        if block is _IMAGE:
             image_at = len(body)
             continue
         if _is_address(block):

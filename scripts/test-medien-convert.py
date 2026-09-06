@@ -92,6 +92,40 @@ def main():
     except medien_convert.ConversionError:
         check("empty document rejected", True)
 
+    # --- a leading image must never become the title ---
+    # A press release on letterhead opens with the logo, and the markup carries the
+    # per-run --extract-media path: as the title it would put an absolute
+    # build-runner path into a committed file and change on every run.
+    t, b, c, i = medien_convert.shape_document(
+        '![](/tmp/medien-abc123/media/rId20.png){width="5.83in" height="2.33in"}\n\n'
+        "**MEDIENMITTEILUNG**\n\n"
+        "**Schülerhort startet erfolgreich**\n\n"
+        "Ein Absatz mit Text.\n")
+    check("leading image: the text is the title, not the image",
+          t == "Schülerhort startet erfolgreich", t)
+    check("leading image: the label is still dropped",
+          not any("MEDIENMITTEILUNG" in x for x in b), b)
+    check("leading image: the real title is not demoted to a sub-heading",
+          not any(x.startswith("## ") for x in b), b)
+    check("leading image: no extract-media path anywhere",
+          "/tmp/medien-" not in t and not any("/tmp/medien-" in x for x in b), (t, b))
+    check("leading image: its position is still recorded", i == 0, i)
+
+    # a document that is nothing but images -- a scanned press release -- has no
+    # title to find, and the Anleitung already tells the author it is rejected
+    try:
+        medien_convert.shape_document("![](/tmp/medien-abc123/xml/doc-1_1.jpg)\n")
+        check("image-only document rejected", False, "no exception")
+    except medien_convert.ConversionError as e:
+        check("image-only document rejected", "no text" in str(e), str(e))
+
+    # an image set INSIDE a paragraph loses its markup but not the prose around it,
+    # and does not leave a double space behind
+    t, b, _, _ = medien_convert.shape_document(
+        "**Titel**\n\nEin Absatz ![](/tmp/medien-abc123/media/rId7.png) mit Bild.\n")
+    check("inline image: the path does not reach the body",
+          b == ["Ein Absatz mit Bild."], b)
+
     # the real document, through pandoc
     import tempfile as _tf
     _media = _tf.mkdtemp(prefix="medien-test-")
@@ -280,6 +314,54 @@ def main():
           b.body.count("{{") == 2, b.body)
     _sh.rmtree(out, ignore_errors=True)
     _sh.rmtree(evil_dir, ignore_errors=True)
+
+    # --- a real letterhead document, and the determinism that hangs on it ---
+    # A press release on letterhead opens with the logo. Converted twice from two
+    # DIFFERENT temp directories the bundle must come out byte for byte the same:
+    # the mirror detects change by regenerating and comparing, so a title carrying
+    # the mkdtemp path is a bot commit and a deploy every single Monday.
+    import hashlib
+    head_dir = tempfile.mkdtemp()
+    from PIL import Image as _Im
+    _Im.new("RGB", (500, 200), "white").save(os.path.join(head_dir, "logo.png"))
+    head_md = os.path.join(head_dir, "head.md")
+    with open(head_md, "w", encoding="utf-8") as fh:
+        fh.write("![](logo.png)\n\n**MEDIENMITTEILUNG**\n\n"
+                 "**Schülerhort startet erfolgreich**\n\nEin Absatz mit Text.\n")
+    head_docx = os.path.join(head_dir, "letterhead.docx")
+    subprocess.run(["pandoc", "-f", "markdown", "-o", head_docx, head_md],
+                   cwd=head_dir, check=True)
+
+    def _convert_under(tmpdir):
+        """convert() with tempfile pointed somewhere else, digested."""
+        os.makedirs(tmpdir, exist_ok=True)
+        was, tempfile.tempdir = tempfile.tempdir, tmpdir
+        try:
+            dest = os.path.join(head_dir, os.path.basename(tmpdir) + "-out")
+            os.makedirs(dest)
+            bundle = medien_convert.convert(head_docx, [], dest)
+            files = {}
+            for root, _, names in os.walk(dest):
+                for n in sorted(names):
+                    p = os.path.join(root, n)
+                    files[os.path.relpath(p, dest)] = hashlib.sha256(
+                        open(p, "rb").read()).hexdigest()
+            return bundle.title, bundle.body, files
+        finally:
+            tempfile.tempdir = was
+
+    run_a = _convert_under(os.path.join(head_dir, "tmpA"))
+    run_b = _convert_under(os.path.join(head_dir, "tmpB"))
+    check("letterhead: the logo does not become the title",
+          run_a[0] == "Schülerhort startet erfolgreich", run_a[0])
+    check("letterhead: the label is dropped and the title is the H1",
+          run_a[1].startswith("# Schülerhort startet erfolgreich")
+          and "MEDIENMITTEILUNG" not in run_a[1], run_a[1][:200])
+    check("letterhead: no absolute temp path reaches the page",
+          "medien-" not in run_a[1] and head_dir not in run_a[1], run_a[1])
+    check("determinism: two runs from two temp directories are byte-identical",
+          run_a == run_b, (run_a[0], run_b[0]))
+    _sh.rmtree(head_dir, ignore_errors=True)
 
     # --- a document the tools cannot read is a ConversionError, not a crash ---
     # Task 6 catches ConversionError to reject one folder; anything else it does not
