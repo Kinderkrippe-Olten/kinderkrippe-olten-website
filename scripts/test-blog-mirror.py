@@ -79,6 +79,67 @@ def main():
         lines, status = blog_mirror.apply({}, content, PREFIX, allow_empty=True)
         check("foreign prefix: survives",
               os.path.isdir(os.path.join(content, "2026-05-01_Story")), lines)
+
+        # --- update rewrites generated files and prunes dropped gallery images ---
+        content = os.path.join(tmp, "blog4")
+        staging = os.path.join(tmp, "stage4")
+        os.makedirs(content)
+        bundle(content, "2026-09-04_Hort", marker=f"{PREFIX}/2026-09-04_hort",
+               body="# Alt\n", gallery=("a.jpeg", "b.jpeg"))
+        new = bundle(staging, "2026-09-04_Hort", marker=f"{PREFIX}/2026-09-04_hort",
+                     body="# Neu\n", gallery=("a.jpeg",))
+        lines, status = blog_mirror.apply({"2026-09-04_Hort": new}, content, PREFIX)
+        with open(os.path.join(content, "2026-09-04_Hort", "index.md"), encoding="utf-8") as fh:
+            got = fh.read()
+        check("update: body replaced", "# Neu" in got, got[:80])
+        check("update: dropped gallery image pruned",
+              not os.path.exists(os.path.join(content, "2026-09-04_Hort", "gallery", "b.jpeg")))
+        check("update: reported", any(l.startswith("update:") for l in lines), lines)
+
+        # --- re-running the same input changes nothing (proves determinism end) ---
+        lines, status = blog_mirror.apply({"2026-09-04_Hort": new}, content, PREFIX)
+        check("no-op: reports no changes", lines == ["no changes"], lines)
+
+        # --- delete removes an owned bundle whose source is gone ---
+        content = os.path.join(tmp, "blog5")
+        os.makedirs(content)
+        bundle(content, "2026-09-04_Hort", marker=f"{PREFIX}/2026-09-04_hort")
+        bundle(content, "2024-03-18_Osterprojekt", marker=None)
+        lines, status = blog_mirror.apply({}, content, PREFIX, allow_empty=True)
+        check("delete: owned bundle removed",
+              not os.path.exists(os.path.join(content, "2026-09-04_Hort")))
+        check("delete: hand-made post survives",
+              os.path.isdir(os.path.join(content, "2024-03-18_Osterprojekt")))
+
+        # --- the wipeout guard refuses an empty set while owned bundles exist ---
+        content = os.path.join(tmp, "blog6")
+        os.makedirs(content)
+        bundle(content, "2026-09-04_Hort", marker=f"{PREFIX}/2026-09-04_hort")
+        lines, status = blog_mirror.apply({}, content, PREFIX)
+        check("guard: status 3", status == 3, status)
+        check("guard: nothing deleted",
+              os.path.isdir(os.path.join(content, "2026-09-04_Hort")))
+
+        # --- a REJECTED folder must not unpublish its page ---
+        content = os.path.join(tmp, "blog7")
+        os.makedirs(content)
+        bundle(content, "2026-09-04_Hort", marker=f"{PREFIX}/2026-09-04_hort")
+        bundle(content, "2026-07-20_Hort", marker=f"{PREFIX}/2026-07-20_hort")
+        lines, status = blog_mirror.apply(
+            {"2026-07-20_Hort": bundle(os.path.join(tmp, "stage7"), "2026-07-20_Hort",
+                                       marker=f"{PREFIX}/2026-07-20_hort")},
+            content, PREFIX, protected={"2026-09-04_Hort"})
+        check("rejected: page left as-is",
+              os.path.isdir(os.path.join(content, "2026-09-04_Hort")), lines)
+
+        # --- dry run touches nothing ---
+        content = os.path.join(tmp, "blog8")
+        os.makedirs(content)
+        lines, status = blog_mirror.apply(
+            {"2026-09-04_Hort": src}, content, PREFIX, dry_run=True)
+        check("dry-run: nothing written",
+              not os.path.exists(os.path.join(content, "2026-09-04_Hort")))
+        check("dry-run: says 'would'", any(l.startswith("would add:") for l in lines), lines)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
