@@ -74,7 +74,7 @@ aus dem PDF:
 | jeder weitere ganz fette Absatz | Zwischentitel |
 | eingebettetes Bild | Titelbild der Seite |
 | `Bildlegende: …` | Bildunterschrift zum Titelbild |
-| Absatz mit einer Zeile, die nur aus Postleitzahl und Ort besteht | wird ganz weggelassen |
+| Absatz mit einer Zeile, die wie Postleitzahl und Ort aussieht | wird ganz weggelassen |
 
 Lead und Zwischentitel werden an der **Fettschrift** erkannt, nicht an den
 Word-Formatvorlagen. Für den Titel bitte keine Formatvorlage «Überschrift 1»
@@ -83,19 +83,22 @@ ganz normaler, fett formatierter Absatz ist genau richtig.
 
 Die Adresse wird an der Postleitzahl erkannt und **absichtlich entfernt** – auf
 der Website steht sie ohnehin schon. Das gilt aber nicht nur für den Adressblock
-am Schluss: Steht *irgendwo* im Dokument eine Zeile, die aus nichts anderem
-besteht als einer vierstelligen Postleitzahl und einem Ortsnamen («4600 Olten»,
-«2300 La Chaux-de-Fonds»), so verschwindet der **ganze Absatz**, in dem diese
-Zeile steht – mitsamt allem anderen, was in diesem Absatz steht.
+am Schluss: Steht *irgendwo* im Dokument eine Zeile, die wie eine vierstellige
+Postleitzahl mit Ortsnamen aussieht («4600 Olten», «2300 La Chaux-de-Fonds»), so
+verschwindet der **ganze Absatz**, in dem diese Zeile steht – mitsamt allem
+anderen, was in diesem Absatz steht.
 
-Entscheidend ist, dass die Zeile *nur* aus Postleitzahl und Ort besteht. Eine
-Zeile, die mit vier Ziffern anfängt und dann weitergeht, ist keine Adresse und
-bleibt stehen: «1990 Wurde der Verein gegründet», «5000 Franken wurden
-gespendet», «2024 Eröffnung der Kita».
+Entscheidend ist, was nach den vier Ziffern kommt. Folgen dort nur ein bis vier
+Wörter, die alle grossgeschrieben sind, gilt die Zeile als Adresse – auch wenn
+gar keine gemeint ist: «2024 Umbau Sonnhalde» nimmt seinen Absatz mit. Ein
+einziges kleingeschriebenes Wort irgendwo nach der Zahl genügt dagegen, damit
+die Zeile stehen bleibt; deshalb bleiben «1990 Wurde der Verein gegründet»,
+«5000 Franken wurden gespendet», «2024 Eröffnung der Kita» und ebenso «2024
+Umbau der Sonnhalde» erhalten.
 
-Soll eine Adresse stehen bleiben, etwa ein Veranstaltungsort, dann einfach so
-schreiben, dass noch etwas anderes auf derselben Zeile steht. «Die Feier findet
-im Stadthaus, 4600 Olten, statt» mitten im Fliesstext bleibt erhalten; eine
+Soll eine Adresse stehen bleiben, etwa ein Veranstaltungsort, dann einfach in
+einen Satz einbauen. «Die Feier findet im Stadthaus, 4600 Olten, statt» mitten
+im Fliesstext bleibt erhalten; eine
 eigene Zeile «4600 Olten» nimmt ihren Absatz mit.
 
 Ist das Bild im Dokument dasselbe wie eines der losen Fotos, wird es **nicht

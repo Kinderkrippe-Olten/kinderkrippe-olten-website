@@ -121,6 +121,23 @@ def main():
         _, b, _, _ = medien_convert.shape_document(
             "**Titel**\n\nHort Bifang-Säli\\\nReiserstrasse 91\\\n" + addr + "\n")
         check(f"address: {addr} still takes its block", b == [], b)
+    # --- the Anleitung's promise about number lines, pinned in both directions ---
+    # A line of four digits followed by one to four capitalised words IS taken for
+    # an address today, milestone or not. Pinned so that narrowing ADDRESS_RE stays
+    # a deliberate decision rather than an accident.
+    for gone in ("2024 Umbau Sonnhalde", "2026 Start Hort",
+                 "2025 Jubiläum Verein Kinderkrippe Olten"):
+        _, b, _, _ = medien_convert.shape_document("**Titel**\n\n" + gone + "\n")
+        check(f"address: article-less milestone goes -- {gone}", b == [], b)
+    # and every line the Anleitung names as surviving must keep surviving
+    for kept in ("1990 Wurde der Verein gegründet",
+                 "5000 Franken wurden gespendet",
+                 "2024 Eröffnung der Kita",
+                 "2024 Umbau der Sonnhalde",
+                 "Die Feier findet im Stadthaus, 4600 Olten, statt"):
+        _, b, _, _ = medien_convert.shape_document("**Titel**\n\n" + kept + "\n")
+        check(f"address: the Anleitung's survivor survives -- {kept[:28]}",
+              b == [kept], b)
 
     # shortcode delimiters are escaped
     t, b, _, _ = medien_convert.shape_document(
