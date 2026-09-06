@@ -4,12 +4,14 @@
 Run with:  python3 scripts/test-apply-medien-sync.py
 """
 
+import datetime
 import importlib.util
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
+import types
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 APPLY = os.path.join(HERE, "apply-medien-sync.py")
@@ -120,6 +122,19 @@ def main():
             DOCX, ("meta.yaml", "Teasertitle: falsch geschrieben\n")]})
         rc, out = run(s, c, si, al)
         check("meta: an unknown key is reported", "Teasertitle" in out, out)
+        check("meta: an unknown key is a note, not a rejection", rc == 0, out)
+        check("meta: an unknown key still publishes the page",
+              os.path.isdir(os.path.join(c, "2026-09-04_Hort")), os.listdir(c))
+
+        # --- meta.yaml's Site goes through the same alias map as the folder name ---
+        s, c, si, al = setup(tmp + "/msa", {"2026-09-04_sonnhalde": [
+            DOCX, ("meta.yaml", "Site: hort\n")]})
+        rc, out = run(s, c, si, al)
+        md = os.path.join(c, "2026-09-04_Sonnhalde", "index.md")
+        check("meta: an aliased Site -> rc 0", rc == 0, out)
+        check("meta: Site resolved through the alias",
+              os.path.isfile(md)
+              and "Site: bifang-säli" in open(md, encoding="utf-8").read(), out)
 
         # --- an unusable Site in meta.yaml is a rejection, not broken front matter ---
         s, c, si, al = setup(tmp + "/ms", {"2026-09-04_hort": [
@@ -169,6 +184,24 @@ def main():
         check("collide: both folders are named",
               "2026-09-04_hort/" in out and "2026-09-04_Hort/" in out, out)
 
+        # --- an image Pillow cannot read is one folder's problem, not the run's ---
+        s, c, si, al = setup(tmp + "/img", {
+            "2026-09-04_hort": [DOCX, ("x.jpg", "not an image")],
+            "2026-09-04_sonnhalde": [DOCX]})
+        rc, out = run(s, c, si, al)
+        check("corrupt image: rc 1", rc == 1, out)
+        check("corrupt image: the other folder in the same run still publishes",
+              os.listdir(c) == ["2026-09-04_Sonnhalde"], os.listdir(c))
+        check("corrupt image: the folder is named as rejected, not crashed on",
+              "2026-09-04_hort/" in out and "Traceback" not in out, out)
+
+        # --- --dry-run reports what it would do and writes nothing ---
+        s, c, si, al = setup(tmp + "/dry", {"2026-09-04_hort": [DOCX]})
+        rc, out = run(s, c, si, al, "--dry-run")
+        check("dry-run: rc 0", rc == 0, out)
+        check("dry-run: says what it would add", "would add: 2026-09-04_Hort" in out, out)
+        check("dry-run: nothing written", os.listdir(c) == [], os.listdir(c))
+
         # --- RULING-9: a hand-made page of the same name is not overwritten, and the
         #     run must not report success ---
         s, c, si, al = setup(tmp + "/own", {"2026-09-04_hort": [DOCX]})
@@ -185,9 +218,12 @@ def main():
 
         # --- pandoc's backslash escapes do not reach the front matter ---
         mod = load_module()
-        got = mod.unescape_markdown(r"Titel mit {{\< a \>}} darin")
-        check("title: pandoc's escapes are undone for the front matter",
-              got == "Titel mit {{< a >}} darin", got)
+        fm = mod.front_matter(
+            types.SimpleNamespace(title=r"Titel mit {{\< a \>}} darin", author=""),
+            datetime.date(2026, 9, 4), "bifang-säli",
+            "Medienmitteilungen/2026-09-04_hort", {})
+        check("title: pandoc's escapes are gone from the Title: line",
+              'Title: "Titel mit {{< a >}} darin"' in fm, fm)
 
         # --- A REJECTED FOLDER MUST NOT UNPUBLISH ITS PAGE ---
         s, c, si, al = setup(tmp + "/p", {"2026-09-04_hort": [DOCX] + imgs})

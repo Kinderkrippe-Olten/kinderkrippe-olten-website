@@ -119,7 +119,17 @@ def unescape_markdown(text):
     return MD_ESCAPE_RE.sub(r"\1", text)
 
 
-def parse_folder(name, sites, aliases):
+def resolve_site(token, known_sites, aliases):
+    """A site key in data/sites.yaml's own spelling, or None.
+
+    The one place a location token becomes a Site: the folder name and meta.yaml's
+    Site: both go through it, so 'hort' means the same thing in both.
+    """
+    key = token.casefold()
+    return known_sites.get(key) or known_sites.get(aliases.get(key, "").casefold())
+
+
+def parse_folder(name, known_sites, aliases):
     """(date, site, target directory name) -- or raise ValueError with the reason."""
     m = FOLDER_RE.match(name)
     if not m:
@@ -134,9 +144,7 @@ def parse_folder(name, sites, aliases):
         raise ValueError(
             "only letters, digits and '-' are allowed between the '_' separators; "
             "unusable: " + ", ".join(repr(t) for t in bad))
-    key = tokens[0].casefold()
-    known = {s.casefold(): s for s in sites}
-    site = known.get(key) or known.get(aliases.get(key, "").casefold())
+    site = resolve_site(tokens[0], known_sites, aliases)
     if not site:
         raise ValueError(
             f"{tokens[0]!r} is not a site in data/sites.yaml and has no alias in "
@@ -244,7 +252,7 @@ def main():
     parsed, rejected = {}, []
     for name in folders:
         try:
-            parsed[name] = parse_folder(name, sites, aliases)
+            parsed[name] = parse_folder(name, known_sites, aliases)
         except ValueError as exc:
             rejected.append((name, None, str(exc)))
 
@@ -260,19 +268,27 @@ def main():
             try:
                 doc, images = inspect(folder)
                 meta, unknown = read_meta(folder)
-                if meta.get("Site") and meta["Site"].casefold() not in known_sites:
-                    raise ValueError(
-                        f"meta.yaml sets Site: {meta['Site']} -- not a site in "
-                        "data/sites.yaml")
+                if meta.get("Site"):
+                    # Through the same alias map as the folder name, so that the
+                    # 'hort' the Anleitung teaches means one thing in both places.
+                    chosen = resolve_site(meta["Site"], known_sites, aliases)
+                    if not chosen:
+                        raise ValueError(
+                            f"meta.yaml sets Site: {meta['Site']} -- not a site in "
+                            "data/sites.yaml and no alias in "
+                            "data/medienmitteilungen.yaml")
+                    meta["Site"] = chosen
                 out = os.path.join(work, target)
                 os.makedirs(out)
                 bundle = medien_convert.convert(doc, images, out)
-            except (ValueError, medien_convert.ConversionError) as exc:
+            # OSError too: an author's image that Pillow cannot open reaches
+            # select_images as PIL.UnidentifiedImageError, which is an OSError. One
+            # truncated file -- what a half-finished WebDAV sync leaves behind -- must
+            # cost its own folder and no one else's.
+            except (ValueError, OSError, medien_convert.ConversionError) as exc:
                 rejected.append((name, target, str(exc)))
                 continue
 
-            if meta.get("Site"):
-                meta["Site"] = known_sites[meta["Site"].casefold()]
             marker = f"{args.prefix}/{name}"
             with open(os.path.join(out, "index.md"), "w", encoding="utf-8") as fh:
                 fh.write(front_matter(bundle, date, site, marker, meta) + bundle.body)
@@ -312,8 +328,8 @@ def main():
         for name, target, why in sorted(rejected, key=lambda r: r[0]):
             kept = " (page left as-is)" if target in left_alone else ""
             print(f"  {name}/{kept}\n      {why}", file=sys.stderr)
-        print("\nFix them in OpenCloud. Nothing already published was removed.",
-              file=sys.stderr)
+        print("\nFix them in OpenCloud. No page belonging to a rejected folder was "
+              "removed.", file=sys.stderr)
 
     # A target name that is already taken by a hand-made post is a silent
     # publication failure otherwise: nothing is written and the author sees a
