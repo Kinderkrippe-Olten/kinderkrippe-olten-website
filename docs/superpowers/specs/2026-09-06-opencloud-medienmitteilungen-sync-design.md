@@ -84,7 +84,7 @@ Nothing depends on being able to reverse that transformation — see the marker 
 | Found | Treatment |
 |---|---|
 | Exactly one `.docx` **or** one `.pdf` | The document. Required. |
-| `.jpg` / `.jpeg` / `.png` at the top level | Copied verbatim into `gallery/`. |
+| `.jpg` / `.jpeg` / `.png` at the top level | Pooled with the document's own images; see "Images". |
 | `meta.yaml` | Optional front-matter overrides. |
 | Dot-files, `Thumbs.db` | Ignored, as in the job-ad validator. |
 | Anything else | The folder is rejected. |
@@ -96,6 +96,24 @@ silently ignoring it publishes a page that is missing something.
 Subdirectories are rejected. The gallery is built from the top-level images; a
 `gallery/` folder in OpenCloud would be a second, conflicting way to say the same
 thing.
+
+**Rejection is inert.** A rejected folder is never created, never updated and — this
+is the part that matters — **never deleted**. Any bundle already published from it
+stays exactly as it is, and the report says so in as many words:
+`rejected (page left as-is): 2026-09-04_hort — 2 documents`.
+
+This diverges from the job-ad syncer, deliberately. There, `desired` is built only
+from the validator's `valid` list and `removed` is `current - desired`
+(`scripts/apply-stellen-sync.py`), so a PDF that exists in OpenCloud but fails
+validation is deleted from the repository. For a job ad that is defensible: a
+mis-named ad is not publishable and the page is regenerated from OpenCloud anyway.
+
+Applied to `content/blog/` the same rule means somebody drags a stray file into a
+folder and **a published press release disappears from the website** — a permanent URL
+that has been linked to, taken down by an edit that had nothing to do with it, with a
+red tick in the Actions tab as the only signal. Rejection means "I cannot read this",
+which is not the same claim as "this was withdrawn". Only an absent folder is a
+withdrawal. This also makes a partial rclone fetch safe for free.
 
 ## What the syncer owns
 
@@ -177,37 +195,23 @@ Against the resulting block sequence:
    and its caption follow the address, and a drop-to-end rule would silently lose the
    photo. Splitting on the hard breaks rather than searching the whole block also keeps
    a body sentence that happens to mention `4600 Olten` from being mistaken for it.
-6. The embedded image becomes `teaser.<ext>`, emitted at the position it occupied in
-   the document as `{{< blog-pic src="teaser.jpeg" … >}}` — the `src` naming whatever
-   extension the image actually has.
-7. A paragraph beginning `Bildlegende:` is that caption, with the prefix stripped and
-   the remainder as the shortcode's inner text. With no such paragraph the shortcode is
-   emitted with an explicit `alt` set to the title instead, because `blog-pic.html`
-   otherwise derives `alt` from its inner text and would produce an empty one.
-8. Loose images become `gallery/`, and
-   `{{< picture-slider dir="gallery" height="250px" >}}` is appended, as in
-   `2026-06-25_Hagmatt_Bauernhof`.
-9. **If the document embeds no image**, the alphabetically first gallery image is
-   copied to `teaser.<ext>` as well, and no `blog-pic` shortcode is emitted. Not a
-   detail: `render-blog-section.html` warns at build time when a post has no
-   `teaser.*`, and the blog card renders with an empty media area. A folder with
-   neither an embedded image nor a loose one is still accepted — it produces exactly
-   that warning, which is the correct outcome for a release that genuinely has no
-   photo.
+6. A paragraph beginning `Bildlegende:` is the photo caption, with the prefix
+   stripped. It becomes the inner text of the `blog-pic` shortcode that renders the
+   teaser. With no such paragraph the shortcode carries an explicit `alt` set to the
+   title instead, because `blog-pic.html` otherwise derives `alt` from its inner text
+   and would produce an empty one.
+7. `{{` in body text is escaped to `&#123;&#123;`. See "Generated content is not
+   trusted markup" below — Hugo evaluates shortcodes in page content, so an
+   unescaped `{{<` in a press release fails the whole site build.
+8. Images are handled as described in "Images" below, and the page ends with the
+   teaser's `blog-pic` at the position the document placed it, followed by
+   `{{< picture-slider dir="gallery" height="250px" >}}` when the gallery is
+   non-empty — as in `2026-06-25_Hagmatt_Bauernhof`.
 
-The extension is preserved rather than forced to `.jpg`. This is a deliberate
-departure from the original brief, which said `teaser.jpg`: Hugo matches `teaser.*`
-(`render-blog-section.html` and the sample bundle `2026-04-23_GV` already carry a
-`teaser.jpeg`), and naming a PNG `.jpg` would be a lie told to every tool that reads the
-file afterwards.
-
-More than one embedded image is a rejection. Picking the first and discarding the rest
-would drop content silently, and the author cannot tell from the website that it
-happened.
 
 ### `.pdf`
 
-`pdftotext -layout` for the text, `pdfimages` for the embedded image. A PDF carries no
+`pdftotext -layout` for the text, `pdfimages` for the images. A PDF carries no
 bold, so steps 3 and 4 above cannot run: the output is a title plus flat paragraphs.
 That is a real degradation and the run log says so on every PDF, naming the `.docx`
 path as the one that produces sub-headings and a lead paragraph.
@@ -215,6 +219,114 @@ path as the one that produces sub-headings and a lead paragraph.
 Supporting PDF at all is a requirement, not a preference — some releases only ever
 exist as PDF. It is supported honestly rather than by pretending the structure can be
 recovered from font metrics.
+
+## Images
+
+Every image in the folder is a candidate, from both sources: the ones embedded in the
+document and the ones sitting loose beside it. They are pooled, filtered,
+de-duplicated, and then split into one teaser and a gallery.
+
+### Extraction
+
+`.docx`
+: Pandoc's `--extract-media` output, which is the document *body*. Header and footer
+  parts are not included, so a letterhead never reaches the pool.
+
+`.pdf`
+: `pdfimages -list`, then extract only the rows whose `type` is `image`. **The
+  `smask` and `stencil` rows are transparency masks and stencils, not photographs.**
+  A mask has the same dimensions as the image it belongs to, so a pixel-area floor
+  does not remove it — the type column is the exact discriminator and a size filter
+  is not a substitute for it.
+
+Both are then filtered by a minimum pixel area, which is what removes logos, bullets
+and rules. PDFs also split large images into horizontal bands; the floor removes thin
+bands, and any that survive are caught by the de-duplication below or, failing that,
+are visible in the run log's inventory.
+
+### De-duplication is perceptual, and must stay that way
+
+The document's image is usually *also* one of the loose files, because the author put
+it in the document from the same camera roll. Word and PDF both re-encode and rescale
+it on the way in, so **the duplicate is not byte-identical and exact comparison cannot
+find it.** Measured on the sample folder:
+
+| | dimensions | MD5 |
+|---|---|---|
+| `word/media/image1.jpeg` | 1385×931 | `5800d062…` |
+| `IMG_0090.jpeg` | 1280×860 | `120b34a0…` |
+
+Different bytes, different dimensions — and the same photograph. A normalised
+16×16 luminance signature separates them unambiguously: `IMG_0090` scores **0.0083**
+against the embedded image, and the next-nearest of the other twelve scores **0.9187**.
+A 110× margin is not a threshold anyone has to tune.
+
+This is recorded at length because the obvious "simplification" — hash the files,
+drop the collisions — is provably wrong on the only real folder we have, and would
+silently ship the same photo twice on every page. When duplicates are found the larger
+copy by pixel count is kept.
+
+Comparison uses Pillow and numpy, installed from apt alongside pandoc. It is the one
+place these scripts take a dependency, and it buys a result no dependency-free rule
+reaches.
+
+### Teaser and gallery
+
+The **teaser** is the document's own image — the one the author chose to place next to
+the text, and the one the `Bildlegende` describes. If de-duplication matched it to a
+loose file, the surviving larger copy is the teaser and the loose file does not also
+appear in the gallery. If the document embeds no image at all, the alphabetically
+first pooled image becomes the teaser and no `blog-pic` shortcode is emitted.
+
+The **gallery** is everything else, in filename order.
+
+The extension is preserved rather than forced to `.jpg`. This is a deliberate
+departure from the original brief, which said `teaser.jpg`: Hugo matches `teaser.*`
+(`render-blog-section.html` and the sample bundle `2026-04-23_GV` already carry a
+`teaser.jpeg`), and naming a PNG `.jpg` would be a lie told to every tool that reads
+the file afterwards.
+
+A folder with no images at all is still accepted. It produces the build-time warning
+`render-blog-section.html` already emits for a post with no `teaser.*`, which is the
+correct outcome for a release that genuinely has no photo.
+
+On the sample folder this yields exactly one right answer, and it is the fixture
+test's acceptance criterion: **teaser = the Hort photo, gallery = 12 files, no
+duplicate.**
+
+## Generated content is not trusted markup
+
+The workflow's order is fetch → apply → commit → push → dispatch the deploy, so
+without a check the first thing to evaluate the generated Markdown would be the
+production build. The job-ad syncer can afford that because it copies PDFs, which
+cannot break a build. This one *generates* content, and three dialect mismatches
+follow from that.
+
+**Hugo evaluates shortcodes in page content.** A release whose text contains `{{<` —
+a mail-merge remnant, or someone writing about the site itself — fails the build with
+"unterminated shortcode". That does not merely lose the press release: `deploy-hugo.yaml`
+fails, so the site stops updating entirely, job ads included, and the error names
+`content/blog/…` rather than the document it came from. Hence the `{{` escaping in the
+conversion steps.
+
+**`config.yaml` sets `markup.goldmark.renderer.unsafe: true`.** Raw HTML that pandoc
+emits for constructs Markdown cannot express — text boxes, some tables, attributed
+`<div>`/`<span>` — is rendered rather than stripped. The WebSync space is
+staff-writable, so this is a trusted boundary rather than an open upload form; it is
+still an uninspected path from a Word file to live HTML.
+
+**Pandoc's attribute syntax is not Goldmark's.** The sample's own output carries
+`{width="6.295833333333333in" height="4.2340277777777775in"}` after the image. The
+image line is replaced by a shortcode, so that instance is handled — but an attribute
+pandoc emits anywhere else renders as literal junk on the page.
+
+So the sync workflow **runs `hugo build` over the working tree after applying and
+before committing.** A failure rejects the offending folder — inert, per the rejection
+rule above — and the run reports it. This validates against the renderer that will
+actually consume the output rather than against a list of failure modes someone
+thought of in advance, and it catches malformed generated front matter for free.
+`deploy-hugo.yaml` already carries the mise / Hugo-extended / dart-sass recipe to
+copy.
 
 ## `meta.yaml`
 
@@ -240,9 +352,11 @@ dispatch. That matters more than it sounds: press-release titles run long, and t
 card is 400px wide, so `TeaserTitle` is the field most likely to be wanted. The
 author-facing documentation has to lead with this.
 
-Parsed with a small `^(\w+):\s*(.*)$` reader rather than PyYAML, keeping the scripts
-dependency-free as the job-ad scripts deliberately are. If `meta.yaml` ever needs
-nested values, that decision gets revisited rather than worked around.
+Parsed with a small `^(\w+):\s*(.*)$` reader rather than PyYAML. The job-ad scripts
+are deliberately dependency-free; these are not quite — de-duplication needs Pillow and
+numpy — but that is one dependency bought for one result that nothing else reaches, and
+it is not a reason to start adding more. If `meta.yaml` ever needs nested values, that
+decision gets revisited rather than worked around.
 
 ## Mirror semantics
 
@@ -260,8 +374,9 @@ something been touched".
 `index.md`, `teaser.*` and the entire contents of `gallery/` are generated, so all
 three are mirrored — including deleting gallery images removed in OpenCloud.
 
-**Delete.** The OpenCloud folder is gone and a marked bundle remains → remove the
-bundle. Git history retains it, exactly as it does a withdrawn job ad.
+**Delete.** The OpenCloud folder is **absent** and a marked bundle remains → remove
+the bundle. Git history retains it, exactly as it does a withdrawn job ad. A folder
+that is present but rejected is not absent; see "Rejection is inert" above.
 
 **Wipeout guard.** An empty validated set while marked bundles still exist is refused,
 because that is what an expired token or a WebDAV outage looks like. `--allow-empty`
@@ -315,15 +430,52 @@ are expensive to undo. When it arrives it gets its own spec.
 `.github/workflows/sync-medienmitteilungen.yaml`, cloned from `sync-stellen.yaml`:
 
 - `OPENCLOUD_PATH: Medienmitteilungen`.
-- An added step installing `pandoc` and `poppler-utils` from apt, rather than relying
-  on what happens to be in the runner image.
+- **Pandoc pinned by version and SHA-256**, installed from its GitHub release the
+  way rclone already is — not from apt. `poppler-utils`, Pillow and numpy do come
+  from apt.
+- A `hugo build` step after applying and before committing, per "Generated content is
+  not trusted markup".
 - `content/blog` in place of `content/docs/stellen` in the commit paths.
 - Everything else kept: the secret-presence pre-check, the pinned checksum-verified
   rclone, the App Token expiry warning, the `dry_run` and `allow_empty` inputs, the
   deploy dispatch and the stranded-commit heal.
 
-Its own `concurrency` group. The two syncers touch disjoint paths and must not queue
-behind each other.
+### Pandoc must be pinned
+
+The update pass rests on one claim — same bytes in, same Markdown out — and that is
+true only for a fixed pandoc. The markdown writer's escaping, attribute emission and
+list markers all move between releases. An unpinned `apt-get install pandoc` therefore
+means that the day GitHub moves the `ubuntu-latest` image, every marked bundle compares
+unequal and the syncer emits **one bot commit rewriting every press release on the
+site**, then deploys it — a diff indistinguishable from real content changes, and if
+the shift is a degradation it ships unreviewed.
+
+`sync-stellen.yaml` already pins rclone to a version *and* a SHA-256. Pinning the tool
+that copies bytes while floating the tool that generates them would be exactly
+backwards. Bumping the pin then becomes a deliberate act, and the fixture diff in that
+pull request is the review of what changed.
+
+`poppler-utils` stays on apt: `pdftotext -layout` output feeds the same parser, and
+drift there surfaces as a rejected or visibly wrong page rather than a silent
+corpus-wide rewrite.
+
+### One concurrency group across both syncers
+
+`concurrency: group: websync-sync`, **shared with `sync-stellen.yaml`**, not a group of
+its own.
+
+The two syncers touch disjoint paths but they do not have disjoint branches, and
+`sync-stellen.yaml`'s commit step pushes with no fetch, no rebase and no retry. Under
+`set -euo pipefail` a non-fast-forward push fails the step, fails the job, and the
+deploy-dispatch step never runs because it requires success — so that run's content is
+not published at all until the next event or the daily heartbeat, up to 24 hours later,
+with a red run nobody reads as the only trace.
+
+That collision is the default rather than a rarity: a new dispatcher release cloned
+from the existing values file inherits `heartbeat.schedule: "23 4 * * *"`, so both
+dispatchers would fire in the same second every day. Serialising is the right
+primitive here; the second run checks out the first's commit and proceeds normally,
+and a press-release sync waiting seconds behind a job-ad sync costs nothing.
 
 The `schedule` stays as the same weak third net it is for job ads, with the same caveat
 recorded there: GitHub disables scheduled workflows in public repositories after 60
@@ -341,8 +493,14 @@ resolves `customers/<customer>/services/<name>/values.yaml` by convention.
 
 1. `customers/kko/services/medien-dispatcher/values.yaml` — `watch.path:
    Medienmitteilungen`, `github.workflow: sync-medienmitteilungen.yaml`,
-   `nats.durable: medien-dispatcher`; same `nats.url`, `watch.spaceId`, repo, ref and
-   `existingSecret`.
+   `nats.durable: medien-dispatcher`, **`heartbeat.schedule: "53 4 * * *"`**; same
+   `nats.url`, `watch.spaceId`, repo, ref and `existingSecret`.
+
+   The heartbeat stagger is not cosmetic. The base chart's `"23 4 * * *"` would
+   otherwise be inherited verbatim and both dispatchers would fire in the same second
+   every night. The shared `concurrency` group above makes that safe rather than
+   destructive, but two syncs queueing behind each other daily makes the Actions log
+   harder to read than it needs to be, and the fix is one line.
 2. `customers/kko/customer.yaml` — a service entry alongside `stellen-dispatcher`,
    `releaseName: kko-medien-dispatcher`, cross-referencing this spec.
 3. `clusters/talos-volki-01/cluster_config/monitoring/medien-dispatcher-alerts.yaml` —
@@ -376,13 +534,24 @@ stream that already carries thirteen.
 ## Testing
 
 Plain self-checking scripts run as `python3 scripts/test-<name>.py`, matching the
-existing pair. No pytest, no dependencies.
+existing pair. No pytest.
+
+**They run in CI.** `.github/workflows/test-scripts.yaml` executes every
+`scripts/test-*.py` on pull requests and pushes, using the same pinned pandoc as the
+sync workflow. Today nothing runs the existing job-ad tests at all — `.github/workflows/`
+holds only `deploy-hugo.yaml` and `sync-stellen.yaml` — which is tolerable for pure
+Python with no external dependency and is not tolerable here: `medien_convert.py`'s
+output depends on a binary that can change underneath it, and the fixture test is the
+only thing that would notice. The existing job-ad tests come along for free.
 
 `scripts/test-medien-convert.py`
 : Against a fixture built from the real `20260904_MM_EröffnungHort.docx`, committed
-  under `scripts/fixtures/`, plus synthetic cases: no embedded image; two embedded
-  images (rejected); no address block; no `Bildlegende`; a PDF; an en-dash in the
-  title; a document that is nothing but a title.
+  under `scripts/fixtures/`, asserting the acceptance criterion from "Images": teaser
+  is the Hort photo, gallery is 12 files, `IMG_0090.jpeg` appears once and not twice.
+  Plus synthetic cases: no images at all; a document image with no loose twin; a
+  letterhead logo below the area floor; a PDF whose `pdfimages -list` includes an
+  `smask` row; no address block; no `Bildlegende`; an en-dash in the title; body text
+  containing `{{<`; a document that is nothing but a title.
 
 `scripts/test-apply-medien-sync.py`
 : A staging tree and a fake `content/blog/` in a temp directory, the script run as a
@@ -396,8 +565,10 @@ is deterministic, and a regression there produces a commit on every dispatch for
 
 ## What this deliberately does not do
 
-- **No image processing.** Photos are copied at whatever size they arrive; Hugo already
-  resizes at build time in `blog-pic.html` and `picture-slider.html`.
+- **No image *re-encoding*.** Photos are copied to the repository byte-for-byte at
+  whatever size they arrive; Hugo resizes at build time in `blog-pic.html` and
+  `picture-slider.html`. Images are decoded during the run, but only to compute the
+  de-duplication signature — nothing decoded is ever written out.
 - **No LLM in the pipeline.** The conventions above are mechanical, testable and free.
   A model in the loop would make the output non-deterministic, which the byte-comparison
   update pass depends on not being.
