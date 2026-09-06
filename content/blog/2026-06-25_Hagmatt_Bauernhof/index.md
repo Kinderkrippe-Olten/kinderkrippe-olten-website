@@ -4,7 +4,7 @@ TeaserTitle: "Projekt Bauernhof"
 Autor: "Antonella Zbinden"
 Date: 2026-06-25
 Site: hagmatt
-SyncedFrom: Geschichten/2026-06-25_Hagmatt_Bauernhof_Kopie
+SyncedFrom: Geschichten/2026-06-25_Hagmatt_Bauernhof
 ---
 # Projekt zum Thema Bauernhof
 
