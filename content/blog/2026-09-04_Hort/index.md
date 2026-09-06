@@ -1,5 +1,6 @@
 ---
 Title: "Schülerhort Bifang-Säli startet erfolgreich – freie Plätze verfügbar"
+TeaserTitle: "Eröffnung Hort"
 Autor: "Melanie von Arx"
 Date: 2026-09-04
 Site: bifang-säli
