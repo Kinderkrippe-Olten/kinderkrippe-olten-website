@@ -207,6 +207,35 @@ detachment that fix is silently reverted on the next dispatch, which is a bad th
 learn by watching it happen. The cost is that the page and the OpenCloud folder then
 diverge permanently, which is exactly what was asked for.
 
+**Detaching means deleting the marker *and* removing the OpenCloud folder.** Both, and
+in that order. Deleting the marker alone leaves the folder in OpenCloud, and every
+future run then finds a page of that name it does not own:
+
+```
+exists, not owned -- skipped: 2026-09-04_Hort
+1 folder(s) were not published because the page name is not owned by this syncer
+EXIT=1
+```
+
+which the workflow turns into `::error::Some folders … could not be published` — on
+every dispatch, for as long as the folder exists. That report is not wrong. From the
+syncer's side a deliberate detach and a hand-made page that has collided with a
+press-release folder name are the same observation, and telling them apart would need
+state the syncer does not keep — a record of pages it once owned, which is a second
+source of truth and the thing the marker exists to avoid. So the procedure is the
+complete one, not a suppression rule:
+
+1. Delete the `SyncedFrom:` line from `content/blog/<page>/index.md` and commit.
+2. Delete the folder from `WebSync/Medienmitteilungen/` in OpenCloud.
+
+Step 2 is not tidiness. It is what stops the run going red for ever, and it is also
+what makes the detach honest: the page is now maintained in the repository, and a
+folder still sitting in OpenCloud claims otherwise to the next author who looks.
+
+This is a maintainer action. It is deliberately absent from the author-facing
+Anleitung, which tells authors the true thing for them — that a change made directly on
+the website is lost on the next run.
+
 ## Document conversion
 
 The conversion is deterministic and stateless: same bytes in, same Markdown out. The
@@ -402,12 +431,57 @@ image line is replaced by a shortcode, so that instance is handled — but an at
 pandoc emits anywhere else renders as literal junk on the page.
 
 So the sync workflow **runs `hugo build` over the working tree after applying and
-before committing.** A failure rejects the offending folder — inert, per the rejection
-rule above — and the run reports it. This validates against the renderer that will
-actually consume the output rather than against a list of failure modes someone
-thought of in advance, and it catches malformed generated front matter for free.
-`deploy-hugo.yaml` already carries the mise / Hugo-extended / dart-sass recipe to
-copy.
+before committing.** This validates against the renderer that will actually consume
+the output rather than against a list of failure modes someone thought of in advance,
+and it catches malformed generated front matter for free. `deploy-hugo.yaml` already
+carries the mise / Hugo-extended / dart-sass recipe to copy.
+
+**A build failure stalls the whole run.** Nothing is committed, no press release
+publishes, and the run fails at that step every week until a person intervenes.
+
+> **Amended 2026-09-06, during implementation.** This paragraph previously read "A
+> failure rejects the offending folder — inert, per the rejection rule above — and the
+> run reports it." That is not what was built. The original text is in this file's git
+> history.
+
+Per-folder rejection is the better behaviour, and this amendment does not pretend
+otherwise. It is the behaviour every other failure in this design already has: a
+document pandoc cannot read, an image Pillow cannot open, a folder name that is not a
+site — each costs its own folder and no one else's, precisely so that one author's
+mistake cannot hold every other author's press release. A build failure is the one
+place where that principle is now broken, and it is broken in the direction that
+stops publishing altogether.
+
+It was not built for two reasons.
+
+The first is the cost of the mechanism. Hugo reports a build failure as a message
+naming a file, not as an exit code per page. Rejecting one folder means parsing that
+message in workflow bash, mapping the file back to its staged folder, removing it,
+rebuilding, and repeating until the build is clean or nothing is left — a loop with
+its own termination conditions, its own failure modes, and no test that can exercise
+it short of a document that actually breaks Hugo. That is a substantial piece of
+untested shell standing between every press release and the site, added at the end of
+the branch.
+
+The second is that the failure it would guard could not be produced. The three
+plausible routes were tried and none of them reaches Hugo: `{{` is escaped at the
+page-content boundary, in the title and the Bildlegende as well as the body
+(`assemble_body`); every front-matter scalar an author can influence goes through
+`quote()`, which is what a `:` or a `#` in a title would otherwise break; and a CMYK
+JPEG — the classic way an image kills a Hugo build — survives Hugo's resize. The build
+check remains valuable exactly because it validates against the real renderer rather
+than against that list; but a guard against a failure nobody can trigger does not earn
+a bash loop in the publishing path.
+
+What the run does instead is tell the truth about it. The build step's failure message
+names what has happened, says that nothing was committed and no release published, and
+tells the maintainer to follow the offending file's `SyncedFrom:` line back to the
+OpenCloud folder. And the report step now carries `always()`, so a folder the CLI
+rejected in the same run is still reported when the build fails — previously that
+report was skipped too, and the run said nothing about either problem.
+
+If a build failure ever does happen in practice, that is the evidence that would
+justify building the loop.
 
 ## `meta.yaml`
 

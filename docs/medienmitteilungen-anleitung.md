@@ -148,6 +148,14 @@ diese Zeile, sondern die ganze Mitteilung.
 bestehen bleiben. Die Seite wird bei jeder Änderung neu erzeugt – was direkt auf
 der Website geändert wird, geht dabei verloren.
 
+Es gibt einen Weg, eine einzelne Seite dauerhaft von OpenCloud zu lösen und
+danach nur noch von Hand zu pflegen. Das ist aber ein Eingriff in der Website
+selbst und keine Sache für die Autorinnen und Autoren: er muss immer zusammen
+mit dem Löschen des Ordners in OpenCloud geschehen, sonst meldet jeder weitere
+Abgleich einen Fehler. Wer das braucht, meldet sich bei der Website-Betreuung –
+beschrieben ist es im Entwurfsdokument unter «Deleting the marker line detaches
+the bundle».
+
 ## Ändern und Zurückziehen
 
 * **Ändern** – Dokument oder Fotos in OpenCloud ersetzen. Die Seite wird neu
