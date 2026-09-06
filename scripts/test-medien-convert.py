@@ -12,6 +12,9 @@ PDF = os.path.join(FIXTURES, "20260904_MM_EröffnungHort.pdf")
 # The same press release printed to PDF by LibreOffice Writer rather than by LaTeX:
 # ragged-right, and with a title whose own line spacing exceeds the body pitch.
 PDF_WRITER = os.path.join(FIXTURES, "20260904_MM_EröffnungHort_writer.pdf")
+# The bytes the .docx and its 13 loose photos must keep producing. See "THE GOLDEN
+# FILE" below for why, and for how to regenerate it on purpose.
+GOLDEN = os.path.join(FIXTURES, "golden-body.md")
 sys.path.insert(0, HERE)
 import medien_convert  # noqa: E402
 
@@ -269,6 +272,34 @@ def main():
     check("bundle: heading emitted once",
           b.body.count("# Schülerhort Bifang-Säli") == 1, b.body[:200])
     check("bundle: a complete document warns about nothing", b.warnings == [], b.warnings)
+
+    # --- THE GOLDEN FILE: the only assertion that can see pandoc move ---
+    # Every other assertion here is structural -- startswith, a count of '## ', a
+    # word that must not appear. A pandoc that starts escaping the German
+    # guillemets changes 1,492 characters of the published corpus, puts visible
+    # backslashes on the page, and passes all of them. That is the exact drift the
+    # version-and-checksum pin exists to prevent, and without a byte comparison the
+    # pin guards nothing.
+    #
+    # Regenerate deliberately, never to make the test green:
+    #   python3 -c "import sys; sys.path.insert(0,'scripts'); import glob, medien_convert as m; \
+    #     print(m.convert('scripts/fixtures/medien/20260904_MM_EröffnungHort.docx', \
+    #       sorted(glob.glob('scripts/fixtures/medien/IMG_*.jpeg')), OUT).body, end='')" > \
+    #     scripts/fixtures/medien/golden-body.md
+    # and read the diff: it is the diff the whole corpus is about to take.
+    #
+    # No path normalisation is needed. Nothing carrying the --extract-media
+    # directory reaches the body any more -- see shape_document -- which is what
+    # makes an equality assertion possible at all.
+    with open(GOLDEN, encoding="utf-8") as fh:
+        golden = fh.read()
+    check("golden: the generated body is byte for byte the committed one",
+          b.body == golden,
+          next((f"line {i + 1}: {x!r} != {y!r}" for i, (x, y) in
+                enumerate(zip(b.body.splitlines(), golden.splitlines())) if x != y),
+               f"length {len(b.body)} != {len(golden)}"))
+    check("golden: it carries the guillemets unescaped, as pandoc 3.11 writes them",
+          "«Der Hort bietet" in golden and "\\«" not in golden, golden[:0])
     _sh.rmtree(out, ignore_errors=True)
 
     # no caption -> explicit alt, never an empty one
