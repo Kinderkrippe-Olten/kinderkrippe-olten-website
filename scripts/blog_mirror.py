@@ -113,7 +113,7 @@ def apply(desired, content_dir, prefix, protected=(), dry_run=False, allow_empty
 
     for name, src in sorted(desired.items()):
         # "neither updated nor deleted", as the docstring says. Unreachable from
-        # apply-medien-sync.py, which never puts a protected name in `desired` --
+        # apply-blog-sync.py, which never puts a protected name in `desired` --
         # but blog_mirror is the module the coming Geschichten syncer reuses
         # unchanged, and honouring `protected` in the delete loop alone is the kind
         # of half-rule a second caller walks straight into.

@@ -6,6 +6,10 @@ von dort ab und stellt sie unter «Geschichten» auf kinderkrippe-olten.ch. Er l
 fest einmal pro Woche, am Montagmorgen; soll eine Mitteilung früher erscheinen,
 kann ihn die Person, die die Website betreut, von Hand starten.
 
+Für Geschichten aus dem Kita-Alltag gibt es daneben den Ordner **Geschichten**
+mit einem eigenen Abgleich – siehe `geschichten-anleitung.md`. Alles, was hier
+über Ordnernamen, Fotos und `meta.yaml` steht, gilt dort genauso.
+
 ## Ordner anlegen
 
 Pro Mitteilung ein Ordner, benannt nach diesem Muster:
@@ -45,6 +49,8 @@ Ordner und bittet um eine Umbenennung. Einen der beiden umzubenennen genügt.
   für Logos gehalten und weggelassen. Bilder, die im Dokument stecken, kommen
   ebenfalls auf die Seite – bei einem PDF sind das die Fassungen aus dem PDF,
   meist stärker verkleinert als die Originale.
+* Wahlweise ein **Titelbild** unter dem Namen `teaser.jpg` (oder `teaser.png`):
+  siehe unten.
 * Wahlweise eine `meta.yaml` (siehe unten).
 * Sonst nichts. Eine fremde Datei, ein zweites Dokument oder ein Unterordner
   führt dazu, dass der Ordner nicht verarbeitet wird.
@@ -72,7 +78,7 @@ aus dem PDF:
 | erster Absatz (nach dem Label) | Titel der Seite |
 | fetter Absatz direkt darunter | Lead, bleibt fett |
 | jeder weitere ganz fette Absatz | Zwischentitel |
-| eingebettetes Bild | Titelbild der Seite |
+| eingebettetes Bild | Titelbild der Seite (sofern kein `teaser.jpg` beiliegt) |
 | `Bildlegende: …` | Bildunterschrift zum Titelbild |
 | Absatz mit einer Zeile, die wie Postleitzahl und Ort aussieht | wird ganz weggelassen |
 
@@ -110,7 +116,19 @@ Steckt im Dokument gar kein Bild, erscheint auf der Seite selbst auch kein
 Titelbild – für die Kachel auf der Startseite wird dann das erste der losen
 Fotos verwendet, und eine `Bildlegende:` bleibt ungenutzt.
 
-## `meta.yaml` – für Kurztitel, Autorin und Ort
+## Titelbild selbst bestimmen: `teaser.jpg`
+
+Von sich aus nimmt der Abgleich das Bild aus dem Dokument als Titelbild, und wenn
+das Dokument keines enthält, das erste Foto nach Dateinamen. Wer selbst bestimmen
+will, welches Foto oben auf der Seite und auf der Kachel erscheint, legt eine
+**Kopie** dieses Fotos zusätzlich unter dem Namen `teaser.jpg` (oder
+`teaser.png`) in den Ordner.
+
+Dieser Name gewinnt gegen alles andere, auch gegen ein Bild im Dokument. Das
+Original behält seinen Platz in der Galerie – die Kopie ersetzt es also nicht,
+sie bestimmt nur, welches Foto oben steht.
+
+## `meta.yaml` – für Kurztitel, Autorin, Ort und Gruppe
 
 Der Titel einer Medienmitteilung ist oft lang, die Kachel auf der Startseite ist
 schmal. Für einen kürzeren Kacheltitel eine Datei `meta.yaml` in den Ordner
@@ -120,20 +138,31 @@ legen:
 TeaserTitle: Eröffnung Hort
 Autor: Melanie von Arx
 Site: Hort
+Group: fisch
 ```
 
 Alle Angaben sind freiwillig:
 
 * `TeaserTitle` – der Titel auf der Kachel. Ohne diese Angabe steht dort der
   volle Titel.
-* `Autor` – wer die Mitteilung verfasst hat. Ohne Angabe wird der Name aus den
-  Dokumenteigenschaften übernommen. Er wird in der Seite festgehalten, zurzeit
-  aber nirgends angezeigt.
+* `Autor` – wer die Mitteilung verfasst hat. Ohne diese Angabe steht in der Seite
+  gar kein Autor; aus den Dokumenteigenschaften wird **nichts** übernommen. Dort
+  steht das Konto, das die Datei zuletzt gespeichert hat – oft der Name einer
+  Stelle und nicht der Person, die geschrieben hat. Der Eintrag wird in der Seite
+  festgehalten, zurzeit aber nirgends angezeigt. Soll ein Name auf der Seite
+  sichtbar sein, gehört er als Zeile ins Dokument selbst («Text und Fotos: …»).
 * `Site` – überschreibt den Ort aus dem Ordnernamen, für den Fall, dass eine
   Mitteilung zu einem anderen Ort gehört, als der Ordnername sagt. Es gelten
   dieselben Schreibweisen wie dort: `Sonnhalde`, `Hagmatt`, `Hort` (oder
   `Bifang-Säli`) und `Verein`. Steht hier etwas anderes – `Site: Kita` etwa –,
   wird der ganze Ordner nicht verarbeitet und die Mitteilung erscheint gar nicht.
+* `Group` – die Gruppe, zu der die Mitteilung gehört: in der Sonnhalde `papagei`,
+  `balu` oder `regenbogen`, in der Hagmatt `fisch` oder `frosch`. Ohne diese
+  Angabe gehört die Mitteilung zum Ort als Ganzem. Erlaubt sind nur die Gruppen
+  **dieses** Orts: `Group: fisch` auf einer Sonnhalde-Seite wird nicht
+  verarbeitet, und beim Hort und beim Verein, die gar keine Gruppen haben, wird
+  jede Angabe abgewiesen. Steht in derselben `meta.yaml` auch ein `Site:`, so
+  zählen die Gruppen des dort genannten Orts.
 
 Die Datei muss genau `meta.yaml` heissen, alles klein geschrieben. `meta.yml`
 gilt als fremde Datei, und dann wird der ganze Ordner abgewiesen; `Meta.yaml`
