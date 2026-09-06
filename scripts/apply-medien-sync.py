@@ -54,7 +54,14 @@ MD_ESCAPE_RE = re.compile(r"\\([!-/:-@\[-`{-~])")
 DOC_EXT = (".docx", ".pdf")
 IMAGE_EXT = (".jpg", ".jpeg", ".png")
 IGNORED = {"thumbs.db", "meta.yaml"}
-META_KEYS = ("Title", "TeaserTitle", "Autor", "Site")
+# Deliberately no "Title". assemble_body has already baked the document's own
+# title into the page's '#' heading, so honouring one here produced a page whose
+# browser tab, blog card and sitemap said one thing while the heading said
+# another. TeaserTitle serves the documented need -- a short title for the card --
+# and giving the page a SECOND title authority would mean teaching assemble_body
+# about it too. Left out of META_KEYS, 'Title:' is now reported as an unknown key,
+# which is what the note below exists for.
+META_KEYS = ("TeaserTitle", "Autor", "Site")
 SKIPPED = "exists, not owned -- skipped: "
 
 
@@ -202,7 +209,7 @@ def quote(value):
 
 def front_matter(bundle, date, site, marker, meta):
     lines = ["---",
-             f"Title: {quote(meta.get('Title', unescape_markdown(bundle.title)))}"]
+             f"Title: {quote(unescape_markdown(bundle.title))}"]
     if meta.get("TeaserTitle"):
         lines.append(f"TeaserTitle: {quote(meta['TeaserTitle'])}")
     author = meta.get("Autor") or bundle.author

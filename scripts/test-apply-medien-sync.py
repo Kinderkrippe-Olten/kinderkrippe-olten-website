@@ -126,6 +126,29 @@ def main():
         check("meta: an unknown key is a note, not a rejection", rc == 0, out)
         check("meta: an unknown key still publishes the page",
               os.path.isdir(os.path.join(c, "2026-09-04_Hort")), os.listdir(c))
+        check("meta: the note lists only keys that exist -- not 'Title'",
+              "is not one of TeaserTitle, Autor, Site and was ignored" in out, out)
+
+        # --- RULING-36: 'Title:' is NOT a key ---
+        # front_matter honoured it while assemble_body had already baked the
+        # document's own title into the '#' heading, so the browser tab, the blog
+        # card and the sitemap said one thing and the page heading another. It was
+        # also undocumented, yet named in the unknown-key note -- so a typo produced
+        # advice about a key the author had never heard of.
+        s, c, si, al = setup(tmp + "/mt", {"2026-09-04_hort": [
+            DOCX, ("meta.yaml", "Title: Kurz und knapp\n")]})
+        rc, out = run(s, c, si, al)
+        text = open(os.path.join(c, "2026-09-04_Hort", "index.md"),
+                    encoding="utf-8").read()
+        check("meta: Title: is reported as an unknown key",
+              rc == 0 and "meta.yaml key 'Title' is not one of" in out, out)
+        check("meta: Title: does not reach the front matter",
+              "Kurz und knapp" not in text, text[:200])
+        check("meta: the front matter Title matches the page's own heading",
+              'Title: "Schülerhort Bifang-Säli startet erfolgreich – freie Plätze '
+              'verfügbar"' in text
+              and "# Schülerhort Bifang-Säli startet erfolgreich – freie Plätze "
+                  "verfügbar" in text, text[:200])
 
         # --- meta.yaml's Site goes through the same alias map as the folder name ---
         s, c, si, al = setup(tmp + "/msa", {"2026-09-04_sonnhalde": [
