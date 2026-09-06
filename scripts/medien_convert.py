@@ -228,14 +228,25 @@ def select_images(doc_images, loose_images, threshold=DEDUP_THRESHOLD,
 # a PDF does carry bold, and the label drop, title, lead, sub-headings, address
 # removal and Bildlegende extraction all work for PDF with no second implementation.
 
-# Measured on the sample: lines inside a paragraph sit 18 units apart, consecutive
-# paragraphs 26-28. 1.4x the pitch separates the two with room on both sides.
-PARAGRAPH_GAP = 1.4
+# pdftohtml reports the top of each line's box, and that moves by a unit or two with
+# the tallest glyph on the line: the sample's single line spacing arrives as both 17
+# and 18. A gap within this much of the pitch is still ordinary line spacing.
+LINE_JITTER = 1.1
 # A line that stops well short of the widest line in the document was not wrapped by
 # the typesetter -- the author ended it, as in the address block. Emitting a Markdown
 # hard break there is what pandoc does for a Word line break, and it is what lets
 # _is_address() see the postcode on a line of its own.
-FULL_MEASURE = 0.85
+#
+# Set well below the midpoint the sample suggests (its shortest wrapped line is 0.99
+# of the measure, its longest hand-broken one 0.27). The sample is justified LaTeX,
+# where every wrapped line is full; a real upload is a Word export, which is
+# ragged-right, and there a German compound routinely leaves a wrapped line at 0.7-0.8
+# of the measure. The two errors are not equal, so the bias is deliberate: reading a
+# WRAPPED line as hand-broken puts a break inside running prose and -- if the next
+# line opens with a postcode -- makes _is_address() drop that whole paragraph from the
+# page, silently. Reading a HAND-BROKEN line as wrapped only leaves an address block
+# visible where it should have been dropped.
+FULL_MEASURE = 0.6
 
 
 def pdf_xml(path, work_dir):
@@ -307,6 +318,42 @@ def _line_pitch(pages):
     return min(gaps, key=lambda g: (-gaps[g], g)) if gaps else 0
 
 
+def _line_gaps(pages):
+    """The vertical gaps between consecutive text lines, as the paragraph loop sees
+    them: never across a page boundary, never across an image."""
+    gaps = []
+    for items in pages:
+        prev = None
+        for it in items:
+            if it["kind"] != "text":
+                prev = None
+                continue
+            if prev is not None:
+                gaps.append(it["top"] - prev["top"])
+            prev = it
+    return gaps
+
+
+def _paragraph_gap(pages, pitch):
+    """The vertical gap above which a line starts a new paragraph.
+
+    Placed midway between the two clusters the document itself reveals -- its line
+    spacing, and the smallest gap materially larger than that -- rather than at a
+    fixed multiple of the pitch. Measured on the sample, a fixed 1.4x pitch landed
+    7.2 units above the line spacing but only 0.8 units below the real paragraph gap
+    of 26. One unit of rounding in the pitch, from a slightly larger point size, and
+    every paragraph break in the document would have been missed -- the single-block
+    collapse this whole code path exists to avoid. Derived, the sample's margin is
+    4.0 units on each side.
+    """
+    gaps = _line_gaps(pages)
+    spacing = [g for g in gaps if g <= pitch * LINE_JITTER]
+    apart = [g for g in gaps if g > pitch * LINE_JITTER]
+    if not apart:
+        return float("inf")     # one paragraph, or one line: nothing to separate
+    return (max(spacing, default=pitch) + min(apart)) / 2
+
+
 def _merge_lines(items, pitch):
     """One line per baseline: a line broken into several <text> elements is one line.
 
@@ -319,7 +366,14 @@ def _merge_lines(items, pitch):
         prev = merged[-1] if merged else None
         if (it["kind"] == "text" and prev and prev["kind"] == "text"
                 and it["top"] - prev["top"] < max(pitch // 2, 1)):
-            prev["runs"].append((False, " "))
+            # A space only where the fragments really are set apart. pdftohtml splits
+            # a line at a stretched space, but it also splits mid-word on a kerning
+            # pair, and there an injected space would publish 'Kinder krippe'.
+            tail = prev["runs"][-1][1] if prev["runs"] else ""
+            head = it["runs"][0][1] if it["runs"] else ""
+            if (it["left"] - prev["right"] > 0
+                    and not tail[-1:].isspace() and not head[:1].isspace()):
+                prev["runs"].append((False, " "))
             prev["runs"].extend(it["runs"])
             prev["right"] = max(prev["right"], it["right"])
         else:
@@ -363,6 +417,7 @@ def pdf_xml_to_markdown(xml_text):
     pages = _pdf_items(xml_text)
     pitch = _line_pitch(pages)
     pages = [_merge_lines(items, pitch) for items in pages]
+    threshold = _paragraph_gap(pages, pitch)
     measure = max((it["right"] - it["left"] for items in pages for it in items
                    if it["kind"] == "text"), default=0)
 
@@ -385,7 +440,7 @@ def pdf_xml_to_markdown(xml_text):
                 continue
             if prev is None:
                 current.append((False, it["runs"]))
-            elif it["top"] - prev["top"] > pitch * PARAGRAPH_GAP:
+            elif it["top"] - prev["top"] > threshold:
                 flush()
                 current.append((False, it["runs"]))
             else:

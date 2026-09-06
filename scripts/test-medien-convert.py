@@ -399,6 +399,64 @@ def main():
     check("xml seam: the address block is dropped",
           not any("Reiserstrasse" in x for x in b2), b2)
 
+    # --- the realised margins on the fixture, on BOTH sides ---
+    # A threshold that clears the line spacing but sits a fraction of a unit under the
+    # real paragraph gap is one rounding step away from losing every paragraph break
+    # in the document -- the single-block collapse the PDF path exists to avoid. Pin
+    # both walls so a regenerated fixture cannot walk into either one unnoticed.
+    fx_pages = medien_convert._pdf_items(medien_convert.pdf_xml(PDF, tempfile.mkdtemp()))
+    fx_pitch = medien_convert._line_pitch(fx_pages)
+    fx_pages = [medien_convert._merge_lines(p, fx_pitch) for p in fx_pages]
+    fx_thr = medien_convert._paragraph_gap(fx_pages, fx_pitch)
+    fx_gaps = medien_convert._line_gaps(fx_pages)
+    spacing = max(g for g in fx_gaps if g <= fx_thr)
+    apart = min(g for g in fx_gaps if g > fx_thr)
+    check("margins: the paragraph threshold clears the line spacing",
+          fx_thr - spacing >= 3, (fx_pitch, fx_thr, spacing))
+    check("margins: the paragraph threshold stays under the smallest real break",
+          apart - fx_thr >= 3, (fx_thr, apart))
+
+    # A one-paragraph document has no larger gap to find, and must not invent one.
+    check("margins: nothing to separate leaves every line in one paragraph",
+          medien_convert._paragraph_gap(
+              [[{"kind": "text", "top": t, "left": 0, "right": 400, "runs": []}
+                for t in (100, 118, 136)]], 18) == float("inf"))
+
+    # --- the hard-break floor, pinned from both sides ---
+    # The fixture is justified LaTeX, so every wrapped line in it is full-measure and
+    # the floor could sit almost anywhere. A Word export is ragged-right: a wrapped
+    # line at 0.8 of the measure is ordinary and must still be joined, while an
+    # author-ended line at 0.35 must still break.
+    def _seam(width_second):
+        return medien_convert.pdf_xml_to_markdown(
+            '<?xml version="1.0" encoding="UTF-8"?>\n<pdf2xml>\n'
+            '<page number="1" top="0" left="0" height="1188" width="918">\n'
+            '<text top="100" left="100" width="400" height="13">Erste Zeile mit</text>\n'
+            f'<text top="118" left="100" width="{width_second}" height="13">viel Text</text>\n'
+            '<text top="136" left="100" width="400" height="13">und dritte Zeile</text>\n'
+            '</page>\n</pdf2xml>\n')
+
+    check("floor: a ragged-right line at 0.8 of the measure is still wrapped text",
+          "\\" not in _seam(320), _seam(320))
+    check("floor: a line at 0.35 of the measure is a hand-broken one",
+          "viel Text\\\n" in _seam(140), _seam(140))
+
+    # --- same-baseline fragments ---
+    # pdftohtml splits a line at a stretched space, but also mid-word on a kerning
+    # pair. Only the first of those may gain a space.
+    def _fragments(second_left):
+        return medien_convert.pdf_xml_to_markdown(
+            '<?xml version="1.0" encoding="UTF-8"?>\n<pdf2xml>\n'
+            '<page number="1" top="0" left="0" height="1188" width="918">\n'
+            '<text top="100" left="100" width="100" height="13">Kinder</text>\n'
+            f'<text top="100" left="{second_left}" width="100" height="13">krippe</text>\n'
+            '</page>\n</pdf2xml>\n')
+
+    check("fragments: a kerning split mid-word does not gain a space",
+          _fragments(200) == "Kinderkrippe", _fragments(200))
+    check("fragments: a split at a stretched space keeps the space",
+          _fragments(230) == "Kinder krippe", _fragments(230))
+
     print()
     if failures:
         print(f"{len(failures)} failure(s): {', '.join(failures)}")
