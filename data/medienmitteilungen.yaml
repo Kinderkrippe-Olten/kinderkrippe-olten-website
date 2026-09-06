@@ -1,0 +1,11 @@
+# Folder-name tokens for Medienmitteilungen/ that are not themselves keys in
+# data/sites.yaml.
+#
+# A press-release folder is named  YYYY-MM-DD_<location>[_<topic>]…  and <location>
+# sets the page's Site. Tokens that already match a key in data/sites.yaml
+# (sonnhalde, hagmatt, bifang-säli, verein) need no entry here.
+#
+# A token that resolves to nothing is reported and the folder is left unpublished:
+# adding a site stays a deliberate repository change, as it is for job ads.
+aliases:
+  hort: bifang-säli

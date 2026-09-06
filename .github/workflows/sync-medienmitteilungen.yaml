@@ -1,0 +1,366 @@
+name: Sync Medienmitteilungen from OpenCloud
+
+# Mirrors press-release folders from the OpenCloud space into content/blog/.
+# Design: docs/superpowers/specs/2026-09-06-opencloud-medienmitteilungen-sync-design.md
+#
+# The sibling of sync-stellen.yaml, kept as a separate file rather than factored into
+# something shared: the two have the same SHAPE but not the same logic, and a shared
+# workflow would couple a job-ad publish to a press-release bug.
+on:
+  schedule:
+    - cron: '43 5 * * 1'   # UTC, Mondays. Off-round, and away from sync-stellen's :17.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Fetch and validate only -- do not commit or push'
+        type: boolean
+        default: false
+      allow_empty:
+        description: 'Permit removing the last remaining page (overrides the wipeout guard)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+# SHARED with sync-stellen.yaml. See the note there: both push to the same branch and
+# neither rebases, so they must not run at the same time -- and note the cost it
+# records, that a queued run can be dropped when a third dispatch arrives.
+concurrency:
+  group: websync-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      PIN_RCLONE_VERSION: v1.75.0
+      PIN_RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
+
+      # Pandoc GENERATES the committed bytes, and the update pass detects change by
+      # regenerating and comparing them. An unpinned pandoc means that the day the
+      # runner image moves, every synced page compares unequal and one bot commit
+      # rewrites the entire corpus, then deploys it. Pinning the tool that copies
+      # bytes (rclone, above) while floating the tool that writes them would be
+      # exactly backwards.
+      PIN_PANDOC_VERSION: '3.11'
+      PIN_PANDOC_SHA256: 89d4c9d97818c62a97157f0072844e4602c6cee795bf84abd1aee7273abcda99
+
+      # For the pre-commit build check. Keep in step with deploy-hugo.yaml.
+      HUGO_VERSION: 0.158.0
+      DART_SASS_VERSION: 1.98.0
+
+      OPENCLOUD_PATH: Medienmitteilungen
+
+    steps:
+      - name: Check OpenCloud secrets are present
+        env:
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+        run: |
+          set -euo pipefail
+          for v in RCLONE_CONFIG_OC_URL RCLONE_CONFIG_OC_USER OPENCLOUD_TOKEN; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::secret behind $v is empty -- set it in Settings > Secrets and variables > Actions"
+              exit 1
+            fi
+          done
+          echo "all three OpenCloud secrets are set"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # assets/uikit is a submodule and the SCSS build needs it; the build check
+          # below is the reason this differs from sync-stellen.yaml.
+          submodules: recursive
+
+      - name: Install rclone
+        run: |
+          set -euo pipefail
+          dir="rclone-${PIN_RCLONE_VERSION}-linux-amd64"
+          curl -fsSLO "https://downloads.rclone.org/${PIN_RCLONE_VERSION}/${dir}.zip"
+          echo "${PIN_RCLONE_SHA256}  ${dir}.zip" | sha256sum -c -
+          unzip -q "${dir}.zip"
+          sudo install -m 0755 "${dir}/rclone" /usr/local/bin/rclone
+          rm -rf "${dir}" "${dir}.zip"
+          rclone version | head -1
+
+      - name: Install pandoc, poppler and the imaging libraries
+        run: |
+          set -euo pipefail
+          deb="pandoc-${PIN_PANDOC_VERSION}-1-amd64.deb"
+          curl -fsSLO "https://github.com/jgm/pandoc/releases/download/${PIN_PANDOC_VERSION}/${deb}"
+          echo "${PIN_PANDOC_SHA256}  ${deb}" | sha256sum -c -
+          sudo dpkg -i "$deb"
+          rm -f "$deb"
+          # poppler stays unpinned: pdftohtml -xml output feeds the same parser, and
+          # drift there surfaces as a rejected or visibly wrong page rather than a
+          # silent corpus-wide rewrite. Pillow and numpy are for de-duplication only.
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends poppler-utils python3-pil python3-numpy
+          pandoc --version | head -1
+          pdftohtml -v 2>&1 | head -1
+          # medien_convert.py imports these lazily, inside the de-duplication pass,
+          # and ImportError is NOT in the CLI's caught-exception tuple -- so a wrong
+          # interpreter surfaces mid-run as a traceback under a misleading heading.
+          # Fail here instead, where the message names the actual problem.
+          python3 -c "from PIL import Image; import numpy; print('PIL and numpy import')"
+
+      - name: Install Hugo
+        run: |
+          set -euo pipefail
+          curl -fsSLJO "https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
+          tar -xf "dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
+          sudo cp -r dart-sass/* /usr/local/bin
+          rm -rf dart-sass*
+          curl -fsSLo hugo.deb "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i hugo.deb
+          rm -f hugo.deb
+          hugo version
+
+      - name: Fetch press releases from OpenCloud
+        id: fetch
+        env:
+          RCLONE_CONFIG_OC_TYPE: webdav
+          RCLONE_CONFIG_OC_VENDOR: infinitescale
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p staging
+          RCLONE_CONFIG_OC_PASS="$(rclone obscure "$OPENCLOUD_TOKEN")"
+          export RCLONE_CONFIG_OC_PASS
+          # --create-empty-src-dirs is load-bearing, not tidiness. Without it rclone
+          # does not create a destination directory for a source folder whose files
+          # are ALL filtered out -- verified with rclone v1.68.1 -- so a folder whose
+          # only document is over 25M arrives indistinguishable from a folder the
+          # author WITHDREW, and blog_mirror deletes the published page. With the
+          # flag the folder arrives empty, inspect() rejects it as having no
+          # document, and a rejected folder is inert: the page stands, the run turns
+          # red. An oversized photo degrades a page; it never unpublishes one.
+          rclone copy "OC:${OPENCLOUD_PATH}" staging --max-size 25M --create-empty-src-dirs --transfers 4 --stats-one-line -v
+          echo "--- fetched ---"
+          find staging -type f -printf '%P\n' | sort
+
+          # rclone logs a --max-size exclusion at DEBUG, not at the -v above, so an
+          # oversized file leaves NO trace: the converter never sees it, the folder
+          # is not rejected, and the page publishes silently degraded on a green run.
+          # That matters more here than for job ads. A press release carries a SET of
+          # photos and select_images() takes the largest as the teaser -- so the file
+          # most likely to break 25M is the one most likely to have been the teaser.
+          #
+          # Listed at >= 25M and then filtered down to what is actually missing from
+          # staging, so a file of exactly 25M -- which --max-size copies and
+          # --min-size lists -- cannot raise a false alarm.
+          rclone lsf -R --files-only --min-size 25M "OC:${OPENCLOUD_PATH}" > big-remote.txt
+          : > oversized.txt
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            [ -e "staging/${f}" ] || printf '%s\n' "$f" >> oversized.txt
+          done < big-remote.txt
+          n=$(wc -l < oversized.txt)
+          echo "oversized=$n" >> "$GITHUB_OUTPUT"
+          if [ "$n" -gt 0 ]; then
+            echo "--- too large to fetch (--max-size 25M) ---"
+            while IFS= read -r f; do
+              echo "::warning file=${f}::${f} is larger than 25M and was NOT fetched -- its page publishes without it, or, if it was the folder's only file, is left exactly as it was"
+            done < oversized.txt
+          fi
+
+      - name: Warn if the App Token is close to expiring
+        continue-on-error: true
+        env:
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+          WARN_DAYS: '30'
+        run: |
+          # Copied from sync-stellen.yaml -- same token, same failure mode.
+          #
+          # This step must never fail the sync. What guarantees that is
+          # continue-on-error above, NOT the set line below: GitHub runs every run:
+          # block under `bash -eo pipefail`, so -e is already active here and a
+          # non-zero jq can still abort the block before its skip message prints.
+          # All this line adds is -u.
+          set -uo pipefail
+          base=$(printf '%s' "$RCLONE_CONFIG_OC_URL" | sed -E 's#^(https?://[^/]+).*#\1#')
+          if [ -z "$base" ]; then
+            echo "::warning::App Token expiry check skipped: could not derive the OpenCloud base URL"
+            exit 0
+          fi
+          if ! resp=$(curl -fsS --max-time 20 -u "${RCLONE_CONFIG_OC_USER}:${OPENCLOUD_TOKEN}" \
+                        "${base}/auth-app/tokens" 2>/dev/null); then
+            echo "::warning::App Token expiry check skipped: /auth-app/tokens could not be read with the App Token (the sync itself succeeded, so the token is valid)."
+            exit 0
+          fi
+          exp=$(printf '%s' "$resp" | jq -r --arg t "$OPENCLOUD_TOKEN" \
+                  'map(select(.token == $t)) | .[0].expiration_date // empty' 2>/dev/null)
+          matched=exact
+          if [ -z "${exp:-}" ]; then
+            exp=$(printf '%s' "$resp" | jq -r \
+                    '[.[].expiration_date] | map(select(. != null)) | sort | .[0] // empty' 2>/dev/null)
+            matched=soonest-of-several
+          fi
+          [ -n "${exp:-}" ] || { echo "::warning::App Token expiry check skipped: no expiration_date in the response"; exit 0; }
+          exp_s=$(date -u -d "$exp" +%s 2>/dev/null) || { echo "::warning::App Token expiry check skipped: could not parse '$exp'"; exit 0; }
+          days=$(( (exp_s - $(date -u +%s)) / 86400 ))
+          echo "App Token expires ${exp} (in ${days} days, matched: ${matched})"
+          if [ "$days" -le "$WARN_DAYS" ]; then
+            echo "::warning::The OpenCloud App Token expires in ${days} days (${exp}). Publishing stops when it does. Mint a replacement in OpenCloud as ${RCLONE_CONFIG_OC_USER} and update the OPENCLOUD_TOKEN Actions secret."
+          fi
+          exit 0
+
+      - name: Apply to the repository
+        id: apply
+        env:
+          DRY_RUN: ${{ inputs.dry_run || false }}
+          ALLOW_EMPTY: ${{ inputs.allow_empty || false }}
+        run: |
+          set -euo pipefail
+          flags=()
+          if [ "$DRY_RUN" = "true" ]; then flags+=(--dry-run); fi
+          if [ "$ALLOW_EMPTY" = "true" ]; then flags+=(--allow-empty); fi
+
+          set +e
+          # --prefix explicitly, not by relying on the CLI default happening to equal
+          # OPENCLOUD_PATH. --prefix builds the SyncedFrom marker and is what
+          # blog_mirror.owned() matches on, so changing OPENCLOUD_PATH alone would
+          # orphan every page already published: a wall of "exists, not owned" and a
+          # red run. Wiring them together makes that impossible.
+          python3 scripts/apply-medien-sync.py --staging staging --prefix "$OPENCLOUD_PATH" "${flags[@]}" \
+            | tee apply-report.txt
+          rc=${PIPESTATUS[0]}
+          set -e
+
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          # 0 clean, 1 applied with rejections (commit anyway, fail at the end),
+          # 2 could not run, 3 wipeout guard. Stop now on 2/3 so nothing is committed.
+          if [ "$rc" -ge 2 ]; then exit "$rc"; fi
+
+      # This syncer GENERATES content rather than copying it, so the first thing to
+      # evaluate the Markdown must not be the production deploy. Hugo evaluates
+      # shortcodes in page content and this site sets goldmark unsafe:true, so a
+      # document containing '{{<' or unexpected raw HTML could otherwise break every
+      # deploy -- job ads included -- with an error naming content/blog/ rather than
+      # the document it came from.
+      - name: Check the site still builds
+        run: |
+          set -euo pipefail
+          if hugo build --quiet; then
+            echo "site builds with the applied changes"
+            exit 0
+          fi
+          # A build failure stalls the WHOLE run rather than rejecting the one
+          # folder that caused it -- see the amendment in the design spec for why
+          # that trade was taken. So the message has to say what happened and what
+          # to do, or the maintainer meets a bare Hugo error every Monday.
+          echo "::error::hugo build failed on the applied changes, so NOTHING was committed and no press release published this run. The Hugo error above names a file under content/blog/; find its SyncedFrom: line to get the OpenCloud folder it came from, remove or correct that folder, and re-run this workflow. Until then every run fails here, and the same is true of every OTHER folder waiting to publish."
+          echo "Rejected folders from this run, if any, are reported in the step below."
+          exit 1
+
+      - name: Commit and push
+        id: commit
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain content/blog)" ]; then
+            echo "no changes to commit"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name  "kko-websyncer[bot]"
+          git config user.email "websyncer@kinderkrippe-olten.ch"
+          git add -A content/blog
+          # The report is piped in rather than interpolated into a heredoc, so the
+          # shell never looks at its contents at all.
+          #
+          # For the record, because it is the obvious thing to "simplify" back: the
+          # unquoted heredoc this replaces did NOT expand the report. Bash does not
+          # re-scan the result of a command substitution, so a report line reading
+          # '$(id -un)', a backtick, or even a bare 'EOF' all arrived verbatim --
+          # measured, not assumed. The two forms produce byte-identical messages.
+          # This one just does not need that argument to be true.
+          {
+            printf '%s\n\n' "Sync press releases from OpenCloud"
+            cat apply-report.txt
+            printf '\n%s\n' "Applied automatically by .github/workflows/sync-medienmitteilungen.yaml"
+          } | git commit -F -
+          git push
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger the deploy, healing a stranded commit if needed
+        if: ${{ inputs.dry_run != true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUSHED: ${{ steps.commit.outputs.pushed }}
+        run: |
+          set -euo pipefail
+          head="$(git rev-parse HEAD)"
+          if [ "$PUSHED" = "true" ]; then
+            gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
+            echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
+            exit 0
+          fi
+          # Only ever heal a commit a SYNCER made; a human commit whose build
+          # fails for its own reasons must not be re-dispatched forever. "ours" is
+          # loose on purpose: kko-websyncer[bot] is also sync-stellen.yaml's commit
+          # author, so this passes on that workflow's commits too. Wanted -- both
+          # syncers deploy the same site from the same branch -- but it does mean
+          # this step can dispatch for a commit it did not make.
+          if [ "$(git log -1 --format='%an')" != "kko-websyncer[bot]" ]; then
+            echo "no changes, and HEAD is not ours -- nothing to do"
+            exit 0
+          fi
+          deployed="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/deployments?environment=github-pages&per_page=1" \
+            --jq '.[0].sha // empty' 2>/dev/null || true)"
+          if [ -z "$deployed" ]; then
+            echo "could not determine the deployed commit -- skipping the heal check"
+            exit 0
+          fi
+          if [ "$head" = "$deployed" ]; then echo "already deployed at ${head}"; exit 0; fi
+          inflight="$(gh run list --workflow=deploy-hugo.yaml --json status \
+            --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length' \
+            2>/dev/null || echo 0)"
+          if [ "$inflight" -gt 0 ]; then
+            echo "a deploy is already queued or running -- letting it finish"
+            exit 0
+          fi
+          echo "::warning::${head} was committed by an earlier run but never deployed -- dispatching now"
+          gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
+          echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
+
+      # The one place this workflow turns "published, but not as the author intended"
+      # into a red run. Both causes come through here rather than through a second
+      # reporting path: a folder the CLI rejected (rc 1), and a file rclone's
+      # --max-size dropped before the CLI could ever see the folder.
+      #
+      # A clean run cannot reach it: rc is '0' and oversized is '0', so both operands
+      # of the condition are false and the step is skipped. always() does not change
+      # that -- it only stops an EARLIER failure from skipping the report as well,
+      # which is how a folder the CLI rejected went unreported whenever the build
+      # step failed in the same run. The empty-string test matters with always():
+      # a run that died before the fetch step leaves `oversized` unset, and '' would
+      # otherwise satisfy != '0' and fire this step with nothing to say.
+      - name: Report rejected folders and files too large to fetch
+        if: ${{ always() && (steps.apply.outputs.rc == '1' || (steps.fetch.outputs.oversized != '' && steps.fetch.outputs.oversized != '0')) }}
+        env:
+          APPLY_RC: ${{ steps.apply.outputs.rc }}
+          OVERSIZED: ${{ steps.fetch.outputs.oversized }}
+        run: |
+          set -euo pipefail
+          if [ "${APPLY_RC:-0}" = "1" ]; then
+            echo "::error::Some folders in the OpenCloud Medienmitteilungen folder could not be published."
+            echo "Nothing already published was removed. See 'Apply to the repository' above"
+            echo "for the folder names and what to correct."
+          fi
+          if [ "${OVERSIZED:-0}" != "0" ]; then
+            echo "::error::${OVERSIZED} file(s) in the OpenCloud Medienmitteilungen folder are larger than 25M and were not fetched. A page whose folder still had other files has published WITHOUT them -- possibly without its teaser photo. A folder left with nothing at all is reported as rejected above and its page, if it has one, was NOT changed."
+            sed 's/^/  /' oversized.txt
+            echo "Shrink them in OpenCloud and re-run. See 'Fetch press releases from"
+            echo "OpenCloud' above for the same list."
+          fi
+          exit 1

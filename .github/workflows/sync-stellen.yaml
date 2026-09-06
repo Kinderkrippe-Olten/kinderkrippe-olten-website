@@ -42,8 +42,21 @@ permissions:
   contents: write   # commit the synced PDFs
   actions: write    # dispatch deploy-hugo.yaml afterwards
 
+# Shared with sync-medienmitteilungen.yaml, deliberately. The two syncers write to
+# disjoint paths but push to the same branch, and the commit step below pushes with
+# no fetch and no retry -- so a concurrent run would lose its push, fail the job, and
+# skip the deploy dispatch, deferring publication up to 24 hours with only a red run
+# to show for it.
+#
+# It is not free, though. With cancel-in-progress: false GitHub keeps at most one
+# PENDING run per group, so a third dispatch arriving while one run is in progress
+# and one is already queued cancels the queued one. On Monday morning, when the
+# medien cron and a stellen dispatch can overlap, that pending stellen run can be
+# the one dropped. Nothing is lost permanently: the daily heartbeat CronJob
+# re-dispatches, and the NATS listener re-fires on the next change. A deferred
+# publish is the price; a lost push would be a red run and a stranded commit.
 concurrency:
-  group: sync-stellen
+  group: websync-sync
   cancel-in-progress: false
 
 jobs:
@@ -284,9 +297,17 @@ jobs:
             exit 0
           fi
 
-          # Nothing changed this run. Only ever heal a commit this workflow made
-          # itself: a human commit whose build fails for its own reasons must not be
+          # Nothing changed this run. Only ever heal a commit a SYNCER made: a
+          # human commit whose build fails for its own reasons must not be
           # re-dispatched on every run forever.
+          #
+          # "ours" is loose on purpose: kko-websyncer[bot] is also
+          # sync-medienmitteilungen.yaml's commit author, so this guard passes on
+          # that workflow's commits too. That is the behaviour wanted -- both
+          # syncers deploy the same site from the same branch, and a stranded
+          # press-release commit needs healing exactly as much as a stranded job
+          # ad -- but it does mean this step can dispatch for a commit it did not
+          # make.
           if [ "$(git log -1 --format='%an')" != "kko-websyncer[bot]" ]; then
             echo "no changes, and HEAD is not ours -- nothing to do"
             exit 0

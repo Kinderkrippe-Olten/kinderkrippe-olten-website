@@ -4,3 +4,5 @@ resources/_gen/
 .hugo_build.lock
 *~
 WALDLUFT
+.superpowers/
+__pycache__/

@@ -79,9 +79,44 @@ YYYY-MM-DD _ <location> [ _ <topic> ]…
   aliases:
     hort: bifang-säli
   ```
-- Further `_`-separated tokens are free text. They do not affect the front matter; they
-  exist so two releases on the same day do not collide and so the URL can say what the
-  page is about.
+- Further `_`-separated tokens do not affect the front matter; they exist so two
+  releases on the same day do not collide and so the URL can say what the page is
+  about. Between the `_` separators, **every** token — `<location>` included — must
+  match `[^\W_]+(?:-[^\W_]+)*`: Unicode letters and digits joined by hyphens, so
+  `Bifang-Säli` is fine and `Hort Eröffnung`, `Hort.2`, `O'Briens Besuch` are not. A
+  token that does not match is a rejection naming the token, not a silent
+  substitution.
+
+  > **Amended 2026-09-06, during implementation.** This bullet previously said the
+  > further tokens are "free text", with no character rule at all. The original text is
+  > in this file's git history.
+  >
+  > The reason is that the folder name is not only data. It becomes the unquoted
+  > `SyncedFrom:` scalar in the front matter — where a `:` or a `#` is invalid YAML and
+  > fails the **whole** site build, with an error naming `content/blog/` rather than the
+  > folder that caused it — and, through the title-casing rule below, it also becomes
+  > the Hugo bundle directory name and therefore the page's permanent URL. "Free text"
+  > is a promise the second of those cannot keep: a space, an apostrophe or a period in
+  > a folder name produces a URL nobody can type or link, and unlike a front-matter
+  > break it does so quietly, on a green run.
+  >
+  > **The permissiveness this reverses was deliberate and worth defending.** The
+  > original position was that the topic token exists purely to disambiguate and to
+  > describe, that it is the authors' own word for their own release, and that a
+  > validator has no business telling a childcare team how to name a folder — every
+  > character the syncer forbids is one more way for an upload to bounce for a reason
+  > the author considers pedantic. The narrower alternative that follows from that
+  > position was also considered during implementation: forbid only the characters that
+  > actually break YAML, and let everything else through. It was rejected because it
+  > guards less while being harder to state — a blocklist of YAML hazards is a longer
+  > rule than "letters, digits and hyphens", it would still admit the space and the
+  > apostrophe that ruin the URL, and it would have to be re-derived every time the
+  > front matter grows a field. What decides it is the asymmetry in the cost of being
+  > wrong. The strict rule's failure mode is one rejection with an actionable message
+  > ("only letters, digits and '-' are allowed between the '_' separators; unusable:
+  > 'Hort Eröffnung'") and one rename, visible and immediate. The permissive rule's
+  > failure mode is a bad permanent URL, or a build failure blaming the wrong
+  > directory — neither of which the author who caused it can see or fix.
 
 The destination directory is the folder name with each token after the date
 title-cased: `2026-09-04_hort` → `content/blog/2026-09-04_Hort`, which is the
@@ -172,6 +207,35 @@ detachment that fix is silently reverted on the next dispatch, which is a bad th
 learn by watching it happen. The cost is that the page and the OpenCloud folder then
 diverge permanently, which is exactly what was asked for.
 
+**Detaching means deleting the marker *and* removing the OpenCloud folder.** Both, and
+in that order. Deleting the marker alone leaves the folder in OpenCloud, and every
+future run then finds a page of that name it does not own:
+
+```
+exists, not owned -- skipped: 2026-09-04_Hort
+1 folder(s) were not published because the page name is not owned by this syncer
+EXIT=1
+```
+
+which the workflow turns into `::error::Some folders … could not be published` — on
+every dispatch, for as long as the folder exists. That report is not wrong. From the
+syncer's side a deliberate detach and a hand-made page that has collided with a
+press-release folder name are the same observation, and telling them apart would need
+state the syncer does not keep — a record of pages it once owned, which is a second
+source of truth and the thing the marker exists to avoid. So the procedure is the
+complete one, not a suppression rule:
+
+1. Delete the `SyncedFrom:` line from `content/blog/<page>/index.md` and commit.
+2. Delete the folder from `WebSync/Medienmitteilungen/` in OpenCloud.
+
+Step 2 is not tidiness. It is what stops the run going red for ever, and it is also
+what makes the detach honest: the page is now maintained in the repository, and a
+folder still sitting in OpenCloud claims otherwise to the next author who looks.
+
+This is a maintainer action. It is deliberately absent from the author-facing
+Anleitung, which tells authors the true thing for them — that a change made directly on
+the website is lost on the next run.
+
 ## Document conversion
 
 The conversion is deterministic and stateless: same bytes in, same Markdown out. The
@@ -220,14 +284,51 @@ Against the resulting block sequence:
 
 ### `.pdf`
 
-`pdftotext -layout` for the text, `pdfimages` for the images. A PDF carries no
-bold, so steps 3 and 4 above cannot run: the output is a title plus flat paragraphs.
-That is a real degradation and the run log says so on every PDF, naming the `.docx`
-path as the one that produces sub-headings and a lead paragraph.
+`pdftohtml -xml` for the text, `pdfimages` for the images.
+
+> **Amended 2026-09-06, during implementation.** This section previously specified
+> `pdftotext -layout` and stated that a PDF carries no bold, so steps 3 and 4 could
+> not run. Both claims turned out to be wrong, and the first was wrong in a way that
+> did not degrade the output but destroyed it. The original text is in this file's git
+> history.
+
+`pdftotext` does not mark paragraph boundaries for this document. Measured three ways
+on a PDF rendered from the sample press release — with `-layout`, without it, and with
+the paragraph spacing of `\usepackage{parskip}` — the output contains no blank line
+between any two paragraphs. Splitting that on blank lines yields **one** block, so the
+entire press release becomes the page's title and the body comes out empty. This is not
+a degradation of structure; it is the loss of the document.
+
+`pdftohtml -xml` emits one element per typeset line, carrying the two things
+`pdftotext` discards:
+
+- **Vertical geometry.** Measured on the sample: 18 units between consecutive lines
+  within a paragraph, 27 between paragraphs. Paragraph boundaries are read from that
+  gap, per page.
+- **Bold.** Poppler emits `<b>` markup derived from the font name. So a PDF *does*
+  carry bold, and steps 3 and 4 run normally — a PDF yields sub-headings and a lead
+  paragraph exactly as a `.docx` does.
+
+The reader's output is shaped to match what pandoc already produces for `.docx` —
+paragraphs separated by blank lines, a wholly-bold paragraph wrapped in `**…**` — and
+handed to the same `shape_document`. There is one parser, not two, and every rule above
+(label, title, address, `Bildlegende:`, escaping) applies to both inputs without a
+second implementation to keep in step.
+
+**This reverses a position the original spec took deliberately**, so it is worth saying
+why rather than quietly moving on. That text argued PDF should be "supported honestly
+rather than by pretending the structure can be recovered from font metrics." The
+objection is sound against *inferring* structure — guessing headings from point sizes,
+or paragraph breaks from line lengths, both of which are brittle and were the fallbacks
+considered and rejected here too. It does not apply to reading structure poppler has
+already extracted: `<b>` is markup in the output, not a metric being interpreted, and
+the line-gap signal is a measured 18-versus-27, not a tuned threshold. The honesty
+requirement is met better by this than by the original, which promised a degraded page
+and in fact produced a broken one.
 
 Supporting PDF at all is a requirement, not a preference — some releases only ever
-exist as PDF. It is supported honestly rather than by pretending the structure can be
-recovered from font metrics.
+exist as PDF. `.docx` remains the recommended input, because it is what the authors
+already produce and it needs no reconstruction at all.
 
 ## Images
 
@@ -330,12 +431,57 @@ image line is replaced by a shortcode, so that instance is handled — but an at
 pandoc emits anywhere else renders as literal junk on the page.
 
 So the sync workflow **runs `hugo build` over the working tree after applying and
-before committing.** A failure rejects the offending folder — inert, per the rejection
-rule above — and the run reports it. This validates against the renderer that will
-actually consume the output rather than against a list of failure modes someone
-thought of in advance, and it catches malformed generated front matter for free.
-`deploy-hugo.yaml` already carries the mise / Hugo-extended / dart-sass recipe to
-copy.
+before committing.** This validates against the renderer that will actually consume
+the output rather than against a list of failure modes someone thought of in advance,
+and it catches malformed generated front matter for free. `deploy-hugo.yaml` already
+carries the mise / Hugo-extended / dart-sass recipe to copy.
+
+**A build failure stalls the whole run.** Nothing is committed, no press release
+publishes, and the run fails at that step every week until a person intervenes.
+
+> **Amended 2026-09-06, during implementation.** This paragraph previously read "A
+> failure rejects the offending folder — inert, per the rejection rule above — and the
+> run reports it." That is not what was built. The original text is in this file's git
+> history.
+
+Per-folder rejection is the better behaviour, and this amendment does not pretend
+otherwise. It is the behaviour every other failure in this design already has: a
+document pandoc cannot read, an image Pillow cannot open, a folder name that is not a
+site — each costs its own folder and no one else's, precisely so that one author's
+mistake cannot hold every other author's press release. A build failure is the one
+place where that principle is now broken, and it is broken in the direction that
+stops publishing altogether.
+
+It was not built for two reasons.
+
+The first is the cost of the mechanism. Hugo reports a build failure as a message
+naming a file, not as an exit code per page. Rejecting one folder means parsing that
+message in workflow bash, mapping the file back to its staged folder, removing it,
+rebuilding, and repeating until the build is clean or nothing is left — a loop with
+its own termination conditions, its own failure modes, and no test that can exercise
+it short of a document that actually breaks Hugo. That is a substantial piece of
+untested shell standing between every press release and the site, added at the end of
+the branch.
+
+The second is that the failure it would guard could not be produced. The three
+plausible routes were tried and none of them reaches Hugo: `{{` is escaped at the
+page-content boundary, in the title and the Bildlegende as well as the body
+(`assemble_body`); every front-matter scalar an author can influence goes through
+`quote()`, which is what a `:` or a `#` in a title would otherwise break; and a CMYK
+JPEG — the classic way an image kills a Hugo build — survives Hugo's resize. The build
+check remains valuable exactly because it validates against the real renderer rather
+than against that list; but a guard against a failure nobody can trigger does not earn
+a bash loop in the publishing path.
+
+What the run does instead is tell the truth about it. The build step's failure message
+names what has happened, says that nothing was committed and no release published, and
+tells the maintainer to follow the offending file's `SyncedFrom:` line back to the
+OpenCloud folder. And the report step now carries `always()`, so a folder the CLI
+rejected in the same run is still reported when the build fails — previously that
+report was skipped too, and the run said nothing about either problem.
+
+If a build failure ever does happen in practice, that is the evidence that would
+justify building the loop.
 
 ## `meta.yaml`
 
@@ -464,9 +610,14 @@ that copies bytes while floating the tool that generates them would be exactly
 backwards. Bumping the pin then becomes a deliberate act, and the fixture diff in that
 pull request is the review of what changed.
 
-`poppler-utils` stays on apt: `pdftotext -layout` output feeds the same parser, and
-drift there surfaces as a rejected or visibly wrong page rather than a silent
-corpus-wide rewrite.
+`poppler-utils` stays on apt: `pdftohtml -xml` output feeds the same parser, and drift
+there surfaces as a rejected or visibly wrong page rather than a silent corpus-wide
+rewrite. Note this is a weaker guarantee than it was when the PDF path only had to
+recover flat text — poppler now also supplies the paragraph geometry and the bold
+markup, so a change in either would alter generated bytes. It is still the right trade:
+PDFs are the minority input, a regression shows up as a visibly wrong page on the next
+press release rather than as a rewrite of the whole corpus, and the fixture test in
+`scripts/test-medien-convert.py` would fail in CI before it reached the site.
 
 ### One concurrency group across both syncers
 
