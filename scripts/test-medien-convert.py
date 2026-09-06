@@ -150,6 +150,42 @@ def main():
     check("small logo filtered from the pool",
           not any("logo" in g for g in gallery2), gallery2)
 
+    # --- the teaser swap must not depend on iteration order ---
+    # In the committed fixtures the embedded image is already the larger copy, so
+    # that comparison is never exercised above. Build genuine perceptual twins by
+    # rescaling one real photo to three sizes -- all safely above the 40,000px
+    # MIN_PIXELS floor -- so the swap branch, and its order-independence, are
+    # actually tested rather than merely present in the code.
+    import shutil
+    swap_dir = tempfile.mkdtemp()
+    src = Image.open(loose[0])
+    w0, h0 = src.size
+
+    def _rescaled(name, width):
+        path = os.path.join(swap_dir, name)
+        src.resize((width, round(h0 * width / w0)), Image.LANCZOS).save(path)
+        return path
+
+    doc_copy = _rescaled("doc.jpeg", 300)   # ~300x201: the document's own copy
+    mid_copy = _rescaled("mid.jpeg", 400)   # ~400x268: a smaller loose rescan
+    big_copy = _rescaled("big.jpeg", 500)   # ~500x335: the largest loose rescan
+
+    teaser_fwd, gallery_fwd = medien_convert.select_images([doc_copy], [mid_copy, big_copy])
+    check("largest twin wins the teaser slot (the swap branch)",
+          os.path.basename(teaser_fwd) == "big.jpeg", teaser_fwd)
+    check("no twin of the teaser reaches the gallery (forward order)",
+          not any(os.path.basename(g) in ("mid.jpeg", "big.jpeg") for g in gallery_fwd),
+          gallery_fwd)
+
+    teaser_rev, gallery_rev = medien_convert.select_images([doc_copy], [big_copy, mid_copy])
+    check("teaser choice does not depend on loose_images order",
+          os.path.basename(teaser_rev) == "big.jpeg", teaser_rev)
+    check("no twin of the teaser reaches the gallery (reverse order)",
+          not any(os.path.basename(g) in ("mid.jpeg", "big.jpeg") for g in gallery_rev),
+          gallery_rev)
+
+    shutil.rmtree(swap_dir, ignore_errors=True)
+
     # no document image at all: the first pooled image becomes the teaser
     teaser3, gallery3 = medien_convert.select_images([], loose)
     check("teaser falls back to the first loose image",

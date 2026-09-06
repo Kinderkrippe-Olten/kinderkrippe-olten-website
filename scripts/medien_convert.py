@@ -157,8 +157,10 @@ def select_images(doc_images, loose_images, threshold=DEDUP_THRESHOLD,
     """(teaser, gallery) from the document's images and the loose files.
 
     The teaser is the document's own image -- the one the author placed beside the
-    text and the one the Bildlegende describes. Where a loose file is the same photo,
-    the larger copy survives and the other is not repeated in the gallery.
+    text and the one the Bildlegende describes. Where a loose file is the same photo
+    as the document's own image, the higher-resolution copy becomes the teaser; where
+    a loose file duplicates one of the document's *other* images, the loose copy is
+    dropped and the document's own copy stands in the gallery unconditionally.
     """
     docs = [p for p in doc_images if _pixels(p) >= min_pixels]
     loose = [p for p in loose_images if _pixels(p) >= min_pixels]
@@ -166,12 +168,22 @@ def select_images(doc_images, loose_images, threshold=DEDUP_THRESHOLD,
 
     teaser = docs[0] if docs else None
     gallery = []
+    teaser_twins = [teaser] if teaser is not None else []
     for p in loose:
         twin = next((d for d in docs if distance(sigs[p], sigs[d]) < threshold), None)
         if twin is None:
             gallery.append(p)
-        elif twin == teaser and _pixels(p) > _pixels(twin):
-            teaser = p          # keep the higher-resolution copy of the same photo
+        elif twin == teaser:
+            teaser_twins.append(p)      # a rescaling of the teaser photo: competes below
+        # else: a duplicate of some other document image (docs[1:]) -- dropped. That
+        # document image already stands in the gallery via the extend() below.
+    if teaser_twins:
+        # Resolved after the loop, from every twin found, rather than swapped in as
+        # each loose file is seen -- so the winner is the sharpest copy of the photo
+        # and does not depend on the order loose_images happened to arrive in.
+        # (Comparing to the *original* docs[0] mid-loop, once a swap had already
+        # happened, silently stopped later swaps from ever being considered.)
+        teaser = max(teaser_twins, key=lambda p: (_pixels(p), p == docs[0]))
     gallery.extend(d for d in docs[1:] if d != teaser)
 
     gallery.sort(key=os.path.basename)
