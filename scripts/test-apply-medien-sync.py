@@ -236,6 +236,25 @@ def main():
               os.path.isdir(os.path.join(c, "2026-09-04_Hort")), out)
         check("protect: report says it was left alone", "left as-is" in out, out)
 
+        # --- an EMPTY staged folder is what an over-25M upload looks like ---
+        # rclone's --max-size drops the files; --create-empty-src-dirs in
+        # sync-medienmitteilungen.yaml is what keeps the folder itself, so the
+        # syncer can tell "too big to fetch" from "withdrawn". Empty means "I cannot
+        # read this", so it is inert -- the page must survive, and the run go red.
+        s, c, si, al = setup(tmp + "/big", {"2026-09-04_hort": [DOCX] + imgs})
+        rc, out = run(s, c, si, al)
+        check("oversized: published first", rc == 0, out)
+        for n in os.listdir(os.path.join(s, "2026-09-04_hort")):
+            os.remove(os.path.join(s, "2026-09-04_hort", n))
+        rc, out = run(s, c, si, al)
+        check("oversized: an empty folder is rejected, not treated as a withdrawal",
+              rc == 1 and "no .docx or .pdf found" in out, (rc, out))
+        check("oversized: the published page is left exactly as it was",
+              os.path.isdir(os.path.join(c, "2026-09-04_Hort"))
+              and "remove:" not in out, out)
+        check("oversized: the report says the page was left alone",
+              "left as-is" in out, out)
+
         # --- deletion, and the wipeout guard ---
         shutil.rmtree(os.path.join(s, "2026-09-04_hort"))
         rc, out = run(s, c, si, al)

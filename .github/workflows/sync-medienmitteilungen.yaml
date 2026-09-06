@@ -132,7 +132,15 @@ jobs:
           mkdir -p staging
           RCLONE_CONFIG_OC_PASS="$(rclone obscure "$OPENCLOUD_TOKEN")"
           export RCLONE_CONFIG_OC_PASS
-          rclone copy "OC:${OPENCLOUD_PATH}" staging --max-size 25M --transfers 4 --stats-one-line -v
+          # --create-empty-src-dirs is load-bearing, not tidiness. Without it rclone
+          # does not create a destination directory for a source folder whose files
+          # are ALL filtered out -- verified with rclone v1.68.1 -- so a folder whose
+          # only document is over 25M arrives indistinguishable from a folder the
+          # author WITHDREW, and blog_mirror deletes the published page. With the
+          # flag the folder arrives empty, inspect() rejects it as having no
+          # document, and a rejected folder is inert: the page stands, the run turns
+          # red. An oversized photo degrades a page; it never unpublishes one.
+          rclone copy "OC:${OPENCLOUD_PATH}" staging --max-size 25M --create-empty-src-dirs --transfers 4 --stats-one-line -v
           echo "--- fetched ---"
           find staging -type f -printf '%P\n' | sort
 
@@ -157,7 +165,7 @@ jobs:
           if [ "$n" -gt 0 ]; then
             echo "--- too large to fetch (--max-size 25M) ---"
             while IFS= read -r f; do
-              echo "::warning file=${f}::${f} is larger than 25M and was NOT fetched -- its page publishes without it"
+              echo "::warning file=${f}::${f} is larger than 25M and was NOT fetched -- its page publishes without it, or, if it was the folder's only file, is left exactly as it was"
             done < oversized.txt
           fi
 
@@ -321,7 +329,7 @@ jobs:
             echo "for the folder names and what to correct."
           fi
           if [ "${OVERSIZED:-0}" != "0" ]; then
-            echo "::error::${OVERSIZED} file(s) in the OpenCloud Medienmitteilungen folder are larger than 25M and were not fetched. Any page they belong to has published WITHOUT them -- possibly without its teaser photo."
+            echo "::error::${OVERSIZED} file(s) in the OpenCloud Medienmitteilungen folder are larger than 25M and were not fetched. A page whose folder still had other files has published WITHOUT them -- possibly without its teaser photo. A folder left with nothing at all is reported as rejected above and its page, if it has one, was NOT changed."
             sed 's/^/  /' oversized.txt
             echo "Shrink them in OpenCloud and re-run. See 'Fetch press releases from"
             echo "OpenCloud' above for the same list."
