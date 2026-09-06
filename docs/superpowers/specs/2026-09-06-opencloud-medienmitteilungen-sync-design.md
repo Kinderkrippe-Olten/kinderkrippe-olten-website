@@ -52,6 +52,15 @@ OpenCloud space (WebSync)                    repository
 `OPENCLOUD_PATH: Medienmitteilungen` in the workflow, so the layout stays visible in
 review rather than baked into the URL secret — same reasoning as for `Stellenanzeigen`.
 
+**Only directories at that level are considered. A file sitting directly in
+`Medienmitteilungen/` is ignored, not rejected** — so the authors' own instructions can
+live beside the release folders where they will actually be found. This differs from
+the job-ad validator, which reports a top-level file as "unexpected file at the top
+level; job ads belong in a site folder". There the flat layout means a stray file is
+almost certainly a misplaced ad; here the folders are the unit and a loose file at the
+root is deliberate. Rejecting it would make the one obvious place to put an Anleitung
+the one place that breaks the sync.
+
 ### Folder name grammar
 
 ```
