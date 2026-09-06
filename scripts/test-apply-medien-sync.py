@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import types
+import unicodedata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 APPLY = os.path.join(HERE, "apply-medien-sync.py")
@@ -236,6 +237,15 @@ def main():
               os.path.isdir(os.path.join(c, "2026-09-04_Hort")), out)
         check("protect: report says it was left alone", "left as-is" in out, out)
 
+        # --- deletion, and the wipeout guard ---
+        shutil.rmtree(os.path.join(s, "2026-09-04_hort"))
+        rc, out = run(s, c, si, al)
+        check("guard: rc 3 on an empty set", rc == 3, out)
+        check("guard: page survives", os.path.isdir(os.path.join(c, "2026-09-04_Hort")))
+        rc, out = run(s, c, si, al, "--allow-empty")
+        check("delete: rc 0 with --allow-empty", rc == 0, out)
+        check("delete: page removed", not os.path.exists(os.path.join(c, "2026-09-04_Hort")))
+
         # --- an EMPTY staged folder is what an over-25M upload looks like ---
         # rclone's --max-size drops the files; --create-empty-src-dirs in
         # sync-medienmitteilungen.yaml is what keeps the folder itself, so the
@@ -255,14 +265,59 @@ def main():
         check("oversized: the report says the page was left alone",
               "left as-is" in out, out)
 
-        # --- deletion, and the wipeout guard ---
-        shutil.rmtree(os.path.join(s, "2026-09-04_hort"))
+        # --- an NFD folder name, which is what macOS and iOS hand out ---
+        # 'ä' as 'a' + U+0308. TOKEN_RE's [^\W_] does not match a combining mark,
+        # so the author saw their exactly-correct folder name quoted back as
+        # "unusable" with nothing on screen to show what differed -- and the
+        # Anleitung teaches this very name and expects iPhone users.
+        nfd = unicodedata.normalize("NFD", "2026-09-04_Bifang-Säli_Eroeffnung")
+        check("nfd: the fixture name really is decomposed",
+              nfd != unicodedata.normalize("NFC", nfd) and "̈" in nfd, nfd)
+        s, c, si, al = setup(tmp + "/nfd", {nfd: [DOCX]})
         rc, out = run(s, c, si, al)
-        check("guard: rc 3 on an empty set", rc == 3, out)
-        check("guard: page survives", os.path.isdir(os.path.join(c, "2026-09-04_Hort")))
-        rc, out = run(s, c, si, al, "--allow-empty")
-        check("delete: rc 0 with --allow-empty", rc == 0, out)
-        check("delete: page removed", not os.path.exists(os.path.join(c, "2026-09-04_Hort")))
+        check("nfd: accepted, not reported as unusable", rc == 0, out)
+        want = unicodedata.normalize("NFC", "2026-09-04_Bifang-Säli_Eroeffnung")
+        check("nfd: the page directory is composed, so the URL is stable",
+              os.listdir(c) == [want], os.listdir(c))
+        index = open(os.path.join(c, want, "index.md"), encoding="utf-8").read()
+        check("nfd: the SyncedFrom marker is composed too",
+              f"SyncedFrom: Medienmitteilungen/{want}" in index,
+              [l for l in index.splitlines() if l.startswith("SyncedFrom")])
+        check("nfd: the Site resolved through the alias map",
+              "Site: bifang-säli" in index,
+              [l for l in index.splitlines() if l.startswith("Site")])
+
+        # meta.yaml's Site: goes through the same normalisation
+        s, c, si, al = setup(tmp + "/nfdmeta", {"2026-09-04_hort": [
+            DOCX, ("meta.yaml", "Site: "
+                   + unicodedata.normalize("NFD", "Bifang-Säli") + "\n")]})
+        rc, out = run(s, c, si, al)
+        check("nfd: a decomposed meta.yaml Site: resolves", rc == 0, out)
+
+        # a site key that is itself decomposed in data/sites.yaml
+        s, c, si, al = setup(tmp + "/nfdsites", {"2026-09-04_bifang-säli": [DOCX]})
+        open(si, "w", encoding="utf-8").write(unicodedata.normalize("NFD", SITES))
+        rc, out = run(s, c, si, al)
+        check("nfd: a decomposed key in data/sites.yaml still matches", rc == 0, out)
+
+        # --- one non-UTF-8 index.md must not kill the whole sync ---
+        # content/blog/ holds ~19 hand-made posts no syncer wrote. A
+        # UnicodeDecodeError in read_marker escapes the CLI's caught-exception
+        # tuple, and it exits 1 -- which the workflow reads as "applied with
+        # rejections, commit anyway" and proceeds to build, commit and dispatch on
+        # a traceback.
+        s, c, si, al = setup(tmp + "/latin1", {"2026-09-04_hort": [DOCX]})
+        os.makedirs(os.path.join(c, "alt-post"))
+        with open(os.path.join(c, "alt-post", "index.md"), "wb") as fh:
+            fh.write('---\nTitle: "Grüezi mitenand"\nDate: 2026-01-01\n---\n\ntext\n'
+                     .encode("latin-1"))
+        rc, out = run(s, c, si, al)
+        check("latin-1: the sync survives a post it cannot decode",
+              rc == 0 and "Traceback" not in out, out)
+        check("latin-1: the synced page still published",
+              os.path.isdir(os.path.join(c, "2026-09-04_Hort")), os.listdir(c))
+        check("latin-1: the undecodable post is left alone",
+              os.path.isfile(os.path.join(c, "alt-post", "index.md")))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

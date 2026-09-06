@@ -30,6 +30,7 @@ import re
 import shutil
 import sys
 import tempfile
+import unicodedata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -88,7 +89,7 @@ def read_aliases(path):
                 break
             m = ALIAS_RE.match(line.rstrip("\n"))
             if m:
-                out[m.group(1).strip().casefold()] = m.group(2).strip().strip("'\"")
+                out[nfc(m.group(1).strip()).casefold()] = m.group(2).strip().strip("'\"")
     return out
 
 
@@ -110,6 +111,19 @@ def read_meta(folder):
     return out, unknown
 
 
+def nfc(text):
+    """Unicode composed form.
+
+    macOS and iOS clients hand out folder names in NFD, where 'ä' is a plain 'a'
+    followed by a combining diaeresis. TOKEN_RE's [^\\W_] does not match a
+    combining mark and casefold() does not equate NFD to the NFC keys in
+    data/sites.yaml -- so an exactly correct '2026-09-04_Bifang-Säli' was quoted
+    back to its author as "unusable", with nothing on screen to show what differed.
+    The Anleitung teaches that very name and expressly expects iPhone users.
+    """
+    return unicodedata.normalize("NFC", text)
+
+
 def ignored(name):
     return name.startswith(".") or name.lower() in IGNORED
 
@@ -125,12 +139,15 @@ def resolve_site(token, known_sites, aliases):
     The one place a location token becomes a Site: the folder name and meta.yaml's
     Site: both go through it, so 'hort' means the same thing in both.
     """
-    key = token.casefold()
-    return known_sites.get(key) or known_sites.get(aliases.get(key, "").casefold())
+    key = nfc(token).casefold()
+    return known_sites.get(key) or known_sites.get(nfc(aliases.get(key, "")).casefold())
 
 
 def parse_folder(name, known_sites, aliases):
     """(date, site, target directory name) -- or raise ValueError with the reason."""
+    # Before anything looks at the letters: the grammar and the site lookup both
+    # compare them, and NFD would fail both.
+    name = nfc(name)
     m = FOLDER_RE.match(name)
     if not m:
         raise ValueError("expected a folder named YYYY-MM-DD_<Ort>[_<Thema>]")
@@ -239,7 +256,9 @@ def main():
         die(f"content directory {args.content!r} does not exist")
 
     sites = read_sites(args.sites)
-    known_sites = {s.casefold(): s for s in sites}
+    # The KEY is normalised, never the value: the value goes into the page's
+    # front matter and must stay in data/sites.yaml's own spelling.
+    known_sites = {nfc(s).casefold(): s for s in sites}
     aliases = read_aliases(args.aliases)
 
     # Files at the staging root are ignored rather than rejected, so author
@@ -289,7 +308,9 @@ def main():
                 rejected.append((name, target, str(exc)))
                 continue
 
-            marker = f"{args.prefix}/{name}"
+            # Normalised, so a client that switches between NFC and NFD does not
+            # rewrite every marker -- and with it every index.md -- on the next run.
+            marker = f"{args.prefix}/{nfc(name)}"
             with open(os.path.join(out, "index.md"), "w", encoding="utf-8") as fh:
                 fh.write(front_matter(bundle, date, site, marker, meta) + bundle.body)
             desired[target] = out

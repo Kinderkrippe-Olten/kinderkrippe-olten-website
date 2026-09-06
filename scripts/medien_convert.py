@@ -26,9 +26,25 @@ BOLD_RE = re.compile(r"\A\*\*(.+)\*\*\Z", re.S)
 # every run. The surrounding horizontal whitespace goes with it so that an image
 # set inline in a paragraph does not leave a double space behind.
 IMAGE_RE = re.compile(r"[ \t]*!\[[^\]]*\]\((?:[^)]*)\)(?:\{[^}]*\})?[ \t]*")
-# Swiss postcode + town. Spelled out rather than \p{Lu}: Python's re has no
-# Unicode property classes.
-ADDRESS_RE = re.compile(r"^\d{4}\s+[A-ZÄÖÜ]")
+# A Swiss postcode line: four digits and then a town, and NOTHING else on the line.
+# Spelled out rather than \p{Lu}: Python's re has no Unicode property classes.
+#
+# The whole line, not merely its opening. Matching an opening cost whole paragraphs
+# of ordinary prose -- a founding year ("1990 Wurde der Verein gegründet"), a
+# donation figure ("5000 Franken wurden gespendet"), a time ("1830 Uhr beginnt die
+# Feier"), a list of milestones ("2024 Eröffnung der Kita") -- because one matching
+# LINE drops the entire block it sits in, and the Anleitung warns only about
+# postcodes, so an author could not have anticipated it.
+#
+# What separates a town from a sentence is that every word of it is capitalised and
+# there are at most a few: '4600 Olten', '2300 La Chaux-de-Fonds'. A sentence's
+# second word is not. Bounding the LENGTH alone is not enough -- '2024 Eröffnung
+# der Kita' is shorter than 'La Chaux-de-Fonds' is long.
+#
+# The two errors are not equal, and the bias is deliberate in the same direction as
+# FULL_MEASURE's: failing to recognise an address only leaves it visible on the
+# page, while a false positive silently deletes a paragraph the author wrote.
+ADDRESS_RE = re.compile(r"^\d{4}(?:\s+[A-ZÄÖÜ][^\s.!?]{0,20}){1,4}$")
 CAPTION_PREFIX = "bildlegende:"
 LABEL = "MEDIENMITTEILUNG"
 # Stands in for a block that was nothing but images, so the position survives the

@@ -82,6 +82,31 @@ def main():
     check("postcode inside a sentence survives",
           any("4600 Olten" in x for x in b), b)
 
+    # --- _is_address must match a whole address line, not merely an opening ---
+    # One matching LINE drops the whole paragraph it sits in, so a rule that
+    # matches an opening deletes prose: a founding year, a donation figure, a time,
+    # a list of milestones. The Anleitung warns only about postcodes, so an author
+    # cannot anticipate any of it.
+    for prose in ("1990 Wurde der Verein gegründet und wuchs stetig.",
+                  "5000 Franken wurden gespendet, herzlichen Dank an alle.",
+                  "1830 Uhr beginnt die Feier.",
+                  "2024 Eröffnung der Kita",
+                  "2026 Eröffnung des Horts"):
+        _, b, _, _ = medien_convert.shape_document("**Titel**\n\n" + prose + "\n")
+        check(f"address: prose survives -- {prose[:28]}", b == [prose], b)
+    # the same three lines as one hand-broken paragraph, which is what Shift+Enter
+    # in Word produces
+    _, b, _, _ = medien_convert.shape_document(
+        "**Titel**\n\nMeilensteine:\\\n2024 Eröffnung der Kita\\\n"
+        "2026 Eröffnung des Horts\n")
+    check("address: a hand-broken list of years survives whole",
+          b and "Meilensteine" in b[0] and "2026" in b[0], b)
+    # and a real address line still goes, town names of several words included
+    for addr in ("4600 Olten", "8000 Zürich", "2300 La Chaux-de-Fonds"):
+        _, b, _, _ = medien_convert.shape_document(
+            "**Titel**\n\nHort Bifang-Säli\\\nReiserstrasse 91\\\n" + addr + "\n")
+        check(f"address: {addr} still takes its block", b == [], b)
+
     # shortcode delimiters are escaped
     t, b, _, _ = medien_convert.shape_document(
         "**Titel**\n\nWir schreiben {{< stellen >}} in den Text.\n")

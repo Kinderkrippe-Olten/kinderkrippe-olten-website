@@ -22,7 +22,15 @@ MARKER_RE = re.compile(r"^SyncedFrom:\s*(.+?)\s*$", re.M)
 def read_marker(bundle_dir):
     """The bundle's SyncedFrom value, or None if it has none."""
     try:
-        with open(os.path.join(bundle_dir, "index.md"), encoding="utf-8") as fh:
+        # errors="replace", because content/blog/ is full of posts no syncer wrote
+        # and one of them may not be UTF-8. A UnicodeDecodeError here escapes the
+        # CLI's caught-exception tuple and kills the whole sync over a file it was
+        # never going to touch -- and it exits 1, which the workflow reads as
+        # "applied with rejections, commit anyway". A file this cannot read simply
+        # has no marker, so it is unowned: the safe answer, and the one the
+        # ownership model already gives for every other unreadable case.
+        with open(os.path.join(bundle_dir, "index.md"),
+                  encoding="utf-8", errors="replace") as fh:
             head = fh.read(8192)
     except OSError:
         return None
