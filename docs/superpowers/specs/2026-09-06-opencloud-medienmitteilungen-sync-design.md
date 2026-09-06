@@ -79,9 +79,44 @@ YYYY-MM-DD _ <location> [ _ <topic> ]…
   aliases:
     hort: bifang-säli
   ```
-- Further `_`-separated tokens are free text. They do not affect the front matter; they
-  exist so two releases on the same day do not collide and so the URL can say what the
-  page is about.
+- Further `_`-separated tokens do not affect the front matter; they exist so two
+  releases on the same day do not collide and so the URL can say what the page is
+  about. Between the `_` separators, **every** token — `<location>` included — must
+  match `[^\W_]+(?:-[^\W_]+)*`: Unicode letters and digits joined by hyphens, so
+  `Bifang-Säli` is fine and `Hort Eröffnung`, `Hort.2`, `O'Briens Besuch` are not. A
+  token that does not match is a rejection naming the token, not a silent
+  substitution.
+
+  > **Amended 2026-09-06, during implementation.** This bullet previously said the
+  > further tokens are "free text", with no character rule at all. The original text is
+  > in this file's git history.
+  >
+  > The reason is that the folder name is not only data. It becomes the unquoted
+  > `SyncedFrom:` scalar in the front matter — where a `:` or a `#` is invalid YAML and
+  > fails the **whole** site build, with an error naming `content/blog/` rather than the
+  > folder that caused it — and, through the title-casing rule below, it also becomes
+  > the Hugo bundle directory name and therefore the page's permanent URL. "Free text"
+  > is a promise the second of those cannot keep: a space, an apostrophe or a period in
+  > a folder name produces a URL nobody can type or link, and unlike a front-matter
+  > break it does so quietly, on a green run.
+  >
+  > **The permissiveness this reverses was deliberate and worth defending.** The
+  > original position was that the topic token exists purely to disambiguate and to
+  > describe, that it is the authors' own word for their own release, and that a
+  > validator has no business telling a childcare team how to name a folder — every
+  > character the syncer forbids is one more way for an upload to bounce for a reason
+  > the author considers pedantic. The narrower alternative that follows from that
+  > position was also considered during implementation: forbid only the characters that
+  > actually break YAML, and let everything else through. It was rejected because it
+  > guards less while being harder to state — a blocklist of YAML hazards is a longer
+  > rule than "letters, digits and hyphens", it would still admit the space and the
+  > apostrophe that ruin the URL, and it would have to be re-derived every time the
+  > front matter grows a field. What decides it is the asymmetry in the cost of being
+  > wrong. The strict rule's failure mode is one rejection with an actionable message
+  > ("only letters, digits and '-' are allowed between the '_' separators; unusable:
+  > 'Hort Eröffnung'") and one rename, visible and immediate. The permissive rule's
+  > failure mode is a bad permanent URL, or a build failure blaming the wrong
+  > directory — neither of which the author who caused it can see or fix.
 
 The destination directory is the folder name with each token after the date
 title-cased: `2026-09-04_hort` → `content/blog/2026-09-04_Hort`, which is the
