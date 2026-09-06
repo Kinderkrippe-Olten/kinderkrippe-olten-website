@@ -58,7 +58,7 @@ def main():
               os.path.isfile(os.path.join(content, "2026-09-04_Hort", "index.md")))
         check("create: gallery copied",
               os.path.isfile(os.path.join(content, "2026-09-04_Hort", "gallery", "a.jpeg")))
-        check("create: reported", any(l.startswith("add: 2026-09-04_Hort") for l in lines), lines)
+        check("create: reported", any(line.startswith("add: 2026-09-04_Hort") for line in lines), lines)
 
         # --- a target that exists WITHOUT a marker is never touched ---
         content = os.path.join(tmp, "blog2")
@@ -70,7 +70,7 @@ def main():
             kept = fh.read()
         check("unowned: left alone", "Von Hand" in kept, kept[:80])
         check("unowned: reported",
-              any("not owned" in l for l in lines), lines)
+              any("not owned" in line for line in lines), lines)
 
         # --- a bundle marked by ANOTHER syncer survives ---
         content = os.path.join(tmp, "blog3")
@@ -94,7 +94,7 @@ def main():
         check("update: body replaced", "# Neu" in got, got[:80])
         check("update: dropped gallery image pruned",
               not os.path.exists(os.path.join(content, "2026-09-04_Hort", "gallery", "b.jpeg")))
-        check("update: reported", any(l.startswith("update:") for l in lines), lines)
+        check("update: reported", any(line.startswith("update:") for line in lines), lines)
 
         # --- re-running the same input changes nothing (proves determinism end) ---
         lines, status = blog_mirror.apply({"2026-09-04_Hort": new}, content, PREFIX)
@@ -132,6 +132,25 @@ def main():
         check("rejected: page left as-is",
               os.path.isdir(os.path.join(content, "2026-09-04_Hort")), lines)
 
+        # ... and not UPDATED either, which is what the docstring promises. The
+        # medien CLI never puts a protected name in `desired`, but blog_mirror is
+        # the module the coming Geschichten syncer reuses unchanged.
+        content = os.path.join(tmp, "blog7b")
+        os.makedirs(content)
+        bundle(content, "2026-09-04_Hort", marker=f"{PREFIX}/2026-09-04_hort",
+               body="# Wie veröffentlicht\n")
+        newer = bundle(os.path.join(tmp, "stage7b"), "2026-09-04_Hort",
+                       marker=f"{PREFIX}/2026-09-04_hort", body="# Neu erzeugt\n")
+        lines, status = blog_mirror.apply({"2026-09-04_Hort": newer}, content, PREFIX,
+                                          protected={"2026-09-04_Hort"},
+                                          allow_empty=True)
+        kept = open(os.path.join(content, "2026-09-04_Hort", "index.md"),
+                    encoding="utf-8").read()
+        check("protected: a protected bundle is not updated either",
+              "Wie veröffentlicht" in kept and "Neu erzeugt" not in kept, kept)
+        check("protected: and the report does not claim an update",
+              not any("update" in line for line in lines), lines)
+
         # --- dry run touches nothing ---
         content = os.path.join(tmp, "blog8")
         os.makedirs(content)
@@ -139,7 +158,7 @@ def main():
             {"2026-09-04_Hort": src}, content, PREFIX, dry_run=True)
         check("dry-run: nothing written",
               not os.path.exists(os.path.join(content, "2026-09-04_Hort")))
-        check("dry-run: says 'would'", any(l.startswith("would add:") for l in lines), lines)
+        check("dry-run: says 'would'", any(line.startswith("would add:") for line in lines), lines)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

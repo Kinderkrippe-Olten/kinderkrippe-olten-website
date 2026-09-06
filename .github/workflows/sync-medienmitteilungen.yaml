@@ -25,7 +25,8 @@ permissions:
   actions: write
 
 # SHARED with sync-stellen.yaml. See the note there: both push to the same branch and
-# neither rebases, so they must not run at the same time.
+# neither rebases, so they must not run at the same time -- and note the cost it
+# records, that a queued run can be dropped when a third dispatch arrives.
 concurrency:
   group: websync-sync
   cancel-in-progress: false
@@ -264,13 +265,20 @@ jobs:
           git config user.name  "kko-websyncer[bot]"
           git config user.email "websyncer@kinderkrippe-olten.ch"
           git add -A content/blog
-          git commit -F - <<EOF
-          Sync press releases from OpenCloud
-
-          $(cat apply-report.txt)
-
-          Applied automatically by .github/workflows/sync-medienmitteilungen.yaml
-          EOF
+          # The report is piped in rather than interpolated into a heredoc, so the
+          # shell never looks at its contents at all.
+          #
+          # For the record, because it is the obvious thing to "simplify" back: the
+          # unquoted heredoc this replaces did NOT expand the report. Bash does not
+          # re-scan the result of a command substitution, so a report line reading
+          # '$(id -un)', a backtick, or even a bare 'EOF' all arrived verbatim --
+          # measured, not assumed. The two forms produce byte-identical messages.
+          # This one just does not need that argument to be true.
+          {
+            printf '%s\n\n' "Sync press releases from OpenCloud"
+            cat apply-report.txt
+            printf '\n%s\n' "Applied automatically by .github/workflows/sync-medienmitteilungen.yaml"
+          } | git commit -F -
           git push
           echo "pushed=true" >> "$GITHUB_OUTPUT"
 
@@ -287,6 +295,12 @@ jobs:
             echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
             exit 0
           fi
+          # Only ever heal a commit a SYNCER made; a human commit whose build
+          # fails for its own reasons must not be re-dispatched forever. "ours" is
+          # loose on purpose: kko-websyncer[bot] is also sync-stellen.yaml's commit
+          # author, so this passes on that workflow's commits too. Wanted -- both
+          # syncers deploy the same site from the same branch -- but it does mean
+          # this step can dispatch for a commit it did not make.
           if [ "$(git log -1 --format='%an')" != "kko-websyncer[bot]" ]; then
             echo "no changes, and HEAD is not ours -- nothing to do"
             exit 0
@@ -308,6 +322,7 @@ jobs:
           fi
           echo "::warning::${head} was committed by an earlier run but never deployed -- dispatching now"
           gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
+          echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
 
       # The one place this workflow turns "published, but not as the author intended"
       # into a red run. Both causes come through here rather than through a second

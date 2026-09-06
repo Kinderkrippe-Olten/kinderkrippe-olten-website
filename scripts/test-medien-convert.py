@@ -2,8 +2,10 @@
 """Tests for medien_convert.py.  Run with:  python3 scripts/test-medien-convert.py"""
 
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURES = os.path.join(HERE, "fixtures", "medien")
@@ -19,6 +21,19 @@ sys.path.insert(0, HERE)
 import medien_convert  # noqa: E402
 
 failures = []
+_TEMPS = []
+
+
+def mkdtemp(prefix="medien-test-"):
+    """A scratch directory this run cleans up.
+
+    Bare tempfile.mkdtemp() left one behind per call, and this suite makes about
+    twenty -- on a CI runner that is invisible, on a developer's machine it is a
+    slow accumulation of extracted media and gallery copies.
+    """
+    d = tempfile.mkdtemp(prefix=prefix)
+    _TEMPS.append(d)
+    return d
 
 
 def check(name, cond, detail=""):
@@ -158,8 +173,7 @@ def main():
           b == ["Ein Absatz mit Bild."], b)
 
     # the real document, through pandoc
-    import tempfile as _tf
-    _media = _tf.mkdtemp(prefix="medien-test-")
+    _media = mkdtemp()
     text = medien_convert.docx_to_markdown(DOCX, _media)
     title, blocks, caption, image_at = medien_convert.shape_document(text)
     check("real docx: title",
@@ -176,8 +190,7 @@ def main():
     # --- de-duplication against the real folder ---
     import glob
     import zipfile
-    import tempfile
-    tmp = tempfile.mkdtemp()
+    tmp = mkdtemp()
     with zipfile.ZipFile(DOCX) as z:
         embedded = [z.extract(n, tmp) for n in z.namelist() if n.startswith("word/media/")]
     loose = sorted(glob.glob(os.path.join(FIXTURES, "IMG_*.jpeg")))
@@ -222,8 +235,7 @@ def main():
     # rescaling one real photo to three sizes -- all safely above the 40,000px
     # MIN_PIXELS floor -- so the swap branch, and its order-independence, are
     # actually tested rather than merely present in the code.
-    import shutil
-    swap_dir = tempfile.mkdtemp()
+    swap_dir = mkdtemp()
     src = Image.open(loose[0])
     w0, h0 = src.size
 
@@ -274,11 +286,10 @@ def main():
     # nothing at all
     check("no images at all is allowed", medien_convert.select_images([], []) == (None, []))
 
-    import shutil as _sh
-    _sh.rmtree(tmp, ignore_errors=True)
+    shutil.rmtree(tmp, ignore_errors=True)
 
     # --- full bundle assembly from the real document ---
-    out = tempfile.mkdtemp()
+    out = mkdtemp()
     b = medien_convert.convert(DOCX, loose, out)
     check("bundle: title", b.title.startswith("Schülerhort Bifang-Säli"), b.title)
     check("bundle: author from docProps", b.author == "Melanie von Arx", b.author)
@@ -325,7 +336,7 @@ def main():
                f"length {len(b.body)} != {len(golden)}"))
     check("golden: it carries the guillemets unescaped, as pandoc 3.11 writes them",
           "«Der Hort bietet" in golden and "\\«" not in golden, golden[:0])
-    _sh.rmtree(out, ignore_errors=True)
+    shutil.rmtree(out, ignore_errors=True)
 
     # no caption -> explicit alt, never an empty one
     body = medien_convert.assemble_body("Titel", ["Ein Absatz."], None, 0, "teaser.jpg", [])
@@ -347,7 +358,7 @@ def main():
     # shape_document escapes body blocks only; the title and the caption are escaped
     # where they enter page content, which is assemble_body. Unescaped, either one
     # fails the whole site build, not just this page.
-    evil_dir = tempfile.mkdtemp()
+    evil_dir = mkdtemp()
     shutil.copy2(loose[0], os.path.join(evil_dir, "foto.jpeg"))
     evil_md = os.path.join(evil_dir, "evil.md")
     with open(evil_md, "w", encoding="utf-8") as fh:
@@ -359,7 +370,7 @@ def main():
     evil_docx = os.path.join(evil_dir, "evil.docx")
     subprocess.run(["pandoc", "-f", "markdown", "-o", evil_docx, evil_md],
                    cwd=evil_dir, check=True)
-    out = tempfile.mkdtemp()
+    out = mkdtemp()
     b = medien_convert.convert(evil_docx, [], out)
     check("escape: Bundle.title keeps its raw '{{', so front matter stays truthful",
           "{{" in b.title and "&#123;" not in b.title, b.title)
@@ -371,8 +382,8 @@ def main():
           b.body.count("&#123;&#123;") == 2, b.body)
     check("escape: the only '{{' left are the shortcodes assemble_body emits",
           b.body.count("{{") == 2, b.body)
-    _sh.rmtree(out, ignore_errors=True)
-    _sh.rmtree(evil_dir, ignore_errors=True)
+    shutil.rmtree(out, ignore_errors=True)
+    shutil.rmtree(evil_dir, ignore_errors=True)
 
     # --- a real letterhead document, and the determinism that hangs on it ---
     # A press release on letterhead opens with the logo. Converted twice from two
@@ -380,7 +391,7 @@ def main():
     # the mirror detects change by regenerating and comparing, so a title carrying
     # the mkdtemp path is a bot commit and a deploy every single Monday.
     import hashlib
-    head_dir = tempfile.mkdtemp()
+    head_dir = mkdtemp()
     from PIL import Image as _Im
     _Im.new("RGB", (500, 200), "white").save(os.path.join(head_dir, "logo.png"))
     head_md = os.path.join(head_dir, "head.md")
@@ -420,13 +431,13 @@ def main():
           "medien-" not in run_a[1] and head_dir not in run_a[1], run_a[1])
     check("determinism: two runs from two temp directories are byte-identical",
           run_a == run_b, (run_a[0], run_b[0]))
-    _sh.rmtree(head_dir, ignore_errors=True)
+    shutil.rmtree(head_dir, ignore_errors=True)
 
     # --- a document the tools cannot read is a ConversionError, not a crash ---
     # Task 6 catches ConversionError to reject one folder; anything else it does not
     # catch would take the whole sync run down with it.
     for name in ("bad.docx", "bad.pdf"):
-        bad_dir = tempfile.mkdtemp()
+        bad_dir = mkdtemp()
         bad = os.path.join(bad_dir, name)
         with open(bad, "wb") as fh:
             fh.write(b"this is not a document")
@@ -437,13 +448,13 @@ def main():
             check(f"{name}: rejected with ConversionError", True, str(e))
         except Exception as e:
             check(f"{name}: rejected with ConversionError", False, repr(e))
-        _sh.rmtree(bad_dir, ignore_errors=True)
+        shutil.rmtree(bad_dir, ignore_errors=True)
 
     # --- PDF input ---
     # A committed fixture rather than a PDF rendered during the test: rendering one
     # needs a LaTeX engine, which the CI runner does not have. The task report records
     # the command that produced it.
-    out = tempfile.mkdtemp()
+    out = mkdtemp()
     b = medien_convert.convert(PDF, [], out)
     check("pdf: title is exactly the press-release title",
           b.title == "Schülerhort Bifang-Säli startet erfolgreich – freie Plätze verfügbar",
@@ -496,19 +507,19 @@ def main():
     # pdftohtml drops the images it finds beside its output. Pointed at the upload
     # folder they would be read back as loose photos on the next run, so the folder
     # the document came from must come out of a conversion untouched.
-    upload = tempfile.mkdtemp()
+    upload = mkdtemp()
     shutil.copy2(PDF, os.path.join(upload, "mm.pdf"))
-    out2 = tempfile.mkdtemp()
+    out2 = mkdtemp()
     medien_convert.convert(os.path.join(upload, "mm.pdf"), [], out2)
     check("pdf: the folder the document came from is left untouched",
           os.listdir(upload) == ["mm.pdf"], os.listdir(upload))
-    _sh.rmtree(upload, ignore_errors=True)
-    _sh.rmtree(out2, ignore_errors=True)
+    shutil.rmtree(upload, ignore_errors=True)
+    shutil.rmtree(out2, ignore_errors=True)
     check("pdf: a relative document path still resolves",
-          "<pdf2xml" in medien_convert.pdf_xml(os.path.relpath(PDF), tempfile.mkdtemp()))
+          "<pdf2xml" in medien_convert.pdf_xml(os.path.relpath(PDF), mkdtemp()))
     check("pdf: the obsolete 'no bold' warning is gone",
           not any("no bold" in w for w in b.warnings), b.warnings)
-    _sh.rmtree(out, ignore_errors=True)
+    shutil.rmtree(out, ignore_errors=True)
 
     # --- a PDF from a WORD PROCESSOR, not from LaTeX ---
     # The LaTeX fixture is justified, single-spaced throughout and sets its title in
@@ -518,7 +529,7 @@ def main():
     # large enough that its own line spacing (26) exceeds the body pitch (20) and
     # lands among the paragraph gaps as a single outlier against eight real ones of
     # 41. Taking the SMALLEST of those broke the title in half.
-    out = tempfile.mkdtemp()
+    out = mkdtemp()
     bw = medien_convert.convert(PDF_WRITER, [], out)
     check("writer pdf: the title survives its own larger line spacing",
           bw.title == "Schülerhort Bifang-Säli startet erfolgreich – freie Plätze "
@@ -546,20 +557,20 @@ def main():
     # into the committed bytes.
     check("writer pdf: no double spaces in the committed body",
           "  " not in bw.body, [x for x in bw.body.split() if not x])
-    _sh.rmtree(out, ignore_errors=True)
+    shutil.rmtree(out, ignore_errors=True)
 
     # deferred 158, now that it can be asserted: the two input formats produce the
     # SAME page. Only the teaser's file extension differs (Word embeds a .jpeg,
     # pdfimages writes a .jpg) and Word's non-breaking spaces.
     def _plain_body(path):
-        d = tempfile.mkdtemp()
+        d = mkdtemp()
         try:
             return (medien_convert.convert(path, [], d).body
                     .replace('src="teaser.jpeg"', 'src="teaser.X"')
                     .replace('src="teaser.jpg"', 'src="teaser.X"')
                     .replace(" ", " "))
         finally:
-            _sh.rmtree(d, ignore_errors=True)
+            shutil.rmtree(d, ignore_errors=True)
 
     body_docx, body_tex, body_writer = (_plain_body(DOCX), _plain_body(PDF),
                                         _plain_body(PDF_WRITER))
@@ -613,7 +624,7 @@ def main():
     # 41 gaps plus the title's 26 sitting between them.
     def _geometry(path):
         pgs = medien_convert._pdf_items(
-            medien_convert.pdf_xml(path, tempfile.mkdtemp()))
+            medien_convert.pdf_xml(path, mkdtemp()))
         pitch = medien_convert._line_pitch(pgs)
         merged = [medien_convert._merge_lines(p, pitch) for p in pgs]
         return pitch, medien_convert._paragraph_gap(merged, pitch), \
@@ -729,4 +740,9 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        code = main()
+    finally:
+        for d in _TEMPS:
+            shutil.rmtree(d, ignore_errors=True)
+    sys.exit(code)

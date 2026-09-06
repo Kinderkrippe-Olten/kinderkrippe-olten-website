@@ -25,7 +25,7 @@ BOLD_RE = re.compile(r"\A\*\*(.+)\*\*\Z", re.S)
 # page would commit an absolute build-runner path AND make the output differ on
 # every run. The surrounding horizontal whitespace goes with it so that an image
 # set inline in a paragraph does not leave a double space behind.
-IMAGE_RE = re.compile(r"[ \t]*!\[[^\]]*\]\((?:[^)]*)\)(?:\{[^}]*\})?[ \t]*")
+IMAGE_RE = re.compile(r"[ \t]*!\[[^\]]*\]\([^)]*\)(?:\{[^}]*\})?[ \t]*")
 # A Swiss postcode line: four digits and then a town, and NOTHING else on the line.
 # Spelled out rather than \p{Lu}: Python's re has no Unicode property classes.
 #
