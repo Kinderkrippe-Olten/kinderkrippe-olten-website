@@ -340,23 +340,17 @@ def _pdf_items(xml_text):
     return pages
 
 
-def _line_pitch(pages):
-    """The body line pitch: the most common gap between consecutive text lines.
-
-    Derived from the document rather than fixed, so it holds for any point size.
-    Ties break on the smaller gap, because conversion must be deterministic.
-    """
-    gaps = collections.Counter()
-    for items in pages:
-        tops = sorted({it["top"] for it in items if it["kind"] == "text"})
-        for a, b in zip(tops, tops[1:]):
-            gaps[b - a] += 1
-    return min(gaps, key=lambda g: (-gaps[g], g)) if gaps else 0
-
-
 def _line_gaps(pages):
-    """The vertical gaps between consecutive text lines, as the paragraph loop sees
-    them: never across a page boundary, never across an image."""
+    """The vertical gaps between consecutive typeset lines, as the paragraph loop
+    sees them: never across a page boundary, never across an image, and never
+    within one typeset line that pdftohtml happened to split into several elements.
+
+    ONE population, used both for the pitch and for the paragraph threshold. The
+    two were measured over slightly different sets before -- distinct tops and no
+    image reset for the pitch, merged lines and an image reset for the gaps -- and
+    a threshold derived from one set but compared against the other is a wall
+    nobody can see the height of.
+    """
     gaps = []
     for items in pages:
         prev = None
@@ -364,10 +358,24 @@ def _line_gaps(pages):
             if it["kind"] != "text":
                 prev = None
                 continue
-            if prev is not None:
-                gaps.append(it["top"] - prev["top"])
-            prev = it
+            if prev is not None and it["top"] > prev:
+                gaps.append(it["top"] - prev)
+            if prev is None or it["top"] > prev:
+                prev = it["top"]
     return gaps
+
+
+def _line_pitch(pages):
+    """The body line pitch: the most common gap between consecutive text lines.
+
+    Derived from the document rather than fixed, so it holds for any point size.
+    Ties break on the smaller gap, because conversion must be deterministic.
+
+    Measured before _merge_lines runs, because _merge_lines needs it -- which is
+    exactly why _line_gaps skips repeated tops rather than assuming merged input.
+    """
+    gaps = collections.Counter(_line_gaps(pages))
+    return min(gaps, key=lambda g: (-gaps[g], g)) if gaps else 0
 
 
 def _paragraph_gap(pages, pitch):
@@ -381,13 +389,25 @@ def _paragraph_gap(pages, pitch):
     every paragraph break in the document would have been missed -- the single-block
     collapse this whole code path exists to avoid. Derived, the sample's margin is
     4.0 units on each side.
+
+    The upper cluster is the MOST COMMON gap above the line spacing, not the
+    smallest one. A title is set in a larger font, so its own line spacing exceeds
+    the body pitch and lands in the upper cluster as a single outlier. On a Word
+    export of this very fixture that outlier was 26 against real paragraph gaps of
+    41: with min() it both became a break -- splitting the title across an H1 and a
+    stray '**verfügbar**' -- and dragged the threshold from 30.5 down to 23.0. One
+    line of a document must not be able to move the wall the whole document is
+    measured against. On the LaTeX fixture the upper cluster is 26 either way, so
+    nothing there changes.
     """
     gaps = _line_gaps(pages)
     spacing = [g for g in gaps if g <= pitch * LINE_JITTER]
-    apart = [g for g in gaps if g > pitch * LINE_JITTER]
+    apart = collections.Counter(g for g in gaps if g > pitch * LINE_JITTER)
     if not apart:
         return float("inf")     # one paragraph, or one line: nothing to separate
-    return (max(spacing, default=pitch) + min(apart)) / 2
+    # Ties on the smaller gap, as in _line_pitch: conversion must be deterministic.
+    typical = min(apart, key=lambda g: (-apart[g], g))
+    return (max(spacing, default=pitch) + typical) / 2
 
 
 def _merge_lines(items, pitch):
@@ -430,8 +450,19 @@ def _pdf_paragraph(lines):
     """One paragraph as Markdown, in the shape pandoc gives a .docx."""
     runs = []
     for i, (hard, line_runs) in enumerate(lines):
-        if i:
-            runs.append([None, "\\\n"] if hard else [False, " "])
+        if i and hard:
+            runs.append([None, "\\\n"])
+        elif i:
+            # Only where the two lines are not already set apart. A word processor
+            # keeps the space the line was broken at inside the line's own text
+            # run, and injecting a second one committed 26 double spaces per page
+            # -- 'rechten  Stadtseite' -- into the published bytes. The same test
+            # _merge_lines makes for fragments of one line, made here for the join
+            # between two.
+            tail = runs[-1][1] if runs else ""
+            head = line_runs[0][1] if line_runs else ""
+            if not tail[-1:].isspace() and not head[:1].isspace():
+                runs.append([False, " "])
         runs.extend([bold, text] for bold, text in line_runs)
     # The space that joins two bold lines belongs inside the bold: otherwise a
     # wholly-bold paragraph arrives as '**a** **b**', which _bold_inner rejects, and

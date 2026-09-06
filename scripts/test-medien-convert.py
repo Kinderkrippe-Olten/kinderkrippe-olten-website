@@ -9,6 +9,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURES = os.path.join(HERE, "fixtures", "medien")
 DOCX = os.path.join(FIXTURES, "20260904_MM_EröffnungHort.docx")
 PDF = os.path.join(FIXTURES, "20260904_MM_EröffnungHort.pdf")
+# The same press release printed to PDF by LibreOffice Writer rather than by LaTeX:
+# ragged-right, and with a title whose own line spacing exceeds the body pitch.
+PDF_WRITER = os.path.join(FIXTURES, "20260904_MM_EröffnungHort_writer.pdf")
 sys.path.insert(0, HERE)
 import medien_convert  # noqa: E402
 
@@ -451,6 +454,68 @@ def main():
           not any("no bold" in w for w in b.warnings), b.warnings)
     _sh.rmtree(out, ignore_errors=True)
 
+    # --- a PDF from a WORD PROCESSOR, not from LaTeX ---
+    # The LaTeX fixture is justified, single-spaced throughout and sets its title in
+    # the body size, so it cannot exercise the geometry the calibration actually has
+    # to survive. This one is the SAME .docx, printed by LibreOffice Writer
+    # (soffice --headless --convert-to pdf) -- ragged-right, and with a title set
+    # large enough that its own line spacing (26) exceeds the body pitch (20) and
+    # lands among the paragraph gaps as a single outlier against eight real ones of
+    # 41. Taking the SMALLEST of those broke the title in half.
+    out = tempfile.mkdtemp()
+    bw = medien_convert.convert(PDF_WRITER, [], out)
+    check("writer pdf: the title survives its own larger line spacing",
+          bw.title == "Schülerhort Bifang-Säli startet erfolgreich – freie Plätze "
+                      "verfügbar", bw.title)
+    check("writer pdf: the lead is the lead, not a sub-heading",
+          bw.body.split("\n\n")[1].startswith("**Seit Anfang August"),
+          bw.body[:400])
+    check("writer pdf: three sub-headings", bw.body.count("\n## ") == 3,
+          [x for x in bw.body.splitlines() if x.startswith("## ")])
+    check("writer pdf: label, address and telephone all gone",
+          "MEDIENMITTEILUNG" not in bw.body and "Reiserstrasse" not in bw.body
+          and "062 526" not in bw.body, bw.body)
+    check("writer pdf: caption recovered without its prefix",
+          "Die Verantwortlichen eröffnen den Hort" in bw.body
+          and "Bildlegende" not in bw.body, bw.body)
+    check("writer pdf: page numbers dropped",
+          not any(x.strip().isdigit() for x in bw.body.splitlines()), bw.body)
+    check("writer pdf: the embedded photo becomes the teaser",
+          bw.teaser == "teaser.jpg" and os.path.isfile(os.path.join(out, "teaser.jpg")),
+          bw.teaser)
+    check("writer pdf: author read from the PDF metadata",
+          bw.author == "Melanie von Arx", bw.author)
+    # A word processor keeps the space it broke the line at inside the line's own
+    # text run. Injecting a join space on top of it put 26 double spaces per page
+    # into the committed bytes.
+    check("writer pdf: no double spaces in the committed body",
+          "  " not in bw.body, [x for x in bw.body.split() if not x])
+    _sh.rmtree(out, ignore_errors=True)
+
+    # deferred 158, now that it can be asserted: the two input formats produce the
+    # SAME page. Only the teaser's file extension differs (Word embeds a .jpeg,
+    # pdfimages writes a .jpg) and Word's non-breaking spaces.
+    def _plain_body(path):
+        d = tempfile.mkdtemp()
+        try:
+            return (medien_convert.convert(path, [], d).body
+                    .replace('src="teaser.jpeg"', 'src="teaser.X"')
+                    .replace('src="teaser.jpg"', 'src="teaser.X"')
+                    .replace(" ", " "))
+        finally:
+            _sh.rmtree(d, ignore_errors=True)
+
+    body_docx, body_tex, body_writer = (_plain_body(DOCX), _plain_body(PDF),
+                                        _plain_body(PDF_WRITER))
+    check("158: the LaTeX PDF gives the same body as the .docx",
+          body_docx == body_tex,
+          next((f"{a!r} != {b_!r}" for a, b_ in
+                zip(body_docx.splitlines(), body_tex.splitlines()) if a != b_), ""))
+    check("158: the Writer PDF gives the same body as the .docx",
+          body_docx == body_writer,
+          next((f"{a!r} != {b_!r}" for a, b_ in
+                zip(body_docx.splitlines(), body_writer.splitlines()) if a != b_), ""))
+
     # --- the XML -> Markdown seam, on geometry chosen to pin both rules ---
     # Line pitch 18, paragraph gap 40, widest line 400 units. The address block is a
     # run of short lines the author broke by hand; the sentence above it is a wrapped
@@ -486,17 +551,42 @@ def main():
     # real paragraph gap is one rounding step away from losing every paragraph break
     # in the document -- the single-block collapse the PDF path exists to avoid. Pin
     # both walls so a regenerated fixture cannot walk into either one unnoticed.
-    fx_pages = medien_convert._pdf_items(medien_convert.pdf_xml(PDF, tempfile.mkdtemp()))
-    fx_pitch = medien_convert._line_pitch(fx_pages)
-    fx_pages = [medien_convert._merge_lines(p, fx_pitch) for p in fx_pages]
-    fx_thr = medien_convert._paragraph_gap(fx_pages, fx_pitch)
-    fx_gaps = medien_convert._line_gaps(fx_pages)
-    spacing = max(g for g in fx_gaps if g <= fx_thr)
-    apart = min(g for g in fx_gaps if g > fx_thr)
-    check("margins: the paragraph threshold clears the line spacing",
-          fx_thr - spacing >= 3, (fx_pitch, fx_thr, spacing))
-    check("margins: the paragraph threshold stays under the smallest real break",
-          apart - fx_thr >= 3, (fx_thr, apart))
+    #
+    # Both fixtures, because they realise different geometry: the LaTeX one is
+    # single-spaced with paragraph gaps of 26-28, the Writer one has a 20 pitch and
+    # 41 gaps plus the title's 26 sitting between them.
+    def _geometry(path):
+        pgs = medien_convert._pdf_items(
+            medien_convert.pdf_xml(path, tempfile.mkdtemp()))
+        pitch = medien_convert._line_pitch(pgs)
+        merged = [medien_convert._merge_lines(p, pitch) for p in pgs]
+        return pitch, medien_convert._paragraph_gap(merged, pitch), \
+            medien_convert._line_gaps(merged)
+
+    for label, path in (("latex", PDF), ("writer", PDF_WRITER)):
+        fx_pitch, fx_thr, fx_gaps = _geometry(path)
+        spacing = max(g for g in fx_gaps if g <= fx_thr)
+        apart = min(g for g in fx_gaps if g > fx_thr)
+        check(f"margins ({label}): the paragraph threshold clears the line spacing",
+              fx_thr - spacing >= 3, (fx_pitch, fx_thr, spacing))
+        check(f"margins ({label}): the threshold stays under the smallest real break",
+              apart - fx_thr >= 3, (fx_thr, apart))
+
+    # The exact numbers, so a re-derivation cannot quietly move them. The Writer
+    # PDF's 30.5 is what the modal rule buys: min() over the same gaps gives 23.0,
+    # which puts a paragraph break inside the title.
+    check("margins: the LaTeX fixture's geometry is unchanged by the modal rule",
+          _geometry(PDF)[:2] == (18, 22.0), _geometry(PDF)[:2])
+    check("margins: the Writer fixture clears its title's own line spacing",
+          _geometry(PDF_WRITER)[:2] == (20, 30.5), _geometry(PDF_WRITER)[:2])
+
+    # A single line set in a larger font must not be able to move the wall the whole
+    # document is measured against: pitch 20, one gap of 26, eight real breaks at 41.
+    outlier = [[{"kind": "text", "top": t, "left": 0, "right": 400, "runs": []}
+                for t in ([0, 20, 46] + [46 + 41 * (i + 1) for i in range(8)])]]
+    check("margins: one outlier gap does not drag the threshold down to it",
+          medien_convert._paragraph_gap(outlier, 20) == 30.5,
+          medien_convert._paragraph_gap(outlier, 20))
 
     # A one-paragraph document has no larger gap to find, and must not invent one.
     check("margins: nothing to separate leaves every line in one paragraph",
@@ -538,6 +628,41 @@ def main():
           _fragments(200) == "Kinderkrippe", _fragments(200))
     check("fragments: a split at a stretched space keeps the space",
           _fragments(230) == "Kinder krippe", _fragments(230))
+
+    # --- joining two wrapped lines ---
+    # A word processor keeps the space it broke the line at inside the line's own
+    # text run; a typesetter does not. The join has to look before it adds one.
+    def _join(first):
+        return medien_convert.pdf_xml_to_markdown(
+            '<?xml version="1.0" encoding="UTF-8"?>\n<pdf2xml>\n'
+            '<page number="1" top="0" left="0" height="1188" width="918">\n'
+            f'<text top="100" left="100" width="400" height="13">{first}</text>\n'
+            '<text top="118" left="100" width="380" height="13">Stadtseite</text>\n'
+            '</page>\n</pdf2xml>\n')
+
+    check("join: a line that already ends in a space does not gain a second one",
+          _join("auf der rechten ") == "auf der rechten Stadtseite",
+          _join("auf der rechten "))
+    check("join: a line that does not still gains one",
+          _join("auf der rechten") == "auf der rechten Stadtseite",
+          _join("auf der rechten"))
+
+    # --- the pitch and the threshold are measured over ONE population ---
+    # _line_pitch runs before _merge_lines (which needs it) and _paragraph_gap runs
+    # after, so the two saw slightly different sets. Same rule now: skip repeated
+    # tops, reset at an image, never cross a page.
+    split_line = [[{"kind": "text", "top": 100, "left": 0, "right": 200, "runs": []},
+                   {"kind": "text", "top": 100, "left": 210, "right": 400, "runs": []},
+                   {"kind": "text", "top": 118, "left": 0, "right": 400, "runs": []},
+                   {"kind": "image", "top": 200, "left": 0, "src": "x.jpg"},
+                   {"kind": "text", "top": 400, "left": 0, "right": 400, "runs": []}]]
+    check("population: a line split into fragments counts once, and no gap "
+          "crosses an image",
+          medien_convert._line_gaps(split_line) == [18],
+          medien_convert._line_gaps(split_line))
+    check("population: the pitch is the mode of exactly those gaps",
+          medien_convert._line_pitch(split_line) == 18,
+          medien_convert._line_pitch(split_line))
 
     print()
     if failures:
