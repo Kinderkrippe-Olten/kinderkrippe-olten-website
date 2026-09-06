@@ -1,18 +1,19 @@
-name: Sync Medienmitteilungen from OpenCloud
+name: Sync Geschichten from OpenCloud
 
-# Mirrors press-release folders from the OpenCloud space into content/blog/.
-# Authors: docs/medienmitteilungen-anleitung.md
+# Mirrors story folders from the OpenCloud Geschichten space into content/blog/.
+# Authors: docs/geschichten-anleitung.md
 # Design:  docs/superpowers/specs/2026-09-06-opencloud-medienmitteilungen-sync-design.md
+#          -- the Geschichten folders turned out to hold the same thing in the same
+#          shape, so both syncers run scripts/apply-blog-sync.py and differ only in
+#          --prefix and in when they run.
 #
-# Runs scripts/apply-blog-sync.py, as sync-geschichten.yaml does; --prefix is the whole
-# of the difference between them, and it is what scopes this run's deletions.
-#
-# The sibling of sync-stellen.yaml, kept as a separate file rather than factored into
-# something shared: the two have the same SHAPE but not the same logic, and a shared
-# workflow would couple a job-ad publish to a press-release bug.
+# A separate FILE nonetheless, like sync-stellen.yaml: the schedules are independent,
+# a red run has to name one source folder, and a workflow shared between them would
+# couple a story publish to a press-release bug. The logic they share lives in the
+# script, which is where sharing costs nothing.
 on:
   schedule:
-    - cron: '43 5 * * 1'   # UTC, Mondays. Off-round, and away from sync-stellen's :17.
+    - cron: '11 6 * * 1'   # UTC, Mondays. Off-round, and clear of the other two syncers.
   workflow_dispatch:
     inputs:
       dry_run:
@@ -57,7 +58,7 @@ jobs:
       HUGO_VERSION: 0.158.0
       DART_SASS_VERSION: 1.98.0
 
-      OPENCLOUD_PATH: Medienmitteilungen
+      OPENCLOUD_PATH: Geschichten
 
     steps:
       - name: Check OpenCloud secrets are present
@@ -126,7 +127,7 @@ jobs:
           rm -f hugo.deb
           hugo version
 
-      - name: Fetch press releases from OpenCloud
+      - name: Fetch stories from OpenCloud
         id: fetch
         env:
           RCLONE_CONFIG_OC_TYPE: webdav
@@ -154,7 +155,7 @@ jobs:
           # rclone logs a --max-size exclusion at DEBUG, not at the -v above, so an
           # oversized file leaves NO trace: the converter never sees it, the folder
           # is not rejected, and the page publishes silently degraded on a green run.
-          # That matters more here than for job ads. A press release carries a SET of
+          # That matters more here than for job ads. A story carries a SET of
           # photos and select_images() takes the largest as the teaser -- so the file
           # most likely to break 25M is the one most likely to have been the teaser.
           #
@@ -263,7 +264,7 @@ jobs:
           # folder that caused it -- see the amendment in the design spec for why
           # that trade was taken. So the message has to say what happened and what
           # to do, or the maintainer meets a bare Hugo error every Monday.
-          echo "::error::hugo build failed on the applied changes, so NOTHING was committed and no press release published this run. The Hugo error above names a file under content/blog/; find its SyncedFrom: line to get the OpenCloud folder it came from, remove or correct that folder, and re-run this workflow. Until then every run fails here, and the same is true of every OTHER folder waiting to publish."
+          echo "::error::hugo build failed on the applied changes, so NOTHING was committed and no story published this run. The Hugo error above names a file under content/blog/; find its SyncedFrom: line to get the OpenCloud folder it came from, remove or correct that folder, and re-run this workflow. Until then every run fails here, and the same is true of every OTHER folder waiting to publish."
           echo "Rejected folders from this run, if any, are reported in the step below."
           exit 1
 
@@ -290,9 +291,9 @@ jobs:
           # measured, not assumed. The two forms produce byte-identical messages.
           # This one just does not need that argument to be true.
           {
-            printf '%s\n\n' "Sync press releases from OpenCloud"
+            printf '%s\n\n' "Sync stories from OpenCloud"
             cat apply-report.txt
-            printf '\n%s\n' "Applied automatically by .github/workflows/sync-medienmitteilungen.yaml"
+            printf '\n%s\n' "Applied automatically by .github/workflows/sync-geschichten.yaml"
           } | git commit -F -
           git push
           echo "pushed=true" >> "$GITHUB_OUTPUT"
@@ -359,14 +360,14 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${APPLY_RC:-0}" = "1" ]; then
-            echo "::error::Some folders in the OpenCloud Medienmitteilungen folder could not be published."
+            echo "::error::Some folders in the OpenCloud Geschichten folder could not be published."
             echo "Nothing already published was removed. See 'Apply to the repository' above"
             echo "for the folder names and what to correct."
           fi
           if [ "${OVERSIZED:-0}" != "0" ]; then
-            echo "::error::${OVERSIZED} file(s) in the OpenCloud Medienmitteilungen folder are larger than 25M and were not fetched. A page whose folder still had other files has published WITHOUT them -- possibly without its teaser photo. A folder left with nothing at all is reported as rejected above and its page, if it has one, was NOT changed."
+            echo "::error::${OVERSIZED} file(s) in the OpenCloud Geschichten folder are larger than 25M and were not fetched. A page whose folder still had other files has published WITHOUT them -- possibly without its teaser photo. A folder left with nothing at all is reported as rejected above and its page, if it has one, was NOT changed."
             sed 's/^/  /' oversized.txt
-            echo "Shrink them in OpenCloud and re-run. See 'Fetch press releases from"
+            echo "Shrink them in OpenCloud and re-run. See 'Fetch stories from"
             echo "OpenCloud' above for the same list."
           fi
           exit 1
