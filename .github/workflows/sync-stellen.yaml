@@ -42,16 +42,16 @@ permissions:
   contents: write   # commit the synced PDFs
   actions: write    # dispatch deploy-hugo.yaml afterwards
 
-# Shared with sync-medienmitteilungen.yaml, deliberately. The two syncers write to
-# disjoint paths but push to the same branch, and the commit step below pushes with
-# no fetch and no retry -- so a concurrent run would lose its push, fail the job, and
-# skip the deploy dispatch, deferring publication up to 24 hours with only a red run
-# to show for it.
+# Shared with sync-medienmitteilungen.yaml and sync-geschichten.yaml, deliberately.
+# The three syncers write to disjoint paths but push to the same branch, and the
+# commit step below pushes with no fetch and no retry -- so a concurrent run would
+# lose its push, fail the job, and skip the deploy dispatch, deferring publication
+# up to 24 hours with only a red run to show for it.
 #
 # It is not free, though. With cancel-in-progress: false GitHub keeps at most one
 # PENDING run per group, so a third dispatch arriving while one run is in progress
-# and one is already queued cancels the queued one. On Monday morning, when the
-# medien cron and a stellen dispatch can overlap, that pending stellen run can be
+# and one is already queued cancels the queued one. On Monday morning, when both
+# blog crons and a stellen dispatch can overlap, that pending stellen run can be
 # the one dropped. Nothing is lost permanently: the daily heartbeat CronJob
 # re-dispatches, and the NATS listener re-fires on the next change. A deferred
 # publish is the price; a lost push would be a red run and a stranded commit.

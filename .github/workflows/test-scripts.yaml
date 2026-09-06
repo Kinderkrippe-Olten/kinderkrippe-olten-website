@@ -19,6 +19,7 @@ on:
       - 'data/**'
       - '.github/workflows/test-scripts.yaml'
       - '.github/workflows/sync-medienmitteilungen.yaml'
+      - '.github/workflows/sync-geschichten.yaml'
       - '.github/workflows/sync-stellen.yaml'
       - '.github/workflows/deploy-hugo.yaml'
   push:
@@ -28,6 +29,7 @@ on:
       - 'data/**'
       - '.github/workflows/test-scripts.yaml'
       - '.github/workflows/sync-medienmitteilungen.yaml'
+      - '.github/workflows/sync-geschichten.yaml'
       - '.github/workflows/sync-stellen.yaml'
       - '.github/workflows/deploy-hugo.yaml'
   workflow_dispatch:
@@ -39,8 +41,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      # Kept in step with sync-medienmitteilungen.yaml by the check below, not by
-      # good intentions.
+      # Kept in step with the two blog syncers by the check below, not by good
+      # intentions.
       PIN_PANDOC_VERSION: '3.11'
       PIN_PANDOC_SHA256: 89d4c9d97818c62a97157f0072844e4602c6cee795bf84abd1aee7273abcda99
       # The other pins are not used by this job at all. They live here so the check
@@ -59,6 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           medien=.github/workflows/sync-medienmitteilungen.yaml
+          geschichten=.github/workflows/sync-geschichten.yaml
           stellen=.github/workflows/sync-stellen.yaml
           deploy=.github/workflows/deploy-hugo.yaml
 
@@ -74,24 +77,30 @@ jobs:
 
           # pandoc GENERATES the committed bytes. Testing a pandoc the syncer does
           # not use is a green tick over the corpus-wide rewrite the pin prevents.
-          must_hold "$medien" "PIN_PANDOC_VERSION: '${PIN_PANDOC_VERSION}'" \
-            "The fixture test would then run against a pandoc the sync does not use."
-          must_hold "$medien" "PIN_PANDOC_SHA256: ${PIN_PANDOC_SHA256}" \
-            "The fixture test would then run against a pandoc the sync does not use."
-
-          # rclone is pinned twice, once per syncer. Two copies of a checksum are
-          # two chances to update only one of them.
-          for w in "$medien" "$stellen"; do
-            must_hold "$w" "PIN_RCLONE_VERSION: ${PIN_RCLONE_VERSION}" \
-              "The two syncers would then fetch with different rclone versions."
-            must_hold "$w" "PIN_RCLONE_SHA256: ${PIN_RCLONE_SHA256}" \
-              "The two syncers would then fetch with different rclone versions."
+          #
+          # Both blog syncers convert with it, and they publish into ONE section: a
+          # pandoc that differs between them would have the two of them rewriting
+          # each other's pages on alternate Mondays.
+          for w in "$medien" "$geschichten"; do
+            must_hold "$w" "PIN_PANDOC_VERSION: '${PIN_PANDOC_VERSION}'" \
+              "The fixture test would then run against a pandoc the sync does not use."
+            must_hold "$w" "PIN_PANDOC_SHA256: ${PIN_PANDOC_SHA256}" \
+              "The fixture test would then run against a pandoc the sync does not use."
           done
 
-          # Hugo and dart-sass: sync-medienmitteilungen.yaml runs the pre-commit
-          # build check, and it is worth nothing if it builds with a different Hugo
-          # from the one deploy-hugo.yaml publishes with.
-          for w in "$medien" "$deploy"; do
+          # rclone is pinned once per syncer. Three copies of a checksum are three
+          # chances to update only some of them.
+          for w in "$medien" "$geschichten" "$stellen"; do
+            must_hold "$w" "PIN_RCLONE_VERSION: ${PIN_RCLONE_VERSION}" \
+              "The syncers would then fetch with different rclone versions."
+            must_hold "$w" "PIN_RCLONE_SHA256: ${PIN_RCLONE_SHA256}" \
+              "The syncers would then fetch with different rclone versions."
+          done
+
+          # Hugo and dart-sass: both blog syncers run the pre-commit build check,
+          # and it is worth nothing if it builds with a different Hugo from the one
+          # deploy-hugo.yaml publishes with.
+          for w in "$medien" "$geschichten" "$deploy"; do
             must_hold "$w" "HUGO_VERSION: ${HUGO_VERSION}" \
               "The pre-commit build check would then not be the deploy build."
             must_hold "$w" "DART_SASS_VERSION: ${DART_SASS_VERSION}" \

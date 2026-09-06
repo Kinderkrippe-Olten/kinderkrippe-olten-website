@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""End-to-end tests for apply-medien-sync.py, run as a subprocess.
+"""End-to-end tests for apply-blog-sync.py, run as a subprocess.
 
-Run with:  python3 scripts/test-apply-medien-sync.py
+Run with:  python3 scripts/test-apply-blog-sync.py
 """
 
 import datetime
@@ -15,11 +15,19 @@ import types
 import unicodedata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-APPLY = os.path.join(HERE, "apply-medien-sync.py")
+APPLY = os.path.join(HERE, "apply-blog-sync.py")
 FIXTURES = os.path.join(HERE, "fixtures", "medien")
 DOCX = "20260904_MM_EröffnungHort.docx"
 
-SITES = "sonnhalde:\n  Name: Sonnhalde\nhagmatt:\n  Name: Hagmatt\nbifang-säli:\n  Name: Hort\nverein:\n  Name: Verein\n"
+SITES = ("sonnhalde:\n  Name: Sonnhalde\n"
+         "  Groups:\n"
+         "    papagei:\n      Icon: papagei.svg\n      Name: Papagei\n"
+         "    balu:\n      Icon: balu.svg\n      Name: Balu\n"
+         "hagmatt:\n  Name: Hagmatt\n  Color: light-green\n"
+         "  Groups:\n"
+         "    fisch:\n      Icon: fisch.svg\n      Name: Fisch\n"
+         "    frosch:\n      Icon: frosch.svg\n      Name: Frosch\n"
+         "bifang-säli:\n  Name: Hort\nverein:\n  Name: Verein\n")
 ALIASES = "aliases:\n  hort: bifang-säli\n"
 
 HANDMADE = '---\nTitle: "Von Hand"\nDate: 2026-09-04\n---\n\nvon Hand geschrieben\n'
@@ -68,8 +76,8 @@ def run(staging, content, sites, aliases, *extra):
 
 
 def load_module():
-    """Import apply-medien-sync.py, whose file name is not a Python identifier."""
-    spec = importlib.util.spec_from_file_location("apply_medien_sync", APPLY)
+    """Import apply-blog-sync.py, whose file name is not a Python identifier."""
+    spec = importlib.util.spec_from_file_location("apply_blog_sync", APPLY)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
@@ -92,10 +100,12 @@ def main():
         check("happy: Site resolved through the alias", "Site: bifang-säli" in text, text[:200])
         check("happy: marker written",
               "SyncedFrom: Medienmitteilungen/2026-09-04_hort" in text, text[:200])
-        # Values that can carry arbitrary author text are quoted; the ones the
-        # repository controls -- and the marker blog_mirror matches -- are not.
-        check("happy: Autor from the document",
-              'Autor: "Melanie von Arx"' in text, text[:200])
+        # RULING-41: the document's own docProps author is NOT a byline. It is
+        # whatever account last saved the file -- "Hagmatt Leitung Stv" on the
+        # Geschichten fixture -- and a name printed on a page has to be one a
+        # person chose. meta.yaml is where a byline is stated, or there is none.
+        check("happy: no Autor without meta.yaml", "Autor:" not in text, text[:200])
+        check("happy: no Group without meta.yaml", "Group:" not in text, text[:200])
         check("happy: Title is quoted", 'Title: "' in text, text[:200])
         check("happy: no TeaserTitle without meta.yaml", "TeaserTitle:" not in text)
         check("happy: teaser written", os.path.isfile(os.path.join(page, "teaser.jpeg")))
@@ -127,7 +137,7 @@ def main():
         check("meta: an unknown key still publishes the page",
               os.path.isdir(os.path.join(c, "2026-09-04_Hort")), os.listdir(c))
         check("meta: the note lists only keys that exist -- not 'Title'",
-              "is not one of TeaserTitle, Autor, Site and was ignored" in out, out)
+              "is not one of TeaserTitle, Autor, Site, Group and was ignored" in out, out)
 
         # --- RULING-36: 'Title:' is NOT a key ---
         # front_matter honoured it while assemble_body had already baked the
@@ -168,6 +178,83 @@ def main():
         check("meta: an unknown Site publishes nothing", os.listdir(c) == [], os.listdir(c))
         check("meta: an unknown Site is reported, not a crash",
               "not a site in" in out and "Traceback" not in out, out)
+
+        # --- meta.yaml's Group, against that site's own groups ---
+        s, c, si, al = setup(tmp + "/mg", {"2026-09-04_hagmatt": [
+            DOCX, ("meta.yaml", "Group: fisch\n")]})
+        rc, out = run(s, c, si, al)
+        md = os.path.join(c, "2026-09-04_Hagmatt", "index.md")
+        check("meta: a Group of the site -> rc 0", rc == 0, out)
+        check("meta: Group written to the front matter",
+              os.path.isfile(md) and "Group: fisch" in open(md, encoding="utf-8").read(),
+              out)
+
+        # Spelled the way the author typed it, stored the way sites.yaml spells it:
+        # the group key reaches Hugo, where 'Fisch' would find no group at all.
+        s, c, si, al = setup(tmp + "/mgc", {"2026-09-04_hagmatt": [
+            DOCX, ("meta.yaml", "Group: Fisch\n")]})
+        rc, out = run(s, c, si, al)
+        md = os.path.join(c, "2026-09-04_Hagmatt", "index.md")
+        check("meta: Group normalised to the sites.yaml spelling",
+              rc == 0 and os.path.isfile(md)
+              and "Group: fisch" in open(md, encoding="utf-8").read(), out)
+
+        # A group belongs to a site. 'frosch' is Hagmatt's; the Sonnhalde has its own
+        # and none of them is 'frosch', so this is not a page that can be published
+        # to a group filter -- the same claim an unusable Site makes.
+        s, c, si, al = setup(tmp + "/mgw", {"2026-09-04_sonnhalde": [
+            DOCX, ("meta.yaml", "Group: frosch\n")]})
+        rc, out = run(s, c, si, al, "--allow-empty")
+        check("meta: a group of ANOTHER site -> rc 1", rc == 1, out)
+        check("meta: a foreign group publishes nothing", os.listdir(c) == [], os.listdir(c))
+        check("meta: a foreign group is reported, not a crash",
+              "not a group of" in out and "Traceback" not in out, out)
+
+        # bifang-säli has no Groups at all in sites.yaml.
+        s, c, si, al = setup(tmp + "/mgn", {"2026-09-04_hort": [
+            DOCX, ("meta.yaml", "Group: fisch\n")]})
+        rc, out = run(s, c, si, al, "--allow-empty")
+        check("meta: a Group on a site that has none -> rc 1", rc == 1, out)
+        check("meta: it says which site has no groups",
+              "bifang-säli" in out and "Traceback" not in out, out)
+
+        # The Site override decides which site's groups apply -- both keys are read
+        # from the same file, so the group must be checked against the FINAL site.
+        s, c, si, al = setup(tmp + "/mgs", {"2026-09-04_sonnhalde": [
+            DOCX, ("meta.yaml", "Site: hagmatt\nGroup: frosch\n")]})
+        rc, out = run(s, c, si, al)
+        md = os.path.join(c, "2026-09-04_Sonnhalde", "index.md")
+        check("meta: Group is checked against the overriding Site",
+              rc == 0 and os.path.isfile(md)
+              and "Group: frosch" in open(md, encoding="utf-8").read(), out)
+
+        # --- a second syncer: the same script under another prefix ---
+        # Geschichten/ and Medienmitteilungen/ write into ONE content/blog/. This
+        # guards at the CLI what test-blog-mirror.py guards at the module: a run
+        # owns only its own prefix, and everything else in the section -- the other
+        # syncer's pages and the hand-made ones -- is not its to remove.
+        s, c, si, al = setup(tmp + "/g", {"2026-06-25_hagmatt_Bauernhof": [DOCX]})
+        for name, front in (("2026-09-04_Hort",
+                             '---\nTitle: "MM"\nDate: 2026-09-04\n'
+                             'SyncedFrom: Medienmitteilungen/2026-09-04_hort\n---\n'),
+                            ("2024-03-18_Osterprojekt", HANDMADE)):
+            os.makedirs(os.path.join(c, name))
+            with open(os.path.join(c, name, "index.md"), "w", encoding="utf-8") as fh:
+                fh.write(front)
+        rc, out = run(s, c, si, al, "--prefix", "Geschichten")
+        story = os.path.join(c, "2026-06-25_Hagmatt_Bauernhof", "index.md")
+        check("second syncer: rc 0", rc == 0, out)
+        check("second syncer: the marker carries ITS prefix",
+              os.path.isfile(story)
+              and "SyncedFrom: Geschichten/2026-06-25_hagmatt_Bauernhof"
+                  in open(story, encoding="utf-8").read(), out)
+        check("second syncer: the other syncer's page is untouched",
+              os.path.isfile(os.path.join(c, "2026-09-04_Hort", "index.md")), os.listdir(c))
+        check("second syncer: a hand-made page is untouched",
+              os.path.isfile(os.path.join(c, "2024-03-18_Osterprojekt", "index.md")),
+              os.listdir(c))
+        check("second syncer: it removes nothing it does not own",
+              "remove" not in out, out)
 
         # --- folder-name rejections ---
         for folder, why in (("hort", "no date"),

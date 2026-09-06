@@ -300,6 +300,58 @@ def main():
     check("fallback teaser is not also in the gallery",
           teaser3 not in gallery3 and len(gallery3) == 12, len(gallery3))
 
+    # --- a file the author named teaser.* settles the cover ---
+    # The convention the Geschichten folders already use: the cover photo is copied
+    # beside the others under the name teaser.jpg. It has to beat both the fallback
+    # (first loose file alphabetically) and the document's own image, or an author
+    # who names the cover does not get it.
+    # Built from three DIFFERENT photos, not three rescalings of one: rescalings are
+    # perceptual twins, and the twin rules would decide these cases for reasons that
+    # have nothing to do with the name.
+    named_dir = mkdtemp()
+
+    def _named(name, source):
+        path = os.path.join(named_dir, name)
+        Image.open(source).save(path)
+        return path
+
+    doc_img = _named("doc.jpeg", loose[2])
+    photo_a = _named("AAA_first.jpeg", loose[0])   # would win the fallback: sorts first
+    photo_b = _named("ZZZ_last.jpeg", loose[1])
+    cover = os.path.join(named_dir, "teaser.jpg")
+    shutil.copyfile(photo_a, cover)             # a byte-identical copy, as in the example
+
+    t_named, g_named = medien_convert.select_images([], [photo_a, photo_b, cover])
+    check("teaser.jpg wins the cover slot over the alphabetical fallback",
+          os.path.basename(t_named) == "teaser.jpg", t_named)
+    check("the named cover is not itself a gallery entry",
+          cover not in g_named, [os.path.basename(g) for g in g_named])
+    check("a byte-twin of the named cover stays in the gallery",
+          sorted(os.path.basename(g) for g in g_named) == ["AAA_first.jpeg",
+                                                           "ZZZ_last.jpeg"],
+          [os.path.basename(g) for g in g_named])
+
+    t_over, g_over = medien_convert.select_images([doc_img], [photo_a, cover])
+    check("teaser.jpg wins the cover slot over the document's own image",
+          os.path.basename(t_over) == "teaser.jpg", t_over)
+    check("the document's own image falls back to the gallery",
+          any(os.path.basename(g) == "doc.jpeg" for g in g_over),
+          [os.path.basename(g) for g in g_over])
+
+    # Two named files cannot both be the cover. Whichever loses stays an ordinary
+    # gallery photo, and which one loses may not depend on iteration order.
+    cover_png = _named("teaser.png", photo_b)
+    t_two_fwd, g_two_fwd = medien_convert.select_images([], [cover, cover_png, photo_b])
+    t_two_rev, _ = medien_convert.select_images([], [cover_png, cover, photo_b])
+    check("two teaser.* files resolve to the same cover in either order",
+          os.path.basename(t_two_fwd) == os.path.basename(t_two_rev) == "teaser.jpg",
+          (t_two_fwd, t_two_rev))
+    check("the teaser.* that lost is still shown in the gallery",
+          any(os.path.basename(g) == "teaser.png" for g in g_two_fwd),
+          [os.path.basename(g) for g in g_two_fwd])
+
+    shutil.rmtree(named_dir, ignore_errors=True)
+
     # nothing at all
     check("no images at all is allowed", medien_convert.select_images([], []) == (None, []))
 

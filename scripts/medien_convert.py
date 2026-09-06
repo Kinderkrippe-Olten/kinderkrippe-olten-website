@@ -222,19 +222,40 @@ def _pixels(path):
     return w * h
 
 
+def _is_named_teaser(path):
+    """True for a file the author named teaser.jpg / teaser.png / teaser.JPG."""
+    return os.path.splitext(os.path.basename(path))[0].casefold() == "teaser"
+
+
 def select_images(doc_images, loose_images, threshold=DEDUP_THRESHOLD,
                   min_pixels=MIN_PIXELS):
     """(teaser, gallery) from the document's images and the loose files.
 
-    The teaser is the document's own image -- the one the author placed beside the
-    text and the one the Bildlegende describes. Where a loose file is the same photo
-    as the document's own image, the higher-resolution copy becomes the teaser; where
-    a loose file duplicates one of the document's *other* images, the loose copy is
-    dropped and the document's own copy stands in the gallery unconditionally.
+    A loose file NAMED teaser.* settles it: the author said which photo is the cover,
+    and nothing inferred outranks that. Otherwise the teaser is the document's own
+    image -- the one the author placed beside the text and the one the Bildlegende
+    describes. Where a loose file is the same photo as the document's own image, the
+    higher-resolution copy becomes the teaser; where a loose file duplicates one of
+    the document's *other* images, the loose copy is dropped and the document's own
+    copy stands in the gallery unconditionally.
     """
     docs = [p for p in doc_images if _pixels(p) >= min_pixels]
     loose = [p for p in loose_images if _pixels(p) >= min_pixels]
     sigs = {p: signature(p) for p in docs + loose}
+
+    named = sorted((p for p in loose if _is_named_teaser(p)), key=os.path.basename)
+    if named:
+        # No twin resolution against the chosen cover: the Geschichten folders copy
+        # the cover photo in beside the original, and dropping the original would
+        # silently shrink the slider by the one photo the author cared about most.
+        # Duplicates of the DOCUMENT's images are still dropped -- that rule is about
+        # the same photo appearing twice on one page, which has not changed.
+        teaser = named[0]
+        gallery = [p for p in loose if p is not teaser
+                   and not any(distance(sigs[p], sigs[d]) < threshold for d in docs)]
+        gallery.extend(docs)
+        gallery.sort(key=os.path.basename)
+        return teaser, gallery
 
     teaser = docs[0] if docs else None
     gallery = []

@@ -388,6 +388,19 @@ loose file, the surviving larger copy is the teaser and the loose file does not 
 appear in the gallery. If the document embeds no image at all, the alphabetically
 first pooled image becomes the teaser and no `blog-pic` shortcode is emitted.
 
+**AMENDED (Geschichten):** a loose file NAMED `teaser.jpg` / `teaser.png` outranks all
+of that. The Geschichten folders already used the convention before any of this was
+written — the cover photo copied in beside the originals under that name — and inferring
+a cover from resolution and position is a guess where the author has stated an answer.
+When one is present, the document's own image goes to the gallery instead of being
+dropped, and a twin of the named cover is NOT de-duplicated away: the author deliberately
+put the same photo in twice, once to be the cover and once to be in the slider, and a
+run that removed the second copy would silently shrink the slider by the photo the
+author cared about most. Twins of the *document's* images are still dropped; that rule
+is about one photo appearing twice on one page, which has not changed. Two `teaser.*`
+files are resolved by filename so the outcome does not depend on directory order, and
+the loser stays an ordinary gallery photo.
+
 The **gallery** is everything else, in filename order.
 
 The extension is preserved rather than forced to `.jpg`. This is a deliberate
@@ -491,15 +504,27 @@ Optional, and flat:
 TeaserTitle: Eröffnung Hort
 Autor: Melanie von Arx
 Site: bifang-säli
+Group: fisch
 ```
 
-All three keys are optional and all three override what would otherwise be derived.
+All four keys are optional and all four override what would otherwise be derived.
 `Site` overrides the folder-name mapping for the case a release genuinely belongs to a
-site the folder name does not name.
+site the folder name does not name. `Group` names one of that site's own groups in
+`data/sites.yaml`, checked against the site the page ends up on — so a `Site` override
+in the same file decides which groups are legal. A group that is not the site's is a
+rejection, like an unusable `Site`: it is a value only the repository can validate, and
+publishing it anyway would render a group badge the site does not have.
 
-Defaults when it is absent: `Autor` from the document's own metadata (`dc:creator` in
-`docProps/core.xml`, `/Author` in a PDF), and `TeaserTitle` omitted entirely — Hugo's
-`render-blog-section.html` already falls back to `Title`.
+Defaults when it is absent: `TeaserTitle` omitted entirely — Hugo's
+`render-blog-section.html` already falls back to `Title` — and `Autor` omitted too.
+
+**AMENDED (Geschichten):** `Autor` no longer falls back to the document's own metadata
+(`dc:creator` in `docProps/core.xml`, `/Author` in a PDF). That fallback was written
+for a press release signed by its author; the first Geschichten fixture carries
+`dc:creator: Hagmatt Leitung Stv`, the account that last saved the file. docProps says
+who typed, not who is credited, and the two are not the same claim. A byline a reader
+sees has to be one a person chose: it comes from `meta.yaml`, or the author writes it
+into the document body ("Text und Fotos: …"), where it survives as ordinary prose.
 
 **`meta.yaml` is the only durable place for these.** `index.md` is regenerated on every
 change, so a `TeaserTitle` typed into it by hand survives exactly until the next
@@ -568,17 +593,30 @@ Three modules, split where the seams actually are:
   prefix scoping, byte comparison, the wipeout guard, the report. Knows nothing about
   Word, PDF or press releases.
 
-`scripts/apply-medien-sync.py`
+`scripts/apply-blog-sync.py`
 : Thin glue and the CLI: walk the staging tree, validate folder names against
   `data/sites.yaml` and the alias map, call the converter, hand the result to the
   mirror.
 
-The split between the first two is where the planned `WebSync/Geschichten/` syncer
-comes in: it is expected to reuse `blog_mirror.py` unchanged and supply its own
-converter. That is the extent of the provision made for it. No plugin registry, no
-converter dispatch table, no abstract base class — its input format is not yet known,
-and a framework designed against one example and one guess would be wrong in ways that
-are expensive to undo. When it arrives it gets its own spec.
+The split between the first two is where the `WebSync/Geschichten/` syncer was expected
+to come in: reusing `blog_mirror.py` unchanged and supplying its own converter. No
+plugin registry, no dispatch table, no abstract base class was built for it — its input
+format was not yet known, and a framework designed against one example and one guess
+would have been wrong in ways that are expensive to undo.
+
+**AMENDED (Geschichten, 2026-09-06):** the guess about the converter was wrong in the
+cheap direction. The Geschichten folders hold a `.docx` and loose photos — the same
+input, in the same shape, wanting the same page: `teaser.*`, `gallery/` and the
+picture-slider this converter already emits. So it supplies no converter of its own and
+needs no new module. What it needs is `--prefix Geschichten`, which already existed.
+
+The CLI is therefore named `apply-blog-sync.py` rather than `apply-medien-sync.py`, and
+both workflows run it. `--prefix` is the whole of the difference: it builds the
+`SyncedFrom` marker and is what `blog_mirror.owned()` scopes deletions by, so each run
+owns its own folder's pages and nothing else. The workflows stay separate files, as
+`sync-stellen.yaml` is, so that a red run names one source folder and a story bug
+cannot hold up a press release. When the two pipelines stop agreeing on what a page is,
+that is the seam to split — not a parameter to add.
 
 ## Workflow
 
@@ -713,12 +751,15 @@ only thing that would notice. The existing job-ad tests come along for free.
   `smask` row; no address block; no `Bildlegende`; an en-dash in the title; body text
   containing `{{<`; a document that is nothing but a title.
 
-`scripts/test-apply-medien-sync.py`
+`scripts/test-apply-blog-sync.py`
 : A staging tree and a fake `content/blog/` in a temp directory, the script run as a
   subprocess. Covers create, update, no-op re-run, delete, the wipeout guard and its
   override, folder-name rejections, alias resolution, an unowned target directory, a
   detached bundle, and — the case the prefix scoping exists for — a bundle marked
-  `SyncedFrom: Geschichten/…` surviving a Medienmitteilungen run untouched.
+  `SyncedFrom: Geschichten/…` surviving a Medienmitteilungen run untouched. Since the
+  Geschichten syncer runs this same script, that case is now also covered from the
+  other side: a `--prefix Geschichten` run that leaves a Medienmitteilungen page and a
+  hand-made one alone, plus `meta.yaml`'s `Group` and the named-teaser rule.
 
 The no-op re-run is the one that matters most in practice: it is what proves conversion
 is deterministic, and a regression there produces a commit on every dispatch forever.

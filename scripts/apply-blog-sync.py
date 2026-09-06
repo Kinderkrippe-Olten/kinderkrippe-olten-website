@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-"""Publish press-release folders staged from OpenCloud into content/blog/.
+"""Publish folders staged from OpenCloud into content/blog/.
+
+Serves both syncers: --prefix names the OpenCloud folder a run owns, and a run owns
+nothing else. Medienmitteilungen/ and Geschichten/ write into this one section, and
+neither may touch the other's pages or the hand-made ones -- see blog_mirror.owned().
+The two differ in their source folder and their schedule, not in their logic; when
+that stops being true, this is the seam to split, not to parameterise further.
 
 Usage:
-    apply-medien-sync.py --staging DIR [--content content/blog]
-                         [--sites data/sites.yaml]
-                         [--aliases data/medienmitteilungen.yaml]
-                         [--prefix Medienmitteilungen] [--dry-run] [--allow-empty]
+    apply-blog-sync.py --staging DIR [--content content/blog]
+                       [--sites data/sites.yaml]
+                       [--aliases data/medienmitteilungen.yaml]
+                       [--prefix Medienmitteilungen] [--dry-run] [--allow-empty]
 
 Each staged directory is  YYYY-MM-DD_<location>[_<topic>]…  and becomes one Hugo page
 bundle. OpenCloud is the source of truth: the folder's contents are regenerated on
@@ -45,6 +51,11 @@ FOLDER_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})_(.+)$")
 # Hugo would fail the WHOLE site build, naming content/blog/ rather than the folder.
 TOKEN_RE = re.compile(r"^[^\W_]+(?:-[^\W_]+)*$")
 SITE_KEY_RE = re.compile(r"^([^\s#][^:]*):\s*$")
+# Under a site: 'Groups:' opens the block of that site's groups, and any other
+# two-space key -- 'Name:', 'Color:' -- closes it again. The group keys themselves
+# sit one level deeper, and their own contents ('Icon:', 'Name:') deeper still.
+GROUP_BLOCK_RE = re.compile(r"^\s{2}([^\s#][^:]*):")
+GROUP_KEY_RE = re.compile(r"^\s{4}([^\s#][^:]*):\s*$")
 ALIAS_RE = re.compile(r"^\s{2,}([^\s#][^:]*):\s*(.+?)\s*$")
 META_RE = re.compile(r"^(\w+):\s*(.*?)\s*$")
 # Pandoc escapes ASCII punctuation on its way out of the .docx, so a title reads
@@ -61,7 +72,7 @@ IGNORED = {"thumbs.db", "meta.yaml"}
 # and giving the page a SECOND title authority would mean teaching assemble_body
 # about it too. Left out of META_KEYS, 'Title:' is now reported as an unknown key,
 # which is what the note below exists for.
-META_KEYS = ("TeaserTitle", "Autor", "Site")
+META_KEYS = ("TeaserTitle", "Autor", "Site", "Group")
 SKIPPED = "exists, not owned -- skipped: "
 
 
@@ -71,13 +82,35 @@ def die(message):
 
 
 def read_sites(path):
-    """Top-level keys of data/sites.yaml, in the repository's own spelling."""
+    """({site key: [group keys]}) from data/sites.yaml, in its own spelling.
+
+    Both levels stay spelled as the repository spells them: these values go into
+    front matter, where Hugo looks them up in this same file.
+    """
     try:
         lines = open(path, encoding="utf-8").readlines()
     except OSError as exc:
         die(f"cannot read {path!r}: {exc}")
-    sites = [SITE_KEY_RE.match(l).group(1).strip() for l in lines
-             if not l.startswith(("#", " ", "\t")) and SITE_KEY_RE.match(l)]
+    sites, site, in_groups = {}, None, False
+    for line in lines:
+        line = line.rstrip("\n")
+        if line.startswith(("#", " ", "\t")):
+            if site is None:
+                continue
+            # 'Groups:' opens the block; any other two-space key closes it. Group
+            # keys sit one level deeper, and nothing below THEM is a group.
+            m = GROUP_BLOCK_RE.match(line)
+            if m:
+                in_groups = m.group(1) == "Groups"
+                continue
+            m = GROUP_KEY_RE.match(line)
+            if in_groups and m:
+                sites[site].append(m.group(1).strip())
+            continue
+        m = SITE_KEY_RE.match(line)
+        site, in_groups = (m.group(1).strip(), False) if m else (None, False)
+        if site is not None:
+            sites[site] = []
     if not sites:
         die(f"no site keys found in {path!r}")
     return sites
@@ -138,6 +171,25 @@ def ignored(name):
 def unescape_markdown(text):
     """Undo pandoc's backslash escaping, for text leaving Markdown behind."""
     return MD_ESCAPE_RE.sub(r"\1", text)
+
+
+def resolve_group(token, site, site_groups):
+    """A group key in data/sites.yaml's own spelling -- or raise ValueError.
+
+    A group belongs to ONE site, so it is checked against the site the page ends up
+    with, not against every group in the file: 'frosch' on a Sonnhalde page would
+    render a group badge the Sonnhalde does not have.
+    """
+    groups = site_groups.get(site, [])
+    if not groups:
+        raise ValueError(f"meta.yaml sets Group: {token} -- but the site {site} has "
+                         "no groups in data/sites.yaml")
+    key = nfc(token).casefold()
+    for g in groups:
+        if nfc(g).casefold() == key:
+            return g
+    raise ValueError(f"meta.yaml sets Group: {token} -- not a group of {site}, whose "
+                     f"groups are {', '.join(groups)}")
 
 
 def resolve_site(token, known_sites, aliases):
@@ -212,15 +264,20 @@ def front_matter(bundle, date, site, marker, meta):
              f"Title: {quote(unescape_markdown(bundle.title))}"]
     if meta.get("TeaserTitle"):
         lines.append(f"TeaserTitle: {quote(meta['TeaserTitle'])}")
-    author = meta.get("Autor") or bundle.author
-    if author:
-        lines.append(f"Autor: {quote(author)}")
-    # Date, Site and SyncedFrom stay unquoted: blog_mirror reads the marker with a
-    # regex and compares it to the source prefix, so quotes there would make every
-    # page look like someone else's.
+    # meta.yaml only, never the document's docProps: dc:creator is whatever account
+    # last saved the file ("Hagmatt Leitung Stv"), and a name printed under a story
+    # has to be one a person chose to put there.
+    if meta.get("Autor"):
+        lines.append(f"Autor: {quote(meta['Autor'])}")
+    # Date, Site, Group and SyncedFrom stay unquoted: they are validated against
+    # data/sites.yaml or built here, and blog_mirror reads the marker with a regex
+    # and compares it to the source prefix -- quotes there would make every page
+    # look like someone else's.
     lines += [f"Date: {date.isoformat()}",
-              f"Site: {meta.get('Site', site)}",
-              f"SyncedFrom: {marker}",
+              f"Site: {meta.get('Site', site)}"]
+    if meta.get("Group"):
+        lines.append(f"Group: {meta['Group']}")
+    lines += [f"SyncedFrom: {marker}",
               "---"]
     return "\n".join(lines) + "\n"
 
@@ -262,10 +319,10 @@ def main():
     if not os.path.isdir(args.content):
         die(f"content directory {args.content!r} does not exist")
 
-    sites = read_sites(args.sites)
+    site_groups = read_sites(args.sites)
     # The KEY is normalised, never the value: the value goes into the page's
     # front matter and must stay in data/sites.yaml's own spelling.
-    known_sites = {nfc(s).casefold(): s for s in sites}
+    known_sites = {nfc(s).casefold(): s for s in site_groups}
     aliases = read_aliases(args.aliases)
 
     # Files at the staging root are ignored rather than rejected, so author
@@ -304,6 +361,12 @@ def main():
                             "data/sites.yaml and no alias in "
                             "data/medienmitteilungen.yaml")
                     meta["Site"] = chosen
+                if meta.get("Group"):
+                    # After the Site override, not before: meta.yaml can move the
+                    # page to another site, and the group has to belong to the site
+                    # the page actually ends up on.
+                    meta["Group"] = resolve_group(
+                        meta["Group"], meta.get("Site", site), site_groups)
                 out = os.path.join(work, target)
                 os.makedirs(out)
                 bundle = medien_convert.convert(doc, images, out)
