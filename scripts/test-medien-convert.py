@@ -184,6 +184,18 @@ def main():
           not any(os.path.basename(g) in ("mid.jpeg", "big.jpeg") for g in gallery_rev),
           gallery_rev)
 
+    # two loose twins tied on pixel count, neither the document's own copy: the
+    # resolution key alone cannot break this tie, so it must fall to a stable key
+    # (basename) rather than to which twin happened to be seen first.
+    tie_a = _rescaled("tieA.jpeg", 450)
+    tie_b = _rescaled("tieB.jpeg", 450)   # identical dimensions to tie_a
+
+    teaser_tie_fwd, _ = medien_convert.select_images([doc_copy], [tie_a, tie_b])
+    teaser_tie_rev, _ = medien_convert.select_images([doc_copy], [tie_b, tie_a])
+    check("equal-pixel loose twins break the tie the same way in both orderings",
+          os.path.basename(teaser_tie_fwd) == os.path.basename(teaser_tie_rev),
+          (teaser_tie_fwd, teaser_tie_rev))
+
     shutil.rmtree(swap_dir, ignore_errors=True)
 
     # no document image at all: the first pooled image becomes the teaser

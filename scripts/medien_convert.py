@@ -183,7 +183,11 @@ def select_images(doc_images, loose_images, threshold=DEDUP_THRESHOLD,
         # and does not depend on the order loose_images happened to arrive in.
         # (Comparing to the *original* docs[0] mid-loop, once a swap had already
         # happened, silently stopped later swaps from ever being considered.)
-        teaser = max(teaser_twins, key=lambda p: (_pixels(p), p == docs[0]))
+        # The basename is a third, stable key: two loose twins can tie on pixel
+        # count without either being docs[0], and without it max() would fall
+        # back to first-occurrence, reopening the same order-dependence.
+        teaser = max(teaser_twins,
+                     key=lambda p: (_pixels(p), p == docs[0], os.path.basename(p)))
     gallery.extend(d for d in docs[1:] if d != teaser)
 
     gallery.sort(key=os.path.basename)
