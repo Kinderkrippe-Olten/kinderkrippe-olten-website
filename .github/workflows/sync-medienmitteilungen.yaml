@@ -306,9 +306,11 @@ jobs:
           set -euo pipefail
           head="$(git rev-parse HEAD)"
           if [ "$PUSHED" = "true" ]; then
-            gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
-            echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
-            exit 0
+            # Not a bare `gh workflow run`: a dispatch fired seconds after a push can
+            # be resolved by GitHub against the PREVIOUS commit, and the deploy then
+            # goes green having built the wrong tree. scripts/dispatch-deploy.sh waits
+            # for the ref, then checks which commit the run actually picked up.
+            exec sh scripts/dispatch-deploy.sh "$head" "${GITHUB_REF_NAME}"
           fi
           # Only ever heal a commit a SYNCER made; a human commit whose build
           # fails for its own reasons must not be re-dispatched forever. "ours" is
@@ -336,8 +338,7 @@ jobs:
             exit 0
           fi
           echo "::warning::${head} was committed by an earlier run but never deployed -- dispatching now"
-          gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
-          echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
+          exec sh scripts/dispatch-deploy.sh "$head" "${GITHUB_REF_NAME}"
 
       # The one place this workflow turns "published, but not as the author intended"
       # into a red run. Both causes come through here rather than through a second
