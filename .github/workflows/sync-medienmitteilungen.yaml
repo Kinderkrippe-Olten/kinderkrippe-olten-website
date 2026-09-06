@@ -1,0 +1,267 @@
+name: Sync Medienmitteilungen from OpenCloud
+
+# Mirrors press-release folders from the OpenCloud space into content/blog/.
+# Design: docs/superpowers/specs/2026-09-06-opencloud-medienmitteilungen-sync-design.md
+#
+# The sibling of sync-stellen.yaml, kept as a separate file rather than factored into
+# something shared: the two have the same SHAPE but not the same logic, and a shared
+# workflow would couple a job-ad publish to a press-release bug.
+on:
+  schedule:
+    - cron: '43 5 * * 1'   # UTC, Mondays. Off-round, and away from sync-stellen's :17.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Fetch and validate only -- do not commit or push'
+        type: boolean
+        default: false
+      allow_empty:
+        description: 'Permit removing the last remaining page (overrides the wipeout guard)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+# SHARED with sync-stellen.yaml. See the note there: both push to the same branch and
+# neither rebases, so they must not run at the same time.
+concurrency:
+  group: websync-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      PIN_RCLONE_VERSION: v1.75.0
+      PIN_RCLONE_SHA256: aa2804e08f48250e71009c727124b6341cd0288465804a9a09d14663cabafbaa
+
+      # Pandoc GENERATES the committed bytes, and the update pass detects change by
+      # regenerating and comparing them. An unpinned pandoc means that the day the
+      # runner image moves, every synced page compares unequal and one bot commit
+      # rewrites the entire corpus, then deploys it. Pinning the tool that copies
+      # bytes (rclone, above) while floating the tool that writes them would be
+      # exactly backwards.
+      PIN_PANDOC_VERSION: '3.11'
+      PIN_PANDOC_SHA256: 89d4c9d97818c62a97157f0072844e4602c6cee795bf84abd1aee7273abcda99
+
+      # For the pre-commit build check. Keep in step with deploy-hugo.yaml.
+      HUGO_VERSION: 0.158.0
+      DART_SASS_VERSION: 1.98.0
+
+      OPENCLOUD_PATH: Medienmitteilungen
+
+    steps:
+      - name: Check OpenCloud secrets are present
+        env:
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+        run: |
+          set -euo pipefail
+          for v in RCLONE_CONFIG_OC_URL RCLONE_CONFIG_OC_USER OPENCLOUD_TOKEN; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::secret behind $v is empty -- set it in Settings > Secrets and variables > Actions"
+              exit 1
+            fi
+          done
+          echo "all three OpenCloud secrets are set"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # assets/uikit is a submodule and the SCSS build needs it; the build check
+          # below is the reason this differs from sync-stellen.yaml.
+          submodules: recursive
+
+      - name: Install rclone
+        run: |
+          set -euo pipefail
+          dir="rclone-${PIN_RCLONE_VERSION}-linux-amd64"
+          curl -fsSLO "https://downloads.rclone.org/${PIN_RCLONE_VERSION}/${dir}.zip"
+          echo "${PIN_RCLONE_SHA256}  ${dir}.zip" | sha256sum -c -
+          unzip -q "${dir}.zip"
+          sudo install -m 0755 "${dir}/rclone" /usr/local/bin/rclone
+          rm -rf "${dir}" "${dir}.zip"
+          rclone version | head -1
+
+      - name: Install pandoc, poppler and the imaging libraries
+        run: |
+          set -euo pipefail
+          deb="pandoc-${PIN_PANDOC_VERSION}-1-amd64.deb"
+          curl -fsSLO "https://github.com/jgm/pandoc/releases/download/${PIN_PANDOC_VERSION}/${deb}"
+          echo "${PIN_PANDOC_SHA256}  ${deb}" | sha256sum -c -
+          sudo dpkg -i "$deb"
+          rm -f "$deb"
+          # poppler stays unpinned: pdftohtml -xml output feeds the same parser, and
+          # drift there surfaces as a rejected or visibly wrong page rather than a
+          # silent corpus-wide rewrite. Pillow and numpy are for de-duplication only.
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends poppler-utils python3-pil python3-numpy
+          pandoc --version | head -1
+          pdftohtml -v 2>&1 | head -1
+
+      - name: Install Hugo
+        run: |
+          set -euo pipefail
+          curl -fsSLJO "https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
+          tar -xf "dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz"
+          sudo cp -r dart-sass/* /usr/local/bin
+          rm -rf dart-sass*
+          curl -fsSLo hugo.deb "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i hugo.deb
+          rm -f hugo.deb
+          hugo version
+
+      - name: Fetch press releases from OpenCloud
+        env:
+          RCLONE_CONFIG_OC_TYPE: webdav
+          RCLONE_CONFIG_OC_VENDOR: infinitescale
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p staging
+          RCLONE_CONFIG_OC_PASS="$(rclone obscure "$OPENCLOUD_TOKEN")"
+          export RCLONE_CONFIG_OC_PASS
+          rclone copy "OC:${OPENCLOUD_PATH}" staging --max-size 25M --transfers 4 --stats-one-line -v
+          echo "--- fetched ---"
+          find staging -type f -printf '%P\n' | sort
+
+      - name: Warn if the App Token is close to expiring
+        continue-on-error: true
+        env:
+          RCLONE_CONFIG_OC_URL: ${{ secrets.OPENCLOUD_WEBDAV_URL }}
+          RCLONE_CONFIG_OC_USER: ${{ secrets.OPENCLOUD_USER }}
+          OPENCLOUD_TOKEN: ${{ secrets.OPENCLOUD_TOKEN }}
+          WARN_DAYS: '30'
+        run: |
+          # Copied verbatim from sync-stellen.yaml -- same token, same failure mode.
+          # NOT set -e: this step must never fail the sync.
+          set -uo pipefail
+          base=$(printf '%s' "$RCLONE_CONFIG_OC_URL" | sed -E 's#^(https?://[^/]+).*#\1#')
+          if [ -z "$base" ]; then
+            echo "::warning::App Token expiry check skipped: could not derive the OpenCloud base URL"
+            exit 0
+          fi
+          if ! resp=$(curl -fsS --max-time 20 -u "${RCLONE_CONFIG_OC_USER}:${OPENCLOUD_TOKEN}" \
+                        "${base}/auth-app/tokens" 2>/dev/null); then
+            echo "::warning::App Token expiry check skipped: /auth-app/tokens could not be read with the App Token (the sync itself succeeded, so the token is valid)."
+            exit 0
+          fi
+          exp=$(printf '%s' "$resp" | jq -r --arg t "$OPENCLOUD_TOKEN" \
+                  'map(select(.token == $t)) | .[0].expiration_date // empty' 2>/dev/null)
+          if [ -z "${exp:-}" ]; then
+            exp=$(printf '%s' "$resp" | jq -r \
+                    '[.[].expiration_date] | map(select(. != null)) | sort | .[0] // empty' 2>/dev/null)
+          fi
+          [ -n "${exp:-}" ] || { echo "::warning::App Token expiry check skipped: no expiration_date in the response"; exit 0; }
+          exp_s=$(date -u -d "$exp" +%s 2>/dev/null) || { echo "::warning::App Token expiry check skipped: could not parse '$exp'"; exit 0; }
+          days=$(( (exp_s - $(date -u +%s)) / 86400 ))
+          echo "App Token expires ${exp} (in ${days} days)"
+          if [ "$days" -le "$WARN_DAYS" ]; then
+            echo "::warning::The OpenCloud App Token expires in ${days} days (${exp}). Publishing stops when it does."
+          fi
+          exit 0
+
+      - name: Apply to the repository
+        id: apply
+        env:
+          DRY_RUN: ${{ inputs.dry_run || false }}
+          ALLOW_EMPTY: ${{ inputs.allow_empty || false }}
+        run: |
+          set -euo pipefail
+          flags=()
+          if [ "$DRY_RUN" = "true" ]; then flags+=(--dry-run); fi
+          if [ "$ALLOW_EMPTY" = "true" ]; then flags+=(--allow-empty); fi
+
+          set +e
+          python3 scripts/apply-medien-sync.py --staging staging "${flags[@]}" \
+            | tee apply-report.txt
+          rc=${PIPESTATUS[0]}
+          set -e
+
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          # 0 clean, 1 applied with rejections (commit anyway, fail at the end),
+          # 2 could not run, 3 wipeout guard. Stop now on 2/3 so nothing is committed.
+          if [ "$rc" -ge 2 ]; then exit "$rc"; fi
+
+      # This syncer GENERATES content rather than copying it, so the first thing to
+      # evaluate the Markdown must not be the production deploy. Hugo evaluates
+      # shortcodes in page content and this site sets goldmark unsafe:true, so a
+      # document containing '{{<' or unexpected raw HTML could otherwise break every
+      # deploy -- job ads included -- with an error naming content/blog/ rather than
+      # the document it came from.
+      - name: Check the site still builds
+        run: |
+          set -euo pipefail
+          hugo build --quiet
+          echo "site builds with the applied changes"
+
+      - name: Commit and push
+        id: commit
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain content/blog)" ]; then
+            echo "no changes to commit"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name  "kko-websyncer[bot]"
+          git config user.email "websyncer@kinderkrippe-olten.ch"
+          git add -A content/blog
+          git commit -F - <<EOF
+          Sync press releases from OpenCloud
+
+          $(cat apply-report.txt)
+
+          Applied automatically by .github/workflows/sync-medienmitteilungen.yaml
+          EOF
+          git push
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger the deploy, healing a stranded commit if needed
+        if: ${{ inputs.dry_run != true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUSHED: ${{ steps.commit.outputs.pushed }}
+        run: |
+          set -euo pipefail
+          head="$(git rev-parse HEAD)"
+          if [ "$PUSHED" = "true" ]; then
+            gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
+            echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
+            exit 0
+          fi
+          if [ "$(git log -1 --format='%an')" != "kko-websyncer[bot]" ]; then
+            echo "no changes, and HEAD is not ours -- nothing to do"
+            exit 0
+          fi
+          deployed="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/deployments?environment=github-pages&per_page=1" \
+            --jq '.[0].sha // empty' 2>/dev/null || true)"
+          if [ -z "$deployed" ]; then
+            echo "could not determine the deployed commit -- skipping the heal check"
+            exit 0
+          fi
+          if [ "$head" = "$deployed" ]; then echo "already deployed at ${head}"; exit 0; fi
+          inflight="$(gh run list --workflow=deploy-hugo.yaml --json status \
+            --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length' \
+            2>/dev/null || echo 0)"
+          if [ "$inflight" -gt 0 ]; then
+            echo "a deploy is already queued or running -- letting it finish"
+            exit 0
+          fi
+          echo "::warning::${head} was committed by an earlier run but never deployed -- dispatching now"
+          gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
+
+      - name: Report rejected folders
+        if: ${{ steps.apply.outputs.rc == '1' }}
+        run: |
+          echo "::error::Some folders in the OpenCloud Medienmitteilungen folder could not be published."
+          echo "Nothing already published was removed. See 'Apply to the repository' above"
+          echo "for the folder names and what to correct."
+          exit 1

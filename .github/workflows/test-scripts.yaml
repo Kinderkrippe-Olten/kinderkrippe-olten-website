@@ -1,0 +1,46 @@
+name: Test the sync scripts
+
+# The fixture test in scripts/test-medien-convert.py is the only thing that would
+# notice pandoc's Markdown output moving. It has to run somewhere, with the SAME
+# pinned pandoc the sync workflow uses -- otherwise a pin bump passes here and
+# rewrites the corpus there.
+on:
+  pull_request:
+    paths: ['scripts/**', 'data/**', '.github/workflows/test-scripts.yaml']
+  push:
+    branches: [main]
+    paths: ['scripts/**', 'data/**', '.github/workflows/test-scripts.yaml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      # Keep in step with sync-medienmitteilungen.yaml.
+      PIN_PANDOC_VERSION: '3.11'
+      PIN_PANDOC_SHA256: 89d4c9d97818c62a97157f0072844e4602c6cee795bf84abd1aee7273abcda99
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc, poppler and the imaging libraries
+        run: |
+          set -euo pipefail
+          deb="pandoc-${PIN_PANDOC_VERSION}-1-amd64.deb"
+          curl -fsSLO "https://github.com/jgm/pandoc/releases/download/${PIN_PANDOC_VERSION}/${deb}"
+          echo "${PIN_PANDOC_SHA256}  ${deb}" | sha256sum -c -
+          sudo dpkg -i "$deb"
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends poppler-utils python3-pil python3-numpy
+
+      - name: Run every test script
+        run: |
+          set -euo pipefail
+          status=0
+          for t in scripts/test-*.py; do
+            echo "== $t"
+            python3 "$t" || status=1
+          done
+          exit "$status"

@@ -42,8 +42,13 @@ permissions:
   contents: write   # commit the synced PDFs
   actions: write    # dispatch deploy-hugo.yaml afterwards
 
+# Shared with sync-medienmitteilungen.yaml, deliberately. The two syncers write to
+# disjoint paths but push to the same branch, and the commit step below pushes with
+# no fetch and no retry -- so a concurrent run would lose its push, fail the job, and
+# skip the deploy dispatch, deferring publication up to 24 hours with only a red run
+# to show for it. Serialising costs a few seconds.
 concurrency:
-  group: sync-stellen
+  group: websync-sync
   cancel-in-progress: false
 
 jobs:
