@@ -292,9 +292,11 @@ jobs:
           head="$(git rev-parse HEAD)"
 
           if [ "$PUSHED" = "true" ]; then
-            gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
-            echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
-            exit 0
+            # Not a bare `gh workflow run`: a dispatch fired seconds after a push can
+            # be resolved by GitHub against the PREVIOUS commit, and the deploy then
+            # goes green having built the wrong tree. scripts/dispatch-deploy.sh waits
+            # for the ref, then checks which commit the run actually picked up.
+            exec sh scripts/dispatch-deploy.sh "$head" "${GITHUB_REF_NAME}"
           fi
 
           # Nothing changed this run. Only ever heal a commit a SYNCER made: a
@@ -336,8 +338,7 @@ jobs:
           fi
 
           echo "::warning::${head} was committed by an earlier run but never deployed -- dispatching now"
-          gh workflow run deploy-hugo.yaml --ref "${GITHUB_REF_NAME}"
-          echo "deploy-hugo.yaml dispatched on ${GITHUB_REF_NAME} for ${head}"
+          exec sh scripts/dispatch-deploy.sh "$head" "${GITHUB_REF_NAME}"
 
       - name: Report rejected files
         if: ${{ steps.apply.outputs.rc == '1' }}
