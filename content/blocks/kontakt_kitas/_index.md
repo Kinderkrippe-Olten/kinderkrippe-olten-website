@@ -24,6 +24,6 @@ Tel. 062 526 85 12<br>
 <a href="mailto: hort@kinderkrippe-olten.ch">hort@kinderkrippe-olten.ch</a>
 Eliane Flückiger<br>
 Hortleiterin<br>
-Reiserstrasse 89<br>
+Reiserstrasse 91<br>
 4600 Olten<br>
 Tel. 062 526 85 13<br>
