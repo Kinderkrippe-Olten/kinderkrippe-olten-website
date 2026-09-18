@@ -27,7 +27,7 @@
   lastname: Felber
   picture: Rahel_Felber.jpg
   function:
-    - Gruppenleiterin
+    - Miterzieherin
   education:
     - FaBe K EFZ
     - Berufsbildnerin
@@ -39,16 +39,6 @@
 - firstname: Michelle
   lastname: Von Burg
   picture: Michelle_Von_Burg.jpg
-  function:
-    - Miterzieherin
-  education:
-    - FaBe K EFZ
-  group: frosch
-  site: hagmatt
-
-- firstname: Fabienne
-  lastname: Hintermann
-  picture: Fabienne_Hintermann.jpg
   function:
     - Miterzieherin
   education:
@@ -70,7 +60,7 @@
   lastname: Munzinger
   picture: Fabienne_Munzinger.jpg
   function:
-    - Miterzieherin
+    - Gruppenleiterin
   education:
     - FaBe K EFZ
     - Berufsbildnerin
@@ -94,6 +84,17 @@
   function:
     - Miterzieherin
   group: frosch
+  site: hagmatt
+
+- firstname: Hatice
+  lastname: Özlü
+  picture: Oezlue_Hatice.jpg
+  function:
+    - Miterzieherin
+    - Aushilfe
+  education:
+    - Fabe K EFZ
+  group: fisch
   site: hagmatt
 
 - firstname: Merci
