@@ -23,6 +23,17 @@
   group: fisch
   site: hagmatt
 
+- firstname: Fabienne
+  lastname: Munzinger
+  picture: Fabienne_Munzinger.jpg
+  function:
+    - Gruppenleiterin
+  education:
+    - FaBe K EFZ
+    - Berufsbildnerin
+  group: frosch
+  site: hagmatt
+
 - firstname: Rahel
   lastname: Felber
   picture: Rahel_Felber.jpg
@@ -34,15 +45,11 @@
   group: frosch
   site: hagmatt
 
-# - break
-
-- firstname: Michelle
-  lastname: Von Burg
-  picture: Michelle_Von_Burg.jpg
+- firstname: Jaime
+  lastname: Schwarzenbach
+  picture: Jaime_Schwarzenbach.jpg
   function:
     - Miterzieherin
-  education:
-    - FaBe K EFZ
   group: frosch
   site: hagmatt
 
@@ -56,17 +63,6 @@
   group: fisch
   site: hagmatt
 
-- firstname: Fabienne
-  lastname: Munzinger
-  picture: Fabienne_Munzinger.jpg
-  function:
-    - Gruppenleiterin
-  education:
-    - FaBe K EFZ
-    - Berufsbildnerin
-  group: frosch
-  site: hagmatt
-
 - firstname: Erika
   lastname: Huber
   picture: Erika_Huber.jpg
@@ -76,14 +72,6 @@
     - FaBe K EFZ
     - Berufsbildnerin
   group: fisch
-  site: hagmatt
-
-- firstname: Jaime
-  lastname: Schwarzenbach
-  picture: Jaime_Schwarzenbach.jpg
-  function:
-    - Miterzieherin
-  group: frosch
   site: hagmatt
 
 - firstname: Hatice
@@ -105,6 +93,8 @@
     - 2. Lehrjahr
   group: fisch
   site: hagmatt
+
+# - break
 
 - firstname: Caroline
   lastname: Mba
