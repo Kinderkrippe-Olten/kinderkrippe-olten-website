@@ -1,5 +1,5 @@
 [tools]
-"aqua:sass/dart-sass" = "1.98.0"
+"github:sass/dart-sass" = { version = "1.98.0", asset_pattern = "dart-sass-{{ version }}-linux-x64.tar.gz" }
 node = "24.9.0"
 hugo-extended = "latest"
 hugo = "latest"
