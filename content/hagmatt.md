@@ -6,4 +6,6 @@ Title: Hagmatt
 
 <!-- {{< doublepage right=block/5pics left=block/tagesablauf_hagmatt background=beige border=stripes >}} -->
 
+{{< blog siteFilter="hagmatt" background="pink" >}}
+
 {{< team-section siteFilter="hagmatt" title="Hagmatt Team" background="blue" >}}

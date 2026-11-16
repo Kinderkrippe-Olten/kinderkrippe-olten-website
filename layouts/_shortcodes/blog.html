@@ -1,3 +1,5 @@
 {{/* layouts/shortcodes/blog.html */}}
 {{ $background := .Get "background" }}
-{{ partial "render-blog-section.html" (dict "Page" .Page "background" $background) }}
+{{ $siteFilter := .Get "siteFilter" }}
+{{ $title := .Get "title" }}
+{{ partial "render-blog-section.html" (dict "Page" .Page "background" $background "siteFilter" $siteFilter "title" $title) }}
