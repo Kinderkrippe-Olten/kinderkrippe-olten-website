@@ -232,6 +232,14 @@
   group: balu
   site: sonnhalde
 
+- firstname: Lorena
+  lastname: Hetemi
+  picture: Lorena_Hetemi.jpg
+  function:
+    - Miterzieherin
+  group: regenbogen
+  site: sonnhalde
+
 - firstname: Anuschka
   lastname: Gilgen
   picture: Anuschka_Gilgen.jpg
@@ -363,6 +371,13 @@
   picture: Khaoula_Talbi.jpg
   function:
     - Aushilfe
+  site: bifang-säli
+
+- firstname: Xara
+  lastname: Kurtishi
+  picture: Xara_Kurtishi.jpg
+  function:
+    - Fachperson Aushilfe
   site: bifang-säli
 
 - firstname: Siriphon
