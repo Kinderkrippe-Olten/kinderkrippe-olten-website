@@ -9,7 +9,7 @@ Title: Kinderkrippe Olten
 
 
 
-{{< doublepage left=block/hort right=block/hortBanner background=light-blue backgroundRight=light-blue border=stripes >}}
+{{< doublepage left=block/hort right=block/zeiten_hort background=light-blue backgroundRight=beige border=stripes >}}
 
 
 <a name="blog" style="color: inherit; text-decoration: inherit">
