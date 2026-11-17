@@ -9,7 +9,7 @@ im Riggenbachsaal der Friedenskirche einen Hort mit 24 Plätzen.
 Weitere Informationen finden Sie in dieser
 [Medienmitteilung](/docs/kitas/KK-Olten-Medienmitteilung_Hort_2025.pdf).
 
-Anmeldungen bitte ab sofort für August 2026 per Email an [hort@kinderkrippe-olten.ch](mailto:hort@kinderkrippe-olten.ch)
+[Infos zur Anmeldung](/angebot/#kitas)
 
 - [Betreuungsreglement](/docs/hort/KK-Olten-Hort-Betreuungsreglement_2026-10-01.pdf)
 - [Tarifblatt detailliert](/docs/hort/KK-Olten-Tarifblatt-Hort_2026-10-01.pdf)

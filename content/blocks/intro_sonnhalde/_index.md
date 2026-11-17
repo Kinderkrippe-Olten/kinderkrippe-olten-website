@@ -24,3 +24,5 @@ gehören ebenso dazu wie das gemeinsame Essen.
 [Virtuelle Tour](https://goo.gl/maps/CASSFFMQiyccfrtz8)
 
 Download [Pädagogisches Konzept Sonnhalde](/docs/kitas/KK-Olten-Paedagogisches-Konzept-Sonnhalde_2024-01-18.pdf)
+
+[Infos zur Anmeldung](/angebot/#kitas)

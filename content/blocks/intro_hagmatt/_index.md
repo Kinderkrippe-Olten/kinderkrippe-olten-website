@@ -15,3 +15,5 @@ Malen und Basteln sowie Geschichten gehören ebenso dazu wie das gemeinsame
 Essen.
 
 Download [Pädagogisches Konzept Hagmatt](/docs/kitas/KK-Olten-Paedagogisches-Konzept-Hagmatt_2024-01-18.pdf)
+
+[Infos zur Anmeldung](/angebot/#kitas)
