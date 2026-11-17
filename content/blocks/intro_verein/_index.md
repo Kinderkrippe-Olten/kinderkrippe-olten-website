@@ -12,4 +12,4 @@ zweite der Stadt Olten überhaupt eröffnet.
 Mit der im 2002 neu gestarteten Krippe Hagmatt betreibt der Verein aktuell
 zwei Kinderkrippen.
 
-Hier finden Sie unsere [Statuten](/docs/KK_Olten_Statuten_221205.pdf) (PDF).
+Hier finden Sie unsere [Statuten](/docs/verein/KK-Olten-Statuten_2022-12-05.pdf) (PDF).
