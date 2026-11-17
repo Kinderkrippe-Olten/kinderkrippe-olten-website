@@ -10,20 +10,20 @@ Kitaleiterin<br>
 Hagmattstrasse 27<br>
 4600 Olten<br>
 Tel. 062 526 85 11<br>
-<a href="mailto:hagmatt@kinderkrippe-olten.ch">hagmatt@kinderkrippe-olten.ch</a>
+[hagmatt@kinderkrippe-olten.ch](mailto:hagmatt@kinderkrippe-olten.ch)
 
 **Kita Sonnhalde**<br>
-Anne Peter</br>
+Anne Peter<br>
 Kitaleiterin<br>
 Sonnhaldenstrasse 44<br>
 4600 Olten<br>
 Tel. 062 526 85 12<br>
-<a href="mailto: sonnhalde@kinderkrippe-olten.ch">sonnhalde@kinderkrippe-olten.ch</a>
+[sonnhalde@kinderkrippe-olten.ch](mailto:sonnhalde@kinderkrippe-olten.ch)
 
 **Hort Bifang-Säli**<br>
-<a href="mailto: hort@kinderkrippe-olten.ch">hort@kinderkrippe-olten.ch</a>
 Eliane Flückiger<br>
 Hortleiterin<br>
 Reiserstrasse 91<br>
 4600 Olten<br>
 Tel. 062 526 85 13<br>
+[hort@kinderkrippe-olten.ch](mailto:hort@kinderkrippe-olten.ch)
