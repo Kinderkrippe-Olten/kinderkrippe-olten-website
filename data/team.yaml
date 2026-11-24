@@ -4,7 +4,7 @@
   lastname: Zbinden
   picture: Antonella_Zbinden.jpg
   function:
-    - Krippenleiterin
+    - Kita-Leiterin
   education:
     - FaBe K EFZ
     - dipl. Krippenleitung
@@ -15,7 +15,7 @@
   lastname: Altermatt
   picture: Laura_Altermatt.jpg
   function:
-    - Stv. Krippenleiterin
+    - Stv. Kita-Leiterin
     - Gruppenleiterin
   education:
     - FaBe K EFZ
@@ -165,7 +165,7 @@
   lastname: Peter
   picture: Anne_Peter.jpg
   function:
-    - Krippenleiterin
+    - Kita-Leiterin
   education:
     - staatlich anerkannte Erzieherin
     - Berufsbildnerin
@@ -178,7 +178,7 @@
   lastname: Imhof
   picture: Vanessa_Imhof.jpg
   function:
-    - Stv. Kita-Leitung
+    - Stv. Kita-Leiterin
     - Miterzieherin
   education:
     - FaBe K EFZ
@@ -361,6 +361,7 @@
   lastname: Köbeli
   picture: Naomi_Köbeli.jpg
   function:
+    - Stv. Hort-Leiterin
     - Pädagogische Fachperson
   education:
     - FaBe K

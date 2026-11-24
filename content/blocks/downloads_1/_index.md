@@ -10,5 +10,5 @@ Title: Downloads
 
 - [Tarifblatt Kitas](/docs/kitas/KK-Olten-Tarifblatt_2024-09-18.pdf)
 - [Tarifblatt Hort](/docs/hort/KK-Olten-Tarifblatt-Hort_2026-10-01.pdf)
-- [Statuten](/docs/verein/KK-Olten-Statuten_2022-12-05.pdf)
+- [Statuten](/docs/verein/KK-Olten-Statuten_2026-04-22.pdf)
 - [Beitrittsformular Verein](/docs/verein/KK-Olten-Vereinsbeitritt_2026-05-25.pdf)
